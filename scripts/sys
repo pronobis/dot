@@ -15,7 +15,7 @@ then
 fi
 
 # Import tools
-. $DOT_DIR/scripts/tools.bash
+. $DOT_DIR/shell/tools.bash
 
 # Get system folders for all modules
 dot_get_modules

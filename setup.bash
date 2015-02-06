@@ -7,7 +7,7 @@
 export DOT_DIR="$HOME/.dot"
 
 # Import tools
-. $DOT_DIR/scripts/tools.bash
+. $DOT_DIR/shell/tools.bash
 
 # Sort the paths
 IFS=$'\n' DOT_MODULES=($(sort <<<"${DOT_MODULES[*]}"))

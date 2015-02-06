@@ -1,13 +1,16 @@
 #!/bin/bash
 
-# -------------------------------------------------------------
-# General
-# -------------------------------------------------------------
+## -------------------------------------------------------------
+## General
+## -------------------------------------------------------------
 # Set path to the root .dot dir
 DOT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+# Interrupt the script on first error
+set -e
+
 # Import tools
-. $DOT_DIR/scripts/tools.bash
+. $DOT_DIR/shell/tools.bash
 
 # Header
 echo "==============================="
