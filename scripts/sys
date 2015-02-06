@@ -22,7 +22,6 @@ dot_get_modules
 sys_folders=()
 for i in ${DOT_MODULES[@]}
 do
-    # Run the setup.bash in each module
     if [ -d "$i/systems" ]
     then
         sys_folders[${#sys_folders[@]}]="$i/systems"

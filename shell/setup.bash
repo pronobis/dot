@@ -17,9 +17,9 @@ dot_get_modules
 for i in ${DOT_MODULES[@]}
 do
     # Run the setup.bash in each module
-    if [ -f "$i/setup.bash" ]
+    if [ -f "$i/shell/setup.bash" ]
     then
-        . "$i/setup.bash"
+        . "$i/shell/setup.bash"
     fi
 done
 

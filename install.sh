@@ -35,14 +35,14 @@ then
 fi
 
 ## Add the setup.profile to the ~/.profile if not yet added
-if ! grep -q ". $DOT_DIR/setup.profile" "${PROFILE_FILE}"
+if ! grep -q ". $DOT_DIR/shell/setup.profile" "${PROFILE_FILE}"
 then
     cat << EOF >> ${PROFILE_FILE}
 
 ## ---------------
 ## Setup dot files
 ## ---------------
-. ${DOT_DIR}/setup.profile
+. ${DOT_DIR}/shell/setup.profile
 
 EOF
     echo "Done!"
@@ -68,14 +68,14 @@ then
 fi
 
 ## Add the setup.bash to the ~/.profile if not yet added
-if ! grep -q ". $DOT_DIR/setup.bash" "${BASHRC_FILE}"
+if ! grep -q ". $DOT_DIR/shell/setup.bash" "${BASHRC_FILE}"
 then
     cat << EOF >> ${BASHRC_FILE}
 
 ## ---------------
 ## Setup dot files
 ## ---------------
-. ${DOT_DIR}/setup.bash
+. ${DOT_DIR}/shell/setup.bash
 
 EOF
     echo "Done!"
