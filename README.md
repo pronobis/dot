@@ -12,3 +12,5 @@ For now, check out the default module for inspiration.
 
 1. Clone the repository to a convenient location e.g. `~/.dot`
 2. Go to that directory and run `install.sh`
+3. Clone/install your modules in `./modules`. The name of the module determines it's priority.
+4. Run `install.sh` in each module.
