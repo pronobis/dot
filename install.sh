@@ -1,12 +1,29 @@
 #!/bin/bash
 
+# -------------------------------------------------------------
+# General
+# -------------------------------------------------------------
 # Set path to the root .dot dir
-DOT_DIR="$HOME/.dot"
+DOT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+# Import tools
+. $DOT_DIR/scripts/tools.bash
+
+# Header
+echo "==============================="
+echo "Dotfiles Installer "
+echo "==============================="
+echo "Using dot files in: ${DOT_DIR}"
+
 
 ## ---------------------------------------------------------
 ## Install setup.profile
 ## ---------------------------------------------------------
 PROFILE_FILE="$HOME/.profile"
+echo
+echo "-------------------------------"
+echo "Setting up $PROFILE_FILE"
+echo "-------------------------------"
 
 # Create .profile
 if [ ! -f ${PROFILE_FILE} ]
@@ -25,13 +42,21 @@ then
 . ${DOT_DIR}/setup.profile
 
 EOF
+    echo "Done!"
+else
+    echo "Already set up, doing nothing!"
 fi
+
 
 
 ## ---------------------------------------------------------
 ## Install setup.bash
 ## ---------------------------------------------------------
 BASHRC_FILE="$HOME/.bashrc"
+echo
+echo "-------------------------------"
+echo "Setting up $BASHRC_FILE"
+echo "-------------------------------"
 
 # Create .bashrc
 if [ ! -f ${BASHRC_FILE} ]
@@ -50,4 +75,27 @@ then
 . ${DOT_DIR}/setup.bash
 
 EOF
+    echo "Done!"
+else
+    echo "Already set up, doing nothing!"
 fi
+
+
+
+## ---------------------------------------------------------
+## Create links to binaries
+## ---------------------------------------------------------
+echo
+echo "-------------------------------"
+echo "Creating links to binaries "
+echo "-------------------------------"
+dot_link_bin $DOT_DIR "scripts/sys"
+dot_link_bin $DOT_DIR "scripts/cmd"
+echo "Done!"
+
+
+echo
+echo "-------------------------------"
+echo "All done! "
+echo "Please install modules now. "
+echo "-------------------------------"
