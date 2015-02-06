@@ -13,20 +13,15 @@ set -e
 . $DOT_DIR/shell/tools.bash
 
 # Header
-echo "==============================="
-echo "Dotfiles Installer "
-echo "==============================="
-echo "Using dot files in: ${DOT_DIR}"
+print_main_header
 
 
 ## ---------------------------------------------------------
 ## Install setup.profile
 ## ---------------------------------------------------------
 PROFILE_FILE="$HOME/.profile"
-echo
-echo "-------------------------------"
-echo "Setting up $PROFILE_FILE"
-echo "-------------------------------"
+# Header
+print_header "Setting up $PROFILE_FILE"
 
 # Create .profile
 if [ ! -f ${PROFILE_FILE} ]
@@ -45,21 +40,18 @@ then
 . ${DOT_DIR}/shell/setup.profile
 
 EOF
-    echo "Done!"
+    print_status "Done!"
 else
-    echo "Already set up, doing nothing!"
+    print_status "Already set up, doing nothing!"
 fi
-
 
 
 ## ---------------------------------------------------------
 ## Install setup.bash
 ## ---------------------------------------------------------
 BASHRC_FILE="$HOME/.bashrc"
-echo
-echo "-------------------------------"
-echo "Setting up $BASHRC_FILE"
-echo "-------------------------------"
+# Header
+print_header "Setting up $BASHRC_FILE"
 
 # Create .bashrc
 if [ ! -f ${BASHRC_FILE} ]
@@ -78,25 +70,11 @@ then
 . ${DOT_DIR}/shell/setup.bash
 
 EOF
-    echo "Done!"
+    print_status "Done!"
 else
-    echo "Already set up, doing nothing!"
+    print_status "Already set up, doing nothing!"
 fi
 
 
-
-## ---------------------------------------------------------
-## Create links to binaries
-## ---------------------------------------------------------
-# echo
-# echo "-------------------------------"
-# echo "Creating links to binaries "
-# echo "-------------------------------"
-# echo "Done!"
-
-
-echo
-echo "-------------------------------"
-echo "All done! "
-echo "Please install modules now. "
-echo "-------------------------------"
+# Footer
+print_main_footer
