@@ -28,29 +28,51 @@ function dot_link_bin
     fi
 }
 
-# Link to the internal config file
+# Create a link to config files
 function dot_link_config
 {
-    mkdir -p $(dirname "${HOME}/$2")
-    ln -sf "$1/config/$2" "${HOME}/$2"
+    for i in $1/config/$2
+    do
+        i=${i#$1/config/}
+        if [ -e "$1/config/$i" ]
+        then
+            mkdir -p $(dirname "${HOME}/$i")
+            ln -sf "$1/config/$i" "${HOME}/$i"
+        fi
+    done
 }
 
-# Make a copy of the config file
+# Make a copy of config files
 function dot_copy_config
 {
-    mkdir -p $(dirname "${HOME}/$2")
-    if [ -e "${HOME}/$2" ]; then  # To prevent copying into a link
-        rm "${HOME}/$2"
-    fi
-    cp "$1/config/$2" "${HOME}/$2"
+    for i in $1/config/$2
+    do
+        i=${i#$1/config/}
+        if [ -e "$1/config/$i" ]
+        then
+            mkdir -p $(dirname "${HOME}/$i")
+            if [ -e "${HOME}/$i" ]; then  # To prevent copying into a link
+                rm "${HOME}/$i"
+            fi
+            cp "$1/config/$i" "${HOME}/$i"
+        fi
+    done
+
 }
 
-# Copy the file and fill env. variables inside
+# Copy config files and fill env. variables inside
 function dot_fill_config
 {
-    mkdir -p $(dirname "${HOME}/$2")
-    if [ -e "${HOME}/$2" ]; then  # To prevent copying into a link
-        rm "${HOME}/$2"
-    fi
-    envsubst < "$1/config/$2" > "${HOME}/$2"
+    for i in $1/config/$2
+    do
+        i=${i#$1/config/}
+        if [ -e "$1/config/$i" ]
+        then
+            mkdir -p $(dirname "${HOME}/$i")
+            if [ -e "${HOME}/$i" ]; then  # To prevent copying into a link
+                rm "${HOME}/$i"
+            fi
+            envsubst < "$1/config/$i" > "${HOME}/$i"
+        fi
+    done
 }
