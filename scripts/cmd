@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Set variables
+sysDir="$DOT_DIR/system"
+sysName=$(cat "$sysDir/name.conf")
+cmdFile="$sysDir/commands.conf"
+
+if [ ! -f "$cmdFile" ]
+then
+    echo "ERROR: The current system's commands file ($cmdFile) does not exist!"
+    exit
+fi
+
+# Load all commands
+cmdStr=$(cat $cmdFile | grep -E "(^\+)|(^\=)")
+readarray -t cmdArr <<<"$cmdStr"
+
+unset cmdNames
+unset cmdCmds
+for ((i = 0; i < $(( ${#cmdArr[@]}/2 )); i++))
+do
+    cmdNames[$i]=${cmdArr[$(( $i*2 ))]#+}
+    cmdCmds[$i]=${cmdArr[$(( $i*2+1 ))]#=}
+done
+
+# Prepare menus
+for ((i = 0; i < ${#cmdNames[@]}; i++))
+do
+    menuArgs[$((2*i))]="(${i})"
+    menuArgs[$((2*i+1))]="${cmdNames[$i]}"
+done
+
+
+# Show menu
+menuResult=$(whiptail --title "Select Command" --menu "" 30 50 20 "${menuArgs[@]}" 3>&2 2>&1 1>&3)
+
+if [ "$menuResult" == "" ]
+then
+    echo "Canceled!"
+    exit
+else
+    # Get path to the system folder
+    menuNr=${menuResult/(/}
+        menuNr=${menuNr/)/}
+    cmdName=${cmdNames[$menuNr]}
+    cmdCmd=${cmdCmds[$menuNr]}
+
+    eval "$cmdCmd"
+
+fi

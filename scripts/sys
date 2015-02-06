@@ -1,0 +1,71 @@
+#!/bin/bash
+
+if [ $# -eq 1 ]
+then
+    if [ "$1" == "info" ]
+    then
+        if [ -L "$DOT_DIR/system" ]
+        then
+            echo "Selected system: $(cat "$DOT_DIR/system/name.conf")"
+        else
+            echo "No system selected!"
+        fi
+        exit 0
+    fi
+fi
+
+# Import tools
+. $DOT_DIR/scripts/tools.bash
+
+# Get system folders for all modules
+dot_get_modules
+sys_folders=()
+for i in ${DOT_MODULES[@]}
+do
+    # Run the setup.bash in each module
+    if [ -d "$i/systems" ]
+    then
+        sys_folders[${#sys_folders[@]}]="$i/systems"
+    fi
+done
+
+# Load all configurations
+config_paths_str=`find ${sys_folders[@]} -name 'name.conf' -printf '%h\n' | sort -u`
+readarray -t config_paths <<<"$config_paths_str"
+
+# Load all names
+unset config_names
+for ((i = 0; i < ${#config_paths[@]}; i++))
+do
+    config_names[$i]=`cat "${config_paths[$i]}/name.conf"`
+done
+
+# Prepare menus
+unset menu_args
+for ((i = 0; i < ${#config_names[@]}; i++))
+do
+    menu_args[$((2*i))]="(${i})"
+    menu_args[$((2*i+1))]="${config_names[$i]}"
+done
+
+# Show menu
+menu_result=$(whiptail --title "Select System Configuration" --menu "" 20 50 10 "${menu_args[@]}" 3>&2 2>&1 1>&3)
+
+if [ "$menu_result" == "" ]
+then
+    echo "Canceled!"
+    exit
+else
+    # Get path to the system folder
+    menu_nr=${menu_result/(/}
+        menu_nr=${menu_nr/)/}
+    sys_dir=${config_paths[$menu_nr]}
+    sys_name=${config_names[$menu_nr]}
+
+    # Setup the system
+    echo -n "- Setting up \"$sys_name\" in $sys_dir... "
+    ln -snf "$sys_dir" "$DOT_DIR/system" && echo "Done!"
+    [ -f "$sys_dir/init.sh" ] && \
+        echo "- Executing startup script..." && \
+        "$sys_dir/init.sh" && echo "- Done!"
+fi
