@@ -140,6 +140,7 @@ function dot_link_bin
 # Create a link to config files
 function dot_link_config
 {
+    local IFS=$'\n'
     for i in $1/config/$2
     do
         i=${i#$1/config/}
@@ -156,6 +157,7 @@ function dot_link_config
 # Make a copy of config files
 function dot_copy_config
 {
+    local IFS=$'\n'
     for i in $1/config/$2
     do
         i=${i#$1/config/}
@@ -176,6 +178,7 @@ function dot_copy_config
 # Copy config files and fill env. variables inside
 function dot_fill_config
 {
+    local IFS=$'\n'
     for i in $1/config/$2
     do
         i=${i#$1/config/}
