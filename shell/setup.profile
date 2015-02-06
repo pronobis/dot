@@ -19,9 +19,11 @@ if [ -d $DOT_DIR/modules ]; then
             # Set PATH to all module internal binary folders
             PATH="$i/bin:$PATH"
             # Run the setup.profile in each module
-            if [ -f "$i/setup.profile" ]
+            if [ -f "$i/shell/setup.profile" ]
             then
-                . "$i/setup.profile"
+                DOT_MODULE_DIR="$i"
+                . "$i/shell/setup.profile"
+                unset DOT_MODULE_DIR
             fi
         fi
     done

@@ -19,7 +19,9 @@ do
     # Run the setup.bash in each module
     if [ -f "$i/shell/setup.bash" ]
     then
+        DOT_MODULE_DIR="$i"
         . "$i/shell/setup.bash"
+        unset DOT_MODULE_DIR
     fi
 done
 
