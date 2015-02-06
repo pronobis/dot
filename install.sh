@@ -88,13 +88,11 @@ fi
 ## ---------------------------------------------------------
 ## Create links to binaries
 ## ---------------------------------------------------------
-echo
-echo "-------------------------------"
-echo "Creating links to binaries "
-echo "-------------------------------"
-dot_link_bin $DOT_DIR "scripts/sys"
-dot_link_bin $DOT_DIR "scripts/cmd"
-echo "Done!"
+# echo
+# echo "-------------------------------"
+# echo "Creating links to binaries "
+# echo "-------------------------------"
+# echo "Done!"
 
 
 echo

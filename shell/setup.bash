@@ -28,3 +28,21 @@ if [ -d "$DOT_DIR/system" ]
 then
     . "$DOT_DIR/system/setup.bash"
 fi
+
+# Functions for accessing the sys and cmd commands
+function sys
+{
+    $DOT_DIR/scripts/sys
+    if [ -d "$DOT_DIR/system" ]
+    then
+        . "$DOT_DIR/system/setup.bash"
+    fi
+}
+function cmd
+{
+    $DOT_DIR/scripts/cmd
+    if [ -d "$DOT_DIR/system" ]
+    then
+        . "$DOT_DIR/system/setup.bash"
+    fi
+}
