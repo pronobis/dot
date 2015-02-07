@@ -3,9 +3,6 @@
 ## This file is executed for all bash sessions
 ## --------------------------------------------
 
-# Set path to the root .dot dir
-export DOT_DIR="$HOME/.dot"
-
 # Import tools
 . $DOT_DIR/shell/tools.bash
 
@@ -24,6 +21,7 @@ do
         unset DOT_MODULE_DIR
     fi
 done
+unset DOT_MODULES
 
 # Setup selected system
 if [ -d "$DOT_DIR/system" ]

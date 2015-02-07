@@ -37,6 +37,7 @@ then
 ## ---------------
 ## Setup dot files
 ## ---------------
+export DOT_DIR="${DOT_DIR}"
 . ${DOT_DIR}/shell/setup.profile
 
 EOF
@@ -67,6 +68,7 @@ then
 ## ---------------
 ## Setup dot files
 ## ---------------
+export DOT_DIR="${DOT_DIR}"
 . ${DOT_DIR}/shell/setup.bash
 
 EOF

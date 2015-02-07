@@ -4,9 +4,6 @@
 ## Can be executed with dash
 ## --------------------------------------------
 
-# Set path to the root .dot dir
-export DOT_DIR="$HOME/.dot"
-
 # Set PATH to the internal binary folder
 export PATH="$DOT_DIR/bin:$PATH"
 

@@ -93,7 +93,7 @@ function print_warning
 function print_error
 {
     set_format ${light_red}
-    echo -e "ERROR: $1"
+    echo -e "ERROR: $1" 1>&2
     clear_format
 }
 
@@ -147,11 +147,42 @@ function dot_link_config
         if [ -e "$1/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
+            if [[ -d "${HOME}/$i" && ! -L "${HOME}/$i" ]]
+            then # Do not overwrite existing folders
+                print_error "A directory ${HOME}/${i} already exists!"
+                exit -1
+            fi
             if [[ -e "${HOME}/$i" || -h "${HOME}/$i" ]]
-            then  # To prevent creation of a link on another link (e.g. link to folder)
+            then # To prevent creation of a link on another link (e.g. link to folder)
                 rm "${HOME}/$i"
             fi
             ln -s "$1/config/$i" "${HOME}/$i"
+        else
+            print_warning "No config file $i found!"
+        fi
+    done
+}
+
+# Create a link to system-wide config files
+function dot_link_config_sys
+{
+    local IFS=$'\n'
+    for i in $1/config-sys/$2
+    do
+        i=${i#$1/config-sys/}
+        if [ -e "$1/config-sys/$i" ]
+        then
+            mkdir -p $(dirname "/$i")
+            if [[ -d "/$i" && ! -L "/$i" ]]
+            then # Do not overwrite existing folders
+                print_error "A directory /${i} already exists!"
+                exit -1
+            fi
+            if [[ -e "/$i" || -h "/$i" ]]
+            then # To prevent creation of a link on another link (e.g. link to folder)
+                rm "/$i"
+            fi
+            ln -s "$1/config-sys/$i" "/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -168,8 +199,13 @@ function dot_copy_config
         if [ -e "$1/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
+            if [[ -d "${HOME}/$i" && ! -L "${HOME}/$i" ]]
+            then # Do not overwrite existing folders
+                print_error "A directory ${HOME}/${i} already exists!"
+                exit -1
+            fi
             if [[ -e "${HOME}/$i" || -h "${HOME}/$i" ]]
-            then  # To prevent copying into a link
+            then # To prevent copying into a link
                 rm "${HOME}/$i"
             fi
             cp "$1/config/$i" "${HOME}/$i"
@@ -190,8 +226,13 @@ function dot_fill_config
         if [ -e "$1/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
+            if [[ -d "${HOME}/$i" && ! -L "${HOME}/$i" ]]
+            then # Do not overwrite existing folders
+                print_error "A directory ${HOME}/${i} already exists!"
+                exit -1
+            fi
             if [[ -e "${HOME}/$i" || -h "${HOME}/$i" ]]
-            then  # To prevent copying into a link
+            then # To prevent copying into a link
                 rm "${HOME}/$i"
             fi
             envsubst < "$1/config/$i" > "${HOME}/$i"
@@ -199,4 +240,56 @@ function dot_fill_config
             print_warning "No config file $i found!"
         fi
     done
+}
+
+# Copy system-wide config files and fill env. variables inside
+function dot_fill_config_sys
+{
+    local IFS=$'\n'
+    for i in $1/config-sys/$2
+    do
+        i=${i#$1/config-sys/}
+        if [ -e "$1/config-sys/$i" ]
+        then
+            mkdir -p $(dirname "/$i")
+            if [[ -d "/$i" && ! -L "/$i" ]]
+            then # Do not overwrite existing folders
+                print_error "A directory /${i} already exists!"
+                exit -1
+            fi
+            if [[ -e "/$i" || -h "/$i" ]]
+            then # To prevent copying into a link
+                rm "/$i"
+            fi
+            envsubst < "$1/config-sys/$i" > "/$i"
+        else
+            print_warning "No config file $i found!"
+        fi
+    done
+}
+
+
+
+## -------------------------------------------------------------
+## Other
+## -------------------------------------------------------------
+
+# Check if the user is root
+function check_root
+{
+    if [[ $EUID -ne 0 || $HOME != "/root" ]]
+    then
+        print_error "This script must be run as root!"
+        exit -1
+    fi
+}
+
+# Check if the user is root
+function check_not_root
+{
+    if [[ $EUID -eq 0 || $HOME == "/root" ]]
+    then
+        print_error "This script should not be run as root!"
+        exit -1
+    fi
 }
