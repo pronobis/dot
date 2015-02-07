@@ -147,7 +147,11 @@ function dot_link_config
         if [ -e "$1/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
-            ln -sf "$1/config/$i" "${HOME}/$i"
+            if [[ -e "${HOME}/$i" || -h "${HOME}/$i" ]]
+            then  # To prevent creation of a link on another link (e.g. link to folder)
+                rm "${HOME}/$i"
+            fi
+            ln -s "$1/config/$i" "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -164,7 +168,8 @@ function dot_copy_config
         if [ -e "$1/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
-            if [ -e "${HOME}/$i" ]; then  # To prevent copying into a link
+            if [[ -e "${HOME}/$i" || -h "${HOME}/$i" ]]
+            then  # To prevent copying into a link
                 rm "${HOME}/$i"
             fi
             cp "$1/config/$i" "${HOME}/$i"
@@ -185,7 +190,8 @@ function dot_fill_config
         if [ -e "$1/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
-            if [ -e "${HOME}/$i" ]; then  # To prevent copying into a link
+            if [[ -e "${HOME}/$i" || -h "${HOME}/$i" ]]
+            then  # To prevent copying into a link
                 rm "${HOME}/$i"
             fi
             envsubst < "$1/config/$i" > "${HOME}/$i"
