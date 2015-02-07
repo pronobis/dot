@@ -1,50 +1,57 @@
 #!/bin/bash
 
-# Set variables
-sysDir="$DOT_DIR/system"
-sysName=$(cat "$sysDir/name.conf")
-cmdFile="$sysDir/commands.conf"
-
-if [ ! -f "$cmdFile" ]
+# Check system
+sys_dir="$DOT_DIR/system"
+if [ ! -d "$sys_dir" ]
 then
-    echo "ERROR: The current system's commands file ($cmdFile) does not exist!"
-    exit
+    echo "ERROR: No system is currently selected!"
+    exit -1
+fi
+
+# Set variables
+sys_name=$(cat "$sys_dir/name.conf")
+cmd_file="$sys_dir/commands.conf"
+
+if [ ! -f "$cmd_file" ]
+then
+    echo "ERROR: The current system's commands file ($cmd_file) does not exist!"
+    exit -1
 fi
 
 # Load all commands
-cmdStr=$(cat $cmdFile | grep -E "(^\+)|(^\=)")
-readarray -t cmdArr <<<"$cmdStr"
+cmd_str=$(cat $cmd_file | grep -E "(^\+)|(^\=)")
+readarray -t cmd_arr <<<"$cmd_str"
 
-unset cmdNames
-unset cmdCmds
-for ((i = 0; i < $(( ${#cmdArr[@]}/2 )); i++))
+unset cmd_names
+unset cmd_cmds
+for ((i = 0; i < $(( ${#cmd_arr[@]}/2 )); i++))
 do
-    cmdNames[$i]=${cmdArr[$(( $i*2 ))]#+}
-    cmdCmds[$i]=${cmdArr[$(( $i*2+1 ))]#=}
+    cmd_names[$i]=${cmd_arr[$(( $i*2 ))]#+}
+    cmd_cmds[$i]=${cmd_arr[$(( $i*2+1 ))]#=}
 done
 
 # Prepare menus
-for ((i = 0; i < ${#cmdNames[@]}; i++))
+for ((i = 0; i < ${#cmd_names[@]}; i++))
 do
-    menuArgs[$((2*i))]="(${i})"
-    menuArgs[$((2*i+1))]="${cmdNames[$i]}"
+    menu_args[$((2*i))]="(${i})"
+    menu_args[$((2*i+1))]="${cmd_names[$i]}"
 done
 
 
 # Show menu
-menuResult=$(whiptail --title "Select Command" --menu "" 30 50 20 "${menuArgs[@]}" 3>&2 2>&1 1>&3)
+menu_result=$(whiptail --title "Select Command" --menu "" 30 50 20 "${menu_args[@]}" 3>&2 2>&1 1>&3)
 
-if [ "$menuResult" == "" ]
+if [ "$menu_result" == "" ]
 then
     echo "Canceled!"
-    exit
+    exit -1
 else
     # Get path to the system folder
-    menuNr=${menuResult/(/}
-        menuNr=${menuNr/)/}
-    cmdName=${cmdNames[$menuNr]}
-    cmdCmd=${cmdCmds[$menuNr]}
+    menu_nr=${menu_result/(/}
+        menu_nr=${menu_nr/)/}
+    cmd_name=${cmd_names[$menu_nr]}
+    cmd_cmd=${cmd_cmds[$menu_nr]}
 
-    eval "$cmdCmd"
+    eval "$cmd_cmd"
 
 fi
