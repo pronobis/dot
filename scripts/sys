@@ -1,14 +1,16 @@
 #!/bin/bash
 
+. $DOT_DIR/shell/tools.bash
+
 if [ $# -eq 1 ]
 then
     if [ "$1" == "info" ]
     then
         if [ -L "$DOT_DIR/system" ]
         then
-            echo "Selected system: $(cat "$DOT_DIR/system/name.conf")"
+            print_status "Selected system: $(cat "$DOT_DIR/system/name.conf")"
         else
-            echo "No system selected!"
+            print_status "No system selected!"
         fi
         exit 0
     fi
@@ -52,7 +54,7 @@ menu_result=$(whiptail --title "Select System Configuration" --menu "" 20 50 10 
 
 if [ "$menu_result" == "" ]
 then
-    echo "Canceled!"
+    print_warning "Canceled!"
     exit
 else
     # Get path to the system folder
@@ -62,9 +64,9 @@ else
     sys_name=${config_names[$menu_nr]}
 
     # Setup the system
-    echo -n "- Setting up \"$sys_name\" in $sys_dir... "
-    ln -snf "$sys_dir" "$DOT_DIR/system" && echo "Done!"
+    print_status "Using system \"$sys_name\" in $sys_dir"
+    ln -snf "$sys_dir" "$DOT_DIR/system"
     [ -f "$sys_dir/init.sh" ] && \
-        echo "- Executing startup script..." && \
-        "$sys_dir/init.sh" && echo "- Done!"
+        print_status "Executing startup script..." && \
+        "$sys_dir/init.sh" && print_status  "Done!"
 fi
