@@ -76,6 +76,11 @@ function print_header
     clear_format
 }
 
+function print_info
+{
+    echo -e "$1"
+}
+
 function print_status
 {
     set_format ${light_green}
