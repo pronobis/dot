@@ -1,3 +1,7 @@
 *
 !.gitignore
 !00_defaults
+!00_defaults/*
+!00_defaults/shell/*
+!00_defaults/systems/*
+
