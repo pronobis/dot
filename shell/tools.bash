@@ -125,6 +125,9 @@ function dot_get_modules
 }
 
 # Create a link to a given binary
+# Args:
+#   $1 - Dot root dir
+#   $2 - Path to the bin file relative to the dot root dir
 function dot_link_bin
 {
     if [ -d "$1/bin" ]
@@ -143,6 +146,9 @@ function dot_link_bin
 }
 
 # Create a link to config files
+# Args:
+#   $1 - Dot root dir
+#   $2 - Wildcard describing the path to config files relative to $HOME
 function dot_link_config
 {
     local IFS=$'\n'
@@ -169,6 +175,9 @@ function dot_link_config
 }
 
 # Create a link to system-wide config files
+# Args:
+#   $1 - Dot root dir
+#   $2 - Wildcard describing the path to config files relative to /
 function dot_link_config_sys
 {
     local IFS=$'\n'
@@ -195,6 +204,9 @@ function dot_link_config_sys
 }
 
 # Make a copy of config files
+# Args:
+#   $1 - Dot root dir
+#   $2 - Wildcard describing the path to config files relative to $HOME
 function dot_copy_config
 {
     local IFS=$'\n'
@@ -222,6 +234,9 @@ function dot_copy_config
 }
 
 # Copy config files and fill env. variables inside
+# Args:
+#   $1 - Dot root dir
+#   $2 - Wildcard describing the path to config files relative to $HOME
 function dot_fill_config
 {
     local IFS=$'\n'
@@ -248,6 +263,9 @@ function dot_fill_config
 }
 
 # Copy system-wide config files and fill env. variables inside
+# Args:
+#   $1 - Dot root dir
+#   $2 - Wildcard describing the path to config files relative to /
 function dot_fill_config_sys
 {
     local IFS=$'\n'
@@ -267,6 +285,84 @@ function dot_fill_config_sys
                 rm "/$i"
             fi
             envsubst < "$1/config-sys/$i" > "/$i"
+        else
+            print_warning "No config file $i found!"
+        fi
+    done
+}
+
+
+# Add a section to the end of a possibly existing config file.
+# If the section exists in the file, it is replaced.
+# Args:
+#   $1 - Dot root dir
+#   $2 - Wildcard describing the config files relative to $HOME
+#   $3 - Start tag of the section (typically a config file comment)
+#   $4 - End tag of the section (typically a config file comment)
+function dot_append_to_config
+{
+    local IFS=$'\n'
+    for i in $1/config/$2
+    do
+        i=${i#$1/config/}
+        if [ -e "$1/config/$i" ]
+        then
+            mkdir -p $(dirname "${HOME}/$i")
+            if [[ -e "${HOME}/$i" && ! -f "${HOME}/$i" ]]
+            then
+                print_error "${HOME}/${i} exists and is not a file!"
+                exit -1
+            fi
+            if [ ! -e "${HOME}/$i" ]
+            then # If file does not exist, create it
+                touch "${HOME}/$i"
+            fi
+            # Now remove the old section that might exist
+            local safe3=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
+            local safe4=$(printf '%s\n' "$4" | sed 's/[[\.*^$/]/\\&/g')
+            sed -i "/$safe3/,/$safe4/d" "${HOME}/$i"
+            # Add our section
+            echo "$3" >> "${HOME}/$i"
+            cat "$1/config/$i" >> "${HOME}/$i"
+            echo "$4" >> "${HOME}/$i"
+        else
+            print_warning "No config file $i found!"
+        fi
+    done
+}
+
+
+# Add a section to the beginning of a possibly existing config file.
+# If the section exists in the file, it is replaced.
+# Args:
+#   $1 - Dot root dir
+#   $2 - Wildcard describing the config files relative to $HOME
+#   $3 - Start tag of the section (typically a config file comment)
+#   $4 - End tag of the section (typically a config file comment)
+function dot_prepend_to_config
+{
+    local IFS=$'\n'
+    for i in $1/config/$2
+    do
+        i=${i#$1/config/}
+        if [ -e "$1/config/$i" ]
+        then
+            mkdir -p $(dirname "${HOME}/$i")
+            if [[ -e "${HOME}/$i" && ! -f "${HOME}/$i" ]]
+            then
+                print_error "${HOME}/${i} exists and is not a file!"
+                exit -1
+            fi
+            if [ ! -e "${HOME}/$i" ]
+            then # If file does not exist, create it
+                touch "${HOME}/$i"
+            fi
+            # Now remove the old section that might exist
+            local safe3=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
+            local safe4=$(printf '%s\n' "$4" | sed 's/[[\.*^$/]/\\&/g')
+            sed -i "/$safe3/,/$safe4/d" "${HOME}/$i"
+            # Add our section
+            echo -e "$3\n$(cat "$1/config/$i")\n$4\n$(cat ${HOME}/$i)" > "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi
