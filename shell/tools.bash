@@ -4,29 +4,12 @@
 ## Printing
 ## -------------------------------------------------------------
 
-# Colors
-noformat="\e[0m"
-bold="\e[1m"
-light_yellow="\e[93m"
-light_green="\e[92m"
-light_red="\e[91m"
-light_blue="\e[94m"
-yellow="\e[33m"
-
-function set_format
-{
-    echo -e -n "$1"
-}
-
-function clear_format
-{
-    echo -e -n "$noformat"
-}
+. $DOT_DIR/shell/formatting.bash
 
 
 function print_main_header
 {
-    set_format ${bold}${light_yellow}
+    set_format ${BOLD}${LIGHT_YELLOW}
     echo "==============================="
     echo "Dotfiles Installer"
     echo "==============================="
@@ -37,7 +20,7 @@ function print_main_header
 
 function print_main_footer
 {
-    set_format ${bold}${light_green}
+    set_format ${BOLD}${LIGHT_GREEN}
     echo
     echo "==============================="
     echo "All done! "
@@ -48,7 +31,7 @@ function print_main_footer
 
 function print_main_module_header
 {
-    set_format ${bold}${light_yellow}
+    set_format ${BOLD}${LIGHT_YELLOW}
     echo "==============================="
     echo "Dotfiles Module Installer "
     echo "==============================="
@@ -58,7 +41,7 @@ function print_main_module_header
 
 function print_main_module_footer
 {
-    set_format ${bold}${light_green}
+    set_format ${BOLD}${LIGHT_GREEN}
     echo
     echo "==============================="
     echo "All done! "
@@ -68,7 +51,7 @@ function print_main_module_footer
 
 function print_header
 {
-    set_format ${bold}${light_blue}
+    set_format ${BOLD}${LIGHT_BLUE}
     echo
     echo "-------------------------------"
     echo -e "$1"
@@ -83,21 +66,21 @@ function print_info
 
 function print_status
 {
-    set_format ${light_green}
+    set_format ${LIGHT_GREEN}
     echo -e "$1"
     clear_format
 }
 
 function print_warning
 {
-    set_format ${yellow}
+    set_format ${YELLOW}
     echo -e "WARNING: $1"
     clear_format
 }
 
 function print_error
 {
-    set_format ${light_red}
+    set_format ${LIGHT_RED}
     echo -e "ERROR: $1" 1>&2
     clear_format
 }
