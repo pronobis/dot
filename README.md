@@ -40,5 +40,5 @@ Please see the empty system in the default module for the definition of a system
 2. Go to that directory `cd ~/.dot` and run `./install.sh`
 3. If you have access to sudo/root and want to install system-wide module configuration, run `sudo -EH ./install.sh`. Don't forget about the `-EH` options!
 4. Clone/install your modules in `./modules`. The name of the module determines it's priority as it is often the case in Ubuntu `.d` folders. Using number prefixes such as `10_dot-module-my` is a good idea.
-5. Install each module. This typically means running `install.sh` of that module for installing local user configuration and optionally `sudo -EH ./install-sys.sh` for global system configuration.
+5. Install each module. This typically means running (optionally) `sudo -EH ./install-sys.sh` of that module for installing global system configuration and `install.sh` for installing local user configuration. Please note that some modules might require system-wide dependency installation before user local installation can be performed.
 6. Re-login
