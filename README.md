@@ -17,6 +17,8 @@ Each module is typically stored in its own repo which will be cloned into the `m
 * `shell` - Shell scripts configuring your environment. Two files should be present there `setup.bash` and `setup.profile`. `setup.bash` will automatically be executed by your `~/.bashrc` and `setup.profile` by your `~/.profile`.
 * `systems` - Systems provided by the module. See the systems description below.
 * `tmp` - Temporary folder used for storing files during module installation. You can safely delete the files/folders there after the installation finishes.
+* `install.sh` - Installation script installing local user configuration.
+* `install-sys.sh` - Installation script installing global system configuration. Requires root/sudo access.
 
 ## Systems
 
@@ -33,7 +35,8 @@ Please see the empty system in the default module for the definition of a system
 
 ## Installation
 
-1. Clone the repository to a convenient location e.g. `~/.dot`
-2. Go to that directory and run `install.sh`
-3. Clone/install your modules in `./modules`. The name of the module determines it's priority.
-4. Run `install.sh` in each module.
+1. Clone the repository to a convenient location e.g. `~/.dot` using `git clone https://github.com/pronobis/dot.git ~/.dot`
+2. Go to that directory `cd ~/.dot` and run `./install.sh`
+3. If you have access to sudo/root and want to install system-wide module configuration, run `sudo -EH ./install.sh`. Don't forget about the `-EH` options!
+4. Clone/install your modules in `./modules`. The name of the module determines it's priority as it is often the case in Ubuntu `.d` folders. Using number prefixes such as `10_dot-module-my` is a good idea.
+4. Install each module. This typically means running `install.sh` of that module for installing local user configuration and optionally `sudo -EH ./install-sys.sh` for global system configuration.
