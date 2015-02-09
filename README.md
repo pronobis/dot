@@ -36,7 +36,7 @@ Please see the empty system in the default module for the definition of a system
 ## Installation
 
 0. Close any app that you will be re-configuring by changing its config files.
-1. Clone the repository to a convenient location e.g. `~/.dot` using `git clone https://github.com/pronobis/dot.git ~/.dot`
+1. Clone the repository to a convenient location e.g. `~/.dot` using `git clone git@github.com:pronobis/dot.git ~/.dot`
 2. Go to that directory `cd ~/.dot` and run `./install.sh`
 3. If you have access to sudo/root and want to install system-wide module configuration, run `sudo -EH ./install.sh`. Don't forget about the `-EH` options!
 4. Clone/install your modules in `./modules`. The name of the module determines it's priority as it is often the case in Ubuntu `.d` folders. Using number prefixes such as `10_dot-module-my` is a good idea.
