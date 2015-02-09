@@ -1,11 +1,11 @@
 # dot
 
 Ubuntu-oriented dot file management system providing:
-* modular architecture with modules for specific configuration sets
-* console GUI tools for selection of configuration subsets (systems)
-* console GUI menu for running often used commands in each system
+* modular architecture with modules for specific configuration sets (e.g. for your public terminal configuration, for your public GUI configuration, for your private laptop configuration etc.) that can be stacked on top of each other
+* console GUI tools for selecting configuration subsets provided by the modules (called systems) that can modify your environment variables and automatically run init scripts
+* console GUI menu for running commands that can be customized for each system
 
-For now, check out the default module for inspiration.
+Check out the default module provided with this package for inspiration.
 
 
 ## Installation
