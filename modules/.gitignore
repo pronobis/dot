@@ -2,7 +2,11 @@
 !.gitignore
 !00_defaults
 !00_defaults/*
+!00_defaults/bin/*
+!00_defaults/config/*
+!00_defaults/config-sys/*
+!00_defaults/opt/*
 !00_defaults/shell/*
 !00_defaults/systems/*
 !00_defaults/systems/00_empty/*
-
+!00_defaults/tmp/*
