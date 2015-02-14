@@ -107,6 +107,7 @@ function dot_get_modules
     unset tmp
 }
 
+
 # Create a link to a given binary
 # Args:
 #   $1 - Dot root dir
@@ -127,6 +128,7 @@ function dot_link_bin
         exit -1
     fi
 }
+
 
 # Create a link to config files
 # Args:
@@ -157,6 +159,7 @@ function dot_link_config
     done
 }
 
+
 # Create a link to system-wide config files
 # Args:
 #   $1 - Dot root dir
@@ -186,6 +189,7 @@ function dot_link_config_sys
     done
 }
 
+
 # Make a copy of config files
 # Args:
 #   $1 - Dot root dir
@@ -213,8 +217,38 @@ function dot_copy_config
             print_warning "No config file $i found!"
         fi
     done
-
 }
+
+
+# Make a copy of config files system-wide
+# Args:
+#   $1 - Dot root dir
+#   $2 - Wildcard describing the path to config files relative to $HOME
+function dot_copy_config_sys
+{
+    local IFS=$'\n'
+    for i in $1/config-sys/$2
+    do
+        i=${i#$1/config-sys/}
+        if [ -e "$1/config-sys/$i" ]
+        then
+            mkdir -p $(dirname "/$i")
+            if [[ -d "/$i" && ! -L "/$i" ]]
+            then # Do not overwrite existing folders
+                print_error "A directory /${i} already exists!"
+                exit -1
+            fi
+            if [[ -e "/$i" || -h "/$i" ]]
+            then # To prevent copying into a link
+                rm "/$i"
+            fi
+            cp "$1/config-sys/$i" "/$i"
+        else
+            print_warning "No config file $i found!"
+        fi
+    done
+}
+
 
 # Copy config files and fill env. variables inside
 # Args:
@@ -244,6 +278,7 @@ function dot_fill_config
         fi
     done
 }
+
 
 # Copy system-wide config files and fill env. variables inside
 # Args:
