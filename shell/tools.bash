@@ -212,7 +212,7 @@ function dot_copy_config
             then # To prevent copying into a link
                 rm "${HOME}/$i"
             fi
-            cp "$1/config/$i" "${HOME}/$i"
+            cp -d "$1/config/$i" "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -242,7 +242,7 @@ function dot_copy_config_sys
             then # To prevent copying into a link
                 rm "/$i"
             fi
-            cp "$1/config-sys/$i" "/$i"
+            cp -d "$1/config-sys/$i" "/$i"
         else
             print_warning "No config file $i found!"
         fi
