@@ -122,11 +122,11 @@ dot_link_bin()
            ln -sf "$1/$2" "$1/bin"
         else
             print_error "File $2 is not executable or does not exist!"
-            exit -1
+            exit 1
         fi
     else
         print_error "No bin folder!"
-        exit -1
+        exit 1
     fi
 }
 
@@ -147,7 +147,7 @@ dot_link_config()
             if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
             then # Do not overwrite existing folders
                 print_error "A directory ${HOME}/${i} already exists!"
-                exit -1
+                exit 1
             fi
             if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
             then # To prevent creation of a link on another link (e.g. link to folder)
@@ -177,7 +177,7 @@ dot_link_config_sys()
             if [[ -d "/$i" && ! -L "/$i" ]]
             then # Do not overwrite existing folders
                 print_error "A directory /${i} already exists!"
-                exit -1
+                exit 1
             fi
             if [[ -e "/$i" || -h "/$i" ]]
             then # To prevent creation of a link on another link (e.g. link to folder)
@@ -207,7 +207,7 @@ dot_copy_config()
             if [[ -d "${HOME}/$i" && ! -L "${HOME}/$i" ]]
             then # Do not overwrite existing folders
                 print_error "A directory ${HOME}/${i} already exists!"
-                exit -1
+                exit 1
             fi
             if [[ -e "${HOME}/$i" || -h "${HOME}/$i" ]]
             then # To prevent copying into a link
@@ -237,7 +237,7 @@ dot_copy_config_sys()
             if [[ -d "/$i" && ! -L "/$i" ]]
             then # Do not overwrite existing folders
                 print_error "A directory /${i} already exists!"
-                exit -1
+                exit 1
             fi
             if [[ -e "/$i" || -h "/$i" ]]
             then # To prevent copying into a link
@@ -267,7 +267,7 @@ dot_fill_config()
             if [[ -d "${HOME}/$i" && ! -L "${HOME}/$i" ]]
             then # Do not overwrite existing folders
                 print_error "A directory ${HOME}/${i} already exists!"
-                exit -1
+                exit 1
             fi
             if [[ -e "${HOME}/$i" || -h "${HOME}/$i" ]]
             then # To prevent copying into a link
@@ -297,7 +297,7 @@ dot_fill_config_sys()
             if [[ -d "/$i" && ! -L "/$i" ]]
             then # Do not overwrite existing folders
                 print_error "A directory /${i} already exists!"
-                exit -1
+                exit 1
             fi
             if [[ -e "/$i" || -h "/$i" ]]
             then # To prevent copying into a link
@@ -330,7 +330,7 @@ dot_append_to_config()
             if [[ -e "${HOME}/$i" && ! -f "${HOME}/$i" ]]
             then
                 print_error "${HOME}/${i} exists and is not a file!"
-                exit -1
+                exit 1
             fi
             if [ ! -e "${HOME}/$i" ]
             then # If file does not exist, create it
@@ -370,7 +370,7 @@ dot_prepend_to_config()
             if [[ -e "${HOME}/$i" && ! -f "${HOME}/$i" ]]
             then
                 print_error "${HOME}/${i} exists and is not a file!"
-                exit -1
+                exit 1
             fi
             if [ ! -e "${HOME}/$i" ]
             then # If file does not exist, create it
