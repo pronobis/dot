@@ -1,13 +1,18 @@
 # -*- mode: sh -*-
 
+# Include guard
+[ -n "$DOT_SETUP_TOOLS" ] && return || readonly DOT_SETUP_TOOLS=1
+
+
 ## -------------------------------------------------------------
 ## Printing
 ## -------------------------------------------------------------
 
-. $DOT_DIR/shell/formatting.bash
+# Include formatting
+. "$DOT_DIR/shell/formatting.sh"
 
 
-function print_main_header
+print_main_header()
 {
     set_format ${BOLD}${LIGHT_YELLOW}
     echo "==============================="
@@ -18,7 +23,7 @@ function print_main_header
 }
 
 
-function print_main_footer
+print_main_footer()
 {
     set_format ${BOLD}${LIGHT_GREEN}
     echo
@@ -29,7 +34,7 @@ function print_main_footer
     clear_format
 }
 
-function print_main_module_header
+print_main_module_header()
 {
     set_format ${BOLD}${LIGHT_YELLOW}
     echo "==============================="
@@ -39,7 +44,7 @@ function print_main_module_header
     echo "Using dot files in: ${DOT_DIR}"
 }
 
-function print_main_module_footer
+print_main_module_footer()
 {
     set_format ${BOLD}${LIGHT_GREEN}
     echo
@@ -49,7 +54,7 @@ function print_main_module_footer
     clear_format
 }
 
-function print_header
+print_header()
 {
     set_format ${BOLD}${LIGHT_BLUE}
     echo
@@ -59,26 +64,26 @@ function print_header
     clear_format
 }
 
-function print_info
+print_info()
 {
     echo -e "$1"
 }
 
-function print_status
+print_status()
 {
     set_format ${LIGHT_GREEN}
     echo -e "$1"
     clear_format
 }
 
-function print_warning
+print_warning()
 {
     set_format ${YELLOW}
     echo -e "WARNING: $1"
     clear_format
 }
 
-function print_error
+print_error()
 {
     set_format ${LIGHT_RED}
     echo -e "ERROR: $1" 1>&2
@@ -91,20 +96,16 @@ function print_error
 ## -------------------------------------------------------------
 
 # Get paths to all modules in $DOT_MODULES
-function dot_get_modules
+dot_get_modules()
 {
-    DOT_MODULES=()
-    declare -a tmp
-    tmp=( "$DOT_DIR/modules/*" )
-    for i in ${tmp[@]}
+    DOT_MODULES=""
+    for i in "$DOT_DIR/modules/*"
     do
         if [ -d "$i" ]
         then
-            DOT_MODULES[${#DOT_MODULES[@]}]="$i"
+            DOT_MODULES=${DOT_MODULES:+${DOT_MODULES}:}$i
         fi
     done
-    unset i
-    unset tmp
 }
 
 
@@ -112,7 +113,7 @@ function dot_get_modules
 # Args:
 #   $1 - Dot root dir
 #   $2 - Path to the bin file relative to the dot root dir
-function dot_link_bin
+dot_link_bin()
 {
     if [ -d "$1/bin" ]
     then
@@ -134,7 +135,7 @@ function dot_link_bin
 # Args:
 #   $1 - Dot root dir
 #   $2 - Wildcard describing the path to config files relative to $HOME
-function dot_link_config
+dot_link_config()
 {
     local IFS=$'\n'
     for i in $1/config/$2
@@ -164,7 +165,7 @@ function dot_link_config
 # Args:
 #   $1 - Dot root dir
 #   $2 - Wildcard describing the path to config files relative to /
-function dot_link_config_sys
+dot_link_config_sys()
 {
     local IFS=$'\n'
     for i in $1/config-sys/$2
@@ -194,7 +195,7 @@ function dot_link_config_sys
 # Args:
 #   $1 - Dot root dir
 #   $2 - Wildcard describing the path to config files relative to $HOME
-function dot_copy_config
+dot_copy_config()
 {
     local IFS=$'\n'
     for i in $1/config/$2
@@ -224,7 +225,7 @@ function dot_copy_config
 # Args:
 #   $1 - Dot root dir
 #   $2 - Wildcard describing the path to config files relative to $HOME
-function dot_copy_config_sys
+dot_copy_config_sys()
 {
     local IFS=$'\n'
     for i in $1/config-sys/$2
@@ -254,7 +255,7 @@ function dot_copy_config_sys
 # Args:
 #   $1 - Dot root dir
 #   $2 - Wildcard describing the path to config files relative to $HOME
-function dot_fill_config
+dot_fill_config()
 {
     local IFS=$'\n'
     for i in $1/config/$2
@@ -284,7 +285,7 @@ function dot_fill_config
 # Args:
 #   $1 - Dot root dir
 #   $2 - Wildcard describing the path to config files relative to /
-function dot_fill_config_sys
+dot_fill_config_sys()
 {
     local IFS=$'\n'
     for i in $1/config-sys/$2
@@ -317,7 +318,7 @@ function dot_fill_config_sys
 #   $2 - Wildcard describing the config files relative to $HOME
 #   $3 - Start tag of the section (typically a config file comment)
 #   $4 - End tag of the section (typically a config file comment)
-function dot_append_to_config
+dot_append_to_config()
 {
     local IFS=$'\n'
     for i in $1/config/$2
@@ -357,7 +358,7 @@ function dot_append_to_config
 #   $2 - Wildcard describing the config files relative to $HOME
 #   $3 - Start tag of the section (typically a config file comment)
 #   $4 - End tag of the section (typically a config file comment)
-function dot_prepend_to_config
+dot_prepend_to_config()
 {
     local IFS=$'\n'
     for i in $1/config/$2
@@ -394,21 +395,21 @@ function dot_prepend_to_config
 ## -------------------------------------------------------------
 
 # Check if the user is root
-function check_root
+check_root()
 {
-    if [[ $EUID -ne 0 || $HOME != "/root" ]]
+    if [ "$HOME" != "/root" ] || [ "$USER" != "root" ] || [ "$EUID" != "" ] && [ "$EUID" != "0" ]
     then
         print_error "This script must be run as root!"
-        exit -1
+        exit 1
     fi
 }
 
 # Check if the user is root
-function check_not_root
+check_not_root()
 {
-    if [[ $EUID -eq 0 || $HOME == "/root" ]]
+    if [ "$EUID" == "0" ] || [ "$HOME" == "/root" ] || [ "$USER" == "root" ]
     then
         print_error "This script should not be run as root!"
-        exit -1
+        exit 1
     fi
 }

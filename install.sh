@@ -1,19 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-## -------------------------------------------------------------
-## General
-## -------------------------------------------------------------
-# Set path to the root .dot dir
-DOT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-
-# Interrupt the script on first error
-set -e
-
-# Import tools
-. $DOT_DIR/shell/tools.bash
-
-# Header
-print_main_header
+. ${0%/*}/shell/install_main_header.sh
 
 
 ## ---------------------------------------------------------
@@ -78,5 +65,5 @@ else
 fi
 
 
-# Footer
-print_main_footer
+## ---------------------------------------------------------
+. ${0%/*}/shell/install_main_footer.sh

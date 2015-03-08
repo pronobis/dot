@@ -1,36 +1,41 @@
 # -*- mode: sh -*-
-## --------------------------------------------
-## This file is executed for all bash sessions
-## --------------------------------------------
+## ----------------------------------------------------------
+## This file is executed for both login and non-login shells.
+## It is used only if the shell is bash.
+## ----------------------------------------------------------
 
-# Import tools
-. $DOT_DIR/shell/tools.bash
+# Include guard
+[ -n "$DOT_SETUP_BASH" ] && return || readonly DOT_SETUP_BASH=1
+echo "Including setup.bash"
 
-# Sort the paths
-IFS=$'\n' DOT_MODULES=($(sort <<<"${DOT_MODULES[*]}"))
+# Run setup.sh if not yet run
+. "$DOT_DIR/shell/setup.sh"
 
-# Setup modules
-dot_get_modules
-for i in ${DOT_MODULES[@]}
-do
-    # Run the setup.bash in each module
-    if [ -f "$i/shell/setup.bash" ]
-    then
-        DOT_MODULE_DIR="$i"
-        . "$i/shell/setup.bash"
-        unset DOT_MODULE_DIR
-    fi
-done
-unset DOT_MODULES
+# Run setup.bash in all modules
+if [ -d $DOT_DIR/modules ]
+then
+    for i in `ls $DOT_DIR/modules | sort`; do
+        i="$DOT_DIR/modules/$i"
+        if [ -d $i ]
+        then
+            # Run the setup.sh in each module
+            if [ -f "$i/shell/setup.bash" ]
+            then
+                DOT_MODULE_DIR="$i"
+                . "$i/shell/setup.bash"
+                unset DOT_MODULE_DIR
+            fi
+        fi
+    done
+fi
 
 # Setup selected system
-if [ -d "$DOT_DIR/system" ]
-then
+if [ -d "$DOT_DIR/system" ] && [ -f "$DOT_DIR/system/setup.bash" ]
     . "$DOT_DIR/system/setup.bash"
 fi
 
 # Functions for accessing the sys and cmd commands
-function sys
+sys()
 {
     $DOT_DIR/scripts/sys $@
     if [ -d "$DOT_DIR/system" ]
@@ -38,7 +43,7 @@ function sys
         . "$DOT_DIR/system/setup.bash"
     fi
 }
-function cmd
+cmd()
 {
     $DOT_DIR/scripts/cmd $@
     if [ -d "$DOT_DIR/system" ]

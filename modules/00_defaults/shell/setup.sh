@@ -1,8 +1,7 @@
 # -*- mode: sh -*-
 ## ----------------------------------------------------------
-## This file is executed for login shells only
+## This file is executed for both login and non-login shells
 ## Must be compatible with ash/dash.
 ## ----------------------------------------------------------
 
-# Set up your paths here
-#export PATH="$DOT_MODULE_DIR/opt/xxxx:$PATH"
+alias cdot='cd $DOT_DIR'

@@ -1,27 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-## -------------------------------------------------------------
-## General
-## -------------------------------------------------------------
-# Set paths
-export DOT_MODULE_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-if [ -z "$DOT_DIR" ]
-then
-   export DOT_DIR=$( readlink -f $DOT_MODULE_DIR/../.. )
-fi
-TMP_DIR="$DOT_MODULE_DIR/tmp"
-
-# Interrupt the script on first error
-set -e
-
-# Import tools
-. $DOT_DIR/shell/tools.bash
-
-# Check if not run as root
-check_not_root
-
-# Header
-print_main_module_header
+. ${0%/*}/../../shell/install_module_header.sh
 
 
 ## -------------------------------------------------------------
@@ -43,7 +22,6 @@ print_status "Done!"
 
 
 ## -------------------------------------------------------------
-## Finishing
+## Done!
 ## -------------------------------------------------------------
-print_main_module_footer
-unset DOT_MODULE_DIR
+. ${0%/*}/../../shell/install_module_footer.sh

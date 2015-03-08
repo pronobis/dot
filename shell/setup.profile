@@ -1,14 +1,16 @@
 # -*- mode: sh -*-
-## --------------------------------------------
+## ----------------------------------------------------------
 ## This file is executed for login shells only
-## Can be executed with dash
-## --------------------------------------------
+## Must be compatible with ash/dash.
+## ----------------------------------------------------------
 
-# Set PATH to the internal binary folder
-export PATH="$DOT_DIR/bin:$PATH"
+# Include guard
+[ -n "$DOT_SETUP_PROFILE" ] && return || readonly DOT_SETUP_PROFILE=1
+echo "Including setup.profile"
 
-# Initialize all modules
-if [ -d $DOT_DIR/modules ]; then
+# Run setup.profile in all modules
+if [ -d $DOT_DIR/modules ]
+then
     for i in `ls $DOT_DIR/modules | sort`; do
         i="$DOT_DIR/modules/$i"
         if [ -d $i ]
@@ -24,5 +26,13 @@ if [ -d $DOT_DIR/modules ]; then
             fi
         fi
     done
-    unset i
+fi
+
+# Run setup.sh if not yet run
+. "$DOT_DIR/shell/setup.sh"
+
+# Run setup.bash if running bash
+if [ -n "$BASH_VERSION" ]
+then
+    . "$DOT_DIR/shell/setup.bash"
 fi

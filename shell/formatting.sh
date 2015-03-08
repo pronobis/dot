@@ -1,5 +1,8 @@
 # -*- mode: sh -*-
 
+# Include guard
+[ -n "$DOT_SETUP_FORMATTING" ] && return || readonly DOT_SETUP_FORMATTING=1
+
 # Regular Colors
 BLACK='\e[30m'
 RED='\e[31m'
@@ -52,12 +55,12 @@ NO_UNDERLINE='\e[24m'
 
 
 # Setting functions
-function set_format
+set_format()
 {
     echo -e -n "$1"
 }
 
-function clear_format
+clear_format()
 {
     echo -e -n "$NO_FORMAT"
 }
