@@ -391,7 +391,7 @@ dot_prepend_to_config()
             local safe4=$(printf '%s\n' "$4" | sed 's/[[\.*^$/]/\\&/g')
             sed -i "/$safe3/,/$safe4/d" "${HOME}/$i"
             # Add our section
-            echo -e "$3\n$(cat "$1/config/$i")\n$4\n$(cat ${HOME}/$i)" > "${HOME}/$i"
+            printf "$3\n$(cat "$1/config/$i")\n$4\n$(cat ${HOME}/$i)\n" > "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -407,7 +407,8 @@ dot_prepend_to_config()
 # Check if the user is root
 check_root()
 {
-    if [ "$HOME" != "/root" ] || [ "$USER" != "root" ] || [ "$EUID" != "" ] && [ "$EUID" != "0" ]
+    uid="$(id -u)"  # The only way that works with dash
+    if [ "$HOME" != "/root" ] || [ "$USER" != "root" ] || [ "$uid" != "0" ]
     then
         print_error "This script must be run as root!"
         exit 1
@@ -417,7 +418,8 @@ check_root()
 # Check if the user is root
 check_not_root()
 {
-    if [ "$EUID" == "0" ] || [ "$HOME" == "/root" ] || [ "$USER" == "root" ]
+    uid="$(id -u)"  # The only way that works with dash
+    if [ "$uid" = "0" ] || [ "$HOME" = "/root" ] || [ "$USER" = "root" ]
     then
         print_error "This script should not be run as root!"
         exit 1
