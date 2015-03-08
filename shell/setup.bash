@@ -6,7 +6,6 @@
 
 # Include guard
 [ -n "$DOT_SETUP_BASH" ] && return || readonly DOT_SETUP_BASH=1
-echo "Including setup.bash"
 
 # Run setup.sh if not yet run
 . "$DOT_DIR/shell/setup.sh"

@@ -6,7 +6,6 @@
 
 # Include guard
 [ -n "$DOT_SETUP_PROFILE" ] && return || readonly DOT_SETUP_PROFILE=1
-echo "Including setup.profile"
 
 # Run setup.profile in all modules
 if [ -d $DOT_DIR/modules ]
