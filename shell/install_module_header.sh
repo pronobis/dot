@@ -7,7 +7,7 @@ set -e
 export DOT_MODULE_DIR=$( cd "$( dirname "$0" )" && pwd )
 if [ -z "$DOT_DIR" ]
 then
-   export DOT_DIR=$( readlink -f $DOT_MODULE_DIR/../.. )
+   export DOT_DIR=$( cd "$DOT_MODULE_DIR/../.." && pwd )
 fi
 TMP_DIR="$DOT_MODULE_DIR/tmp"
 
