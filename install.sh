@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ${0%/*}/shell/install_main_header.sh
+dot_shell=$(cd "${0%/*}/shell" && pwd); . "$dot_shell/install_main_header.sh"
 
 
 ## ---------------------------------------------------------
@@ -66,4 +66,4 @@ fi
 
 
 ## ---------------------------------------------------------
-. ${0%/*}/shell/install_main_footer.sh
+. "$dot_shell/install_main_footer.sh"

@@ -4,7 +4,7 @@
 set -e
 
 # Set paths
-export DOT_MODULE_DIR=$( cd "$( dirname "$0" )" && pwd )
+export DOT_MODULE_DIR=$( cd "${0%/*}" && pwd )
 if [ -z "$DOT_DIR" ]
 then
    export DOT_DIR=$( cd "$DOT_MODULE_DIR/../.." && pwd )
