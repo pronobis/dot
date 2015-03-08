@@ -59,7 +59,7 @@ print_header()
     set_format ${BOLD}${LIGHT_BLUE}
     echo
     echo "-------------------------------"
-    echo -e "$1"
+    printf "$1\n"
     echo "-------------------------------"
     clear_format
 }
@@ -72,21 +72,21 @@ print_info()
 print_status()
 {
     set_format ${LIGHT_GREEN}
-    echo -e "$1"
+    printf "$1\n"
     clear_format
 }
 
 print_warning()
 {
     set_format ${YELLOW}
-    echo -e "WARNING: $1"
+    printf "WARNING: $1\n"
     clear_format
 }
 
 print_error()
 {
     set_format ${LIGHT_RED}
-    echo -e "ERROR: $1" 1>&2
+    printf "ERROR: $1\n" 1>&2
     clear_format
 }
 
