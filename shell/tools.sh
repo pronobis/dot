@@ -137,7 +137,7 @@ dot_link_bin()
 #   $2 - Wildcard describing the path to config files relative to $HOME
 dot_link_config()
 {
-    local IFS="$(printf '\n+')"; IFS=${IFS%+}
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config/$2
     do
         i=${i#$1/config/}
@@ -167,19 +167,19 @@ dot_link_config()
 #   $2 - Wildcard describing the path to config files relative to /
 dot_link_config_sys()
 {
-    local IFS=$'\n'
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config-sys/$2
     do
         i=${i#$1/config-sys/}
         if [ -e "$1/config-sys/$i" ]
         then
             mkdir -p $(dirname "/$i")
-            if [[ -d "/$i" && ! -L "/$i" ]]
+            if [ -d "/$i" ] && [ ! -L "/$i" ]
             then # Do not overwrite existing folders
                 print_error "A directory /${i} already exists!"
                 exit 1
             fi
-            if [[ -e "/$i" || -h "/$i" ]]
+            if [ -e "/$i" ] || [ -h "/$i" ]
             then # To prevent creation of a link on another link (e.g. link to folder)
                 rm "/$i"
             fi
@@ -197,19 +197,19 @@ dot_link_config_sys()
 #   $2 - Wildcard describing the path to config files relative to $HOME
 dot_copy_config()
 {
-    local IFS=$'\n'
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config/$2
     do
         i=${i#$1/config/}
         if [ -e "$1/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
-            if [[ -d "${HOME}/$i" && ! -L "${HOME}/$i" ]]
+            if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
             then # Do not overwrite existing folders
                 print_error "A directory ${HOME}/${i} already exists!"
                 exit 1
             fi
-            if [[ -e "${HOME}/$i" || -h "${HOME}/$i" ]]
+            if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
             then # To prevent copying into a link
                 rm "${HOME}/$i"
             fi
@@ -227,19 +227,19 @@ dot_copy_config()
 #   $2 - Wildcard describing the path to config files relative to $HOME
 dot_copy_config_sys()
 {
-    local IFS=$'\n'
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config-sys/$2
     do
         i=${i#$1/config-sys/}
         if [ -e "$1/config-sys/$i" ]
         then
             mkdir -p $(dirname "/$i")
-            if [[ -d "/$i" && ! -L "/$i" ]]
+            if [ -d "/$i" ] && [ ! -L "/$i" ]
             then # Do not overwrite existing folders
                 print_error "A directory /${i} already exists!"
                 exit 1
             fi
-            if [[ -e "/$i" || -h "/$i" ]]
+            if [ -e "/$i" ] || [ -h "/$i" ]
             then # To prevent copying into a link
                 rm "/$i"
             fi
@@ -257,19 +257,19 @@ dot_copy_config_sys()
 #   $2 - Wildcard describing the path to config files relative to $HOME
 dot_fill_config()
 {
-    local IFS=$'\n'
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config/$2
     do
         i=${i#$1/config/}
         if [ -e "$1/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
-            if [[ -d "${HOME}/$i" && ! -L "${HOME}/$i" ]]
+            if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
             then # Do not overwrite existing folders
                 print_error "A directory ${HOME}/${i} already exists!"
                 exit 1
             fi
-            if [[ -e "${HOME}/$i" || -h "${HOME}/$i" ]]
+            if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
             then # To prevent copying into a link
                 rm "${HOME}/$i"
             fi
@@ -287,19 +287,19 @@ dot_fill_config()
 #   $2 - Wildcard describing the path to config files relative to /
 dot_fill_config_sys()
 {
-    local IFS=$'\n'
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config-sys/$2
     do
         i=${i#$1/config-sys/}
         if [ -e "$1/config-sys/$i" ]
         then
             mkdir -p $(dirname "/$i")
-            if [[ -d "/$i" && ! -L "/$i" ]]
+            if [ -d "/$i" ] && [ ! -L "/$i" ]
             then # Do not overwrite existing folders
                 print_error "A directory /${i} already exists!"
                 exit 1
             fi
-            if [[ -e "/$i" || -h "/$i" ]]
+            if [ -e "/$i" ] || [ -h "/$i" ]
             then # To prevent copying into a link
                 rm "/$i"
             fi
@@ -320,14 +320,14 @@ dot_fill_config_sys()
 #   $4 - End tag of the section (typically a config file comment)
 dot_append_to_config()
 {
-    local IFS=$'\n'
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config/$2
     do
         i=${i#$1/config/}
         if [ -e "$1/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
-            if [[ -e "${HOME}/$i" && ! -f "${HOME}/$i" ]]
+            if [ -e "${HOME}/$i" ] && [ ! -f "${HOME}/$i" ]
             then
                 print_error "${HOME}/${i} exists and is not a file!"
                 exit 1
@@ -360,14 +360,14 @@ dot_append_to_config()
 #   $4 - End tag of the section (typically a config file comment)
 dot_prepend_to_config()
 {
-    local IFS=$'\n'
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config/$2
     do
         i=${i#$1/config/}
         if [ -e "$1/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
-            if [[ -e "${HOME}/$i" && ! -f "${HOME}/$i" ]]
+            if [ -e "${HOME}/$i" ] && [ ! -f "${HOME}/$i" ]
             then
                 print_error "${HOME}/${i} exists and is not a file!"
                 exit 1
