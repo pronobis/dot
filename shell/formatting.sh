@@ -57,10 +57,10 @@ NO_UNDERLINE='\033[24m'
 # Setting functions
 set_format()
 {
-    printf $1
+    printf "$1"
 }
 
 clear_format()
 {
-    printf $NO_FORMAT
+    printf "$NO_FORMAT"
 }

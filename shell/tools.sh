@@ -59,34 +59,34 @@ print_header()
     set_format ${BOLD}${LIGHT_BLUE}
     echo
     echo "-------------------------------"
-    printf "$1\n"
+    printf "%s\n" "$1"
     echo "-------------------------------"
     clear_format
 }
 
 print_info()
 {
-    echo -e "$1"
+    printf "%s\n" "$1"
 }
 
 print_status()
 {
     set_format ${LIGHT_GREEN}
-    printf "$1\n"
+    printf "%s\n" "$1"
     clear_format
 }
 
 print_warning()
 {
     set_format ${YELLOW}
-    printf "WARNING: $1\n"
+    printf "WARNING: %s\n" "$1"
     clear_format
 }
 
 print_error()
 {
     set_format ${LIGHT_RED}
-    printf "ERROR: $1\n" 1>&2
+    printf "ERROR: %s\n" "$1" 1>&2
     clear_format
 }
 
@@ -137,19 +137,19 @@ dot_link_bin()
 #   $2 - Wildcard describing the path to config files relative to $HOME
 dot_link_config()
 {
-    local IFS=$'\n'
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}
     for i in $1/config/$2
     do
         i=${i#$1/config/}
         if [ -e "$1/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
-            if [[ -d "${HOME}/$i" && ! -L "${HOME}/$i" ]]
+            if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
             then # Do not overwrite existing folders
                 print_error "A directory ${HOME}/${i} already exists!"
                 exit -1
             fi
-            if [[ -e "${HOME}/$i" || -h "${HOME}/$i" ]]
+            if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
             then # To prevent creation of a link on another link (e.g. link to folder)
                 rm "${HOME}/$i"
             fi
