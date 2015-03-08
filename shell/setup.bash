@@ -31,7 +31,8 @@ fi
 
 # Setup selected system
 if [ -d "$DOT_DIR/system" ] && [ -f "$DOT_DIR/system/setup.bash" ]
-    . "$DOT_DIR/system/setup.bash"
+then
+   . "$DOT_DIR/system/setup.bash"
 fi
 
 # Functions for accessing the sys and cmd commands
