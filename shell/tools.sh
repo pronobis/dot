@@ -59,34 +59,34 @@ print_header()
     set_format ${BOLD}${LIGHT_BLUE}
     echo
     echo "-------------------------------"
-    printf "%s\n" "$1"
+    printf "$1\n"
     echo "-------------------------------"
     clear_format
 }
 
 print_info()
 {
-    printf "%s\n" "$1"
+    printf "$1\n"
 }
 
 print_status()
 {
     set_format ${LIGHT_GREEN}
-    printf "%s\n" "$1"
+    printf "$1\n"
     clear_format
 }
 
 print_warning()
 {
     set_format ${YELLOW}
-    printf "WARNING: %s\n" "$1"
+    printf "WARNING: $1\n"
     clear_format
 }
 
 print_error()
 {
     set_format ${LIGHT_RED}
-    printf "ERROR: %s\n" "$1" 1>&2
+    printf "ERROR: $1\n" 1>&2
     clear_format
 }
 
