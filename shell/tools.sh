@@ -273,7 +273,12 @@ dot_fill_config()
             then # To prevent copying into a link
                 rm "${HOME}/$i"
             fi
-            envsubst < "$1/config/$i" > "${HOME}/$i"
+            # envsubst < "$1/config/$i" > "${HOME}/$i"  # Does not work with busybox
+            sed \
+                -e 's#${HOME}#'"${HOME}"'#' \
+                -e 's#${DOT_DIR}#'"${DOT_DIR}"'#' \
+                -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#' \
+                "$1/config/$i" > "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -303,7 +308,12 @@ dot_fill_config_sys()
             then # To prevent copying into a link
                 rm "/$i"
             fi
-            envsubst < "$1/config-sys/$i" > "/$i"
+            # envsubst < "$1/config-sys/$i" > "/$i"  # Does not work with busybox
+            sed \
+                -e 's#${HOME}#'"${HOME}"'#' \
+                -e 's#${DOT_DIR}#'"${DOT_DIR}"'#' \
+                -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#' \
+                "$1/config-sys/$i" > "/$i"
         else
             print_warning "No config file $i found!"
         fi
