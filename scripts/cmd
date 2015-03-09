@@ -1,6 +1,7 @@
 #!/bin/bash
 
-. $DOT_DIR/shell/tools.bash
+# Import tools
+. $DOT_DIR/shell/tools.sh
 
 # Check system
 sys_dir="$DOT_DIR/system"

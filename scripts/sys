@@ -1,6 +1,7 @@
 #!/bin/bash
 
-. $DOT_DIR/shell/tools.bash
+# Import tools
+. $DOT_DIR/shell/tools.sh
 
 if [ $# -eq 1 ]
 then
@@ -16,19 +17,19 @@ then
     fi
 fi
 
-# Import tools
-. $DOT_DIR/shell/tools.bash
 
 # Get system folders for all modules
-dot_get_modules
 sys_folders=()
-for i in ${DOT_MODULES[@]}
-do
-    if [ -d "$i/systems" ]
-    then
-        sys_folders[${#sys_folders[@]}]="$i/systems"
-    fi
-done
+if [ -d $DOT_DIR/modules ]
+then
+    for i in `ls $DOT_DIR/modules | sort`; do
+        i="$DOT_DIR/modules/$i/systems"
+        if [ -d "$i" ]
+        then
+            sys_folders[${#sys_folders[@]}]="$i"
+        fi
+    done
+fi
 
 # Load all configurations
 config_paths_str=`find ${sys_folders[@]} -name 'name.conf' -printf '%h\n' | sort -u`
