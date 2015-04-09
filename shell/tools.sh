@@ -425,3 +425,13 @@ check_not_root()
         exit 1
     fi
 }
+
+# Check if virtualenv is active
+check_virtualenv()
+{
+    if [ -n "$VIRTUAL_ENV" ]
+    then
+        print_error "Python VirtualEnv is active. This might interfere with installation!"
+        exit 1
+    fi
+}
