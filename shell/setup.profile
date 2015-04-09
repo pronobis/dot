@@ -1,7 +1,7 @@
 # -*- mode: sh -*-
 ## ----------------------------------------------------------
-## This file is executed for login shells only
-## Must be compatible with ash/dash.
+## Executed for interactive and non-interactive login
+## sessions for any POSIX shell.
 ## ----------------------------------------------------------
 
 # Include guard

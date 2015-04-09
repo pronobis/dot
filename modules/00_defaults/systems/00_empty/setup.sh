@@ -1,2 +1,5 @@
-# Nothing here, but this is where you put the system specific 
-# environment settings that are compatible with ash/dash.
+# -*- mode: sh -*-
+## ----------------------------------------------------------
+## Executed for interactive, login and non-login
+## sessions for any POSIX shell.
+## ----------------------------------------------------------

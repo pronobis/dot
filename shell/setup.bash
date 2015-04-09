@@ -1,7 +1,7 @@
 # -*- mode: sh -*-
 ## ----------------------------------------------------------
-## This file is executed for both login and non-login shells.
-## It is used only if the shell is bash.
+## Executed for interactive and non-interactive,
+## login and non-login Bash sessions.
 ## ----------------------------------------------------------
 
 # Include guard
@@ -28,10 +28,10 @@ then
     done
 fi
 
-# Setup selected system
-if [ -d "$DOT_DIR/system" ] && [ -f "$DOT_DIR/system/setup.bash" ]
+# Run setup-interactive.bash if not yet run and in interactive shell
+if [ "${-#*i*}" != "$-" ]
 then
-   . "$DOT_DIR/system/setup.bash"
+    . "$DOT_DIR/shell/setup-interactive.bash"
 fi
 
 # Functions for accessing the sys and cmd commands
@@ -40,7 +40,8 @@ sys()
     $DOT_DIR/scripts/sys $@
     if [ -d "$DOT_DIR/system" ]
     then
-        . "$DOT_DIR/system/setup.bash"
+        [ -f "$DOT_DIR/system/setup.sh" ] && . "$DOT_DIR/system/setup.sh"
+        [ -f "$DOT_DIR/system/setup.bash" ] && . "$DOT_DIR/system/setup.bash"
     fi
 }
 cmd()
@@ -48,6 +49,7 @@ cmd()
     $DOT_DIR/scripts/cmd $@
     if [ -d "$DOT_DIR/system" ]
     then
-        . "$DOT_DIR/system/setup.bash"
+        [ -f "$DOT_DIR/system/setup.sh" ] && . "$DOT_DIR/system/setup.sh"
+        [ -f "$DOT_DIR/system/setup.bash" ] && . "$DOT_DIR/system/setup.bash"
     fi
 }

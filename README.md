@@ -14,7 +14,12 @@ Each module is typically stored in its own repo which will be cloned into the `m
 * `config` - Local user config files in the same folder structure in which they should be placed in your `$HOME`. Don't worry, you get to choose if they are copied there, linked there or appended/prepended to existing files.
 * `config-sys` - Global system config files in the same folder structure in which they should be placed in your system root folder `/`.
 * `opt` - Folder where local dependencies are installed.
-* `shell` - Shell scripts configuring your environment. Two files should be present there `setup.bash` and `setup.profile`. `setup.bash` will automatically be executed by your `~/.bashrc` and `setup.profile` by your `~/.profile`.
+* `shell` - Shell scripts configuring your environment. Several files can be present there:
+    * `setup.profile` - Executed for interactive and non-interactive login sessions for any POSIX shell.
+    * `setup.bash` - Executed for interactive and non-interactive, login and non-login Bash sessions.
+    * `setup.sh` - Executed for interactive and non-interactive, login and non-login sessions for any POSIX shell.
+    * `setup-interactive.bash` - Executed for interactive, login and non-login Bash sessions.
+    * `setup-interactive.sh` - Executed for interactive, login and non-login sessions for any POSIX shell.
 * `systems` - Systems provided by the module. See the systems description below.
 * `tmp` - Temporary folder used for storing files during module installation. You can safely delete the files/folders there after the installation finishes.
 * `install.sh` - Installation script installing local user configuration.

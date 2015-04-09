@@ -1,3 +1,5 @@
-# Nothing here, but this is where you put the system specific 
-# environment settings that depend on bash.
-
+# -*- mode: sh -*-
+## ----------------------------------------------------------
+## Executed for interactive, login and non-login
+## Bash sessions.
+## ----------------------------------------------------------

@@ -1,13 +1,13 @@
 # -*- mode: sh -*-
 ## ----------------------------------------------------------
-## Executed for interactive and non-interactive,
-## login and non-login sessions for any POSIX shell.
+## Executed for interactive, login and non-login
+## sessions for any POSIX shell.
 ## ----------------------------------------------------------
 
 # Include guard
-[ -n "$DOT_SETUP_SH" ] && return || readonly DOT_SETUP_SH=1
+[ -n "$DOT_SETUP_INTERACTIVE_SH" ] && return || readonly DOT_SETUP_INTERACTIVE_SH=1
 
-# Run setup.sh in all modules
+# Run setup-interactive.sh in all modules
 if [ -d $DOT_DIR/modules ]
 then
     for i in `ls $DOT_DIR/modules | sort`; do
@@ -15,18 +15,18 @@ then
         if [ -d $i ]
         then
             # Run the setup.sh in each module
-            if [ -f "$i/shell/setup.sh" ]
+            if [ -f "$i/shell/setup-interactive.sh" ]
             then
                 DOT_MODULE_DIR="$i"
-                . "$i/shell/setup.sh"
+                . "$i/shell/setup-interactive.sh"
                 unset DOT_MODULE_DIR
             fi
         fi
     done
 fi
 
-# Run setup-interactive.sh if not yet run and in interactive shell
-if [ "${-#*i*}" != "$-" ]
+# Setup selected system
+if [ -d "$DOT_DIR/system" ] && [ -f "$DOT_DIR/system/setup.sh" ]
 then
-    . "$DOT_DIR/shell/setup-interactive.sh"
+    . "$DOT_DIR/system/setup.sh"
 fi
