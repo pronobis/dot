@@ -399,6 +399,46 @@ dot_prepend_to_config()
 }
 
 
+## Install Python 2 PIP module in ~/.local
+## Args:
+##   $1 - Module name
+dot_install_pip2_user()
+{
+    print_status "Installing $1 for Python 2 in ~/.local"
+    pip2 install --user --upgrade $1 > /dev/null
+}
+
+
+## Install Python 2 PIP module in ~/.local
+## Args:
+##   $1 - Module name
+dot_install_pip3_user()
+{
+    print_status "Installing $1 for Python 3 in ~/.local"
+    pip3 install --user --upgrade $1 > /dev/null
+}
+
+
+## Install Python 2 PIP module in default location
+## Args:
+##   $1 - Module name
+dot_install_pip2()
+{
+    print_status "Installing $1 for Python 2 in default location"
+    pip2 install --upgrade $1 > /dev/null
+}
+
+
+## Install Python 2 PIP module in default location
+## Args:
+##   $1 - Module name
+dot_install_pip3()
+{
+    print_status "Installing $1 for Python 3 in default location"
+    pip3 install --upgrade $1 > /dev/null
+}
+
+
 
 ## -------------------------------------------------------------
 ## Other
