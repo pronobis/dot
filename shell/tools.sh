@@ -405,7 +405,15 @@ dot_prepend_to_config()
 dot_install_pip2_user()
 {
     print_status "Installing $1 for Python 2 in ~/.local"
-    pip2 install --user --upgrade $1 > /dev/null
+    set +e
+    out=$(pip2 install --user --upgrade $1 2>&1)
+    if [ $? -ne 0 ]
+    then
+        printf "$out\n"
+        print_error "Error while running pip!"
+        exit 1
+    fi
+    set -e
 }
 
 
@@ -415,7 +423,15 @@ dot_install_pip2_user()
 dot_install_pip3_user()
 {
     print_status "Installing $1 for Python 3 in ~/.local"
-    pip3 install --user --upgrade $1 > /dev/null
+    set +e
+    out=$(pip3 install --user --upgrade $1 2>&1)
+    if [ $? -ne 0 ]
+    then
+        printf "$out\n"
+        print_error "Error while running pip!"
+        exit 1
+    fi
+    set -e
 }
 
 
@@ -425,7 +441,15 @@ dot_install_pip3_user()
 dot_install_pip2()
 {
     print_status "Installing $1 for Python 2 in default location"
-    pip2 install --upgrade $1 > /dev/null
+    set +e
+    out=$( pip2 install --upgrade $1 2>&1)
+    if [ $? -ne 0 ]
+    then
+        printf "$out\n"
+        print_error "Error while running pip!"
+        exit 1
+    fi
+    set -e
 }
 
 
@@ -435,7 +459,15 @@ dot_install_pip2()
 dot_install_pip3()
 {
     print_status "Installing $1 for Python 3 in default location"
-    pip3 install --upgrade $1 > /dev/null
+    set +e
+    out=$(pip3 install --upgrade $1 2>&1)
+    if [ $? -ne 0 ]
+    then
+        printf "$out\n"
+        print_error "Error while running pip!"
+        exit 1
+    fi
+    set -e
 }
 
 
