@@ -417,7 +417,7 @@ dot_install_pip2_user()
 }
 
 
-## Install Python 2 PIP module in ~/.local
+## Install Python 3 PIP module in ~/.local
 ## Args:
 ##   $1 - Module name
 dot_install_pip3_user()
