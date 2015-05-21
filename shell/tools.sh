@@ -404,9 +404,9 @@ dot_prepend_to_config()
 ##   $1 - Module name
 dot_install_pip2_user()
 {
-    print_status "Installing $1 for Python 2 in ~/.local"
+    print_status "Installing $@ for Python 2 in ~/.local"
     set +e
-    out=$(pip2 install --user --upgrade $1 2>&1)
+    out=$(pip2 install --user --upgrade "$@" 2>&1)
     if [ $? -ne 0 ]
     then
         printf "$out\n"
@@ -422,9 +422,9 @@ dot_install_pip2_user()
 ##   $1 - Module name
 dot_install_pip3_user()
 {
-    print_status "Installing $1 for Python 3 in ~/.local"
+    print_status "Installing $@ for Python 3 in ~/.local"
     set +e
-    out=$(pip3 install --user --upgrade $1 2>&1)
+    out=$(pip3 install --user --upgrade "$@" 2>&1)
     if [ $? -ne 0 ]
     then
         printf "$out\n"
@@ -440,9 +440,9 @@ dot_install_pip3_user()
 ##   $1 - Module name
 dot_install_pip2()
 {
-    print_status "Installing $1 for Python 2 in default location"
+    print_status "Installing $@ for Python 2 in default location"
     set +e
-    out=$( pip2 install --upgrade $1 2>&1)
+    out=$( pip2 install --upgrade "$@" 2>&1)
     if [ $? -ne 0 ]
     then
         printf "$out\n"
@@ -458,9 +458,9 @@ dot_install_pip2()
 ##   $1 - Module name
 dot_install_pip3()
 {
-    print_status "Installing $1 for Python 3 in default location"
+    print_status "Installing $@ for Python 3 in default location"
     set +e
-    out=$(pip3 install --upgrade $1 2>&1)
+    out=$(pip3 install --upgrade "$@" 2>&1)
     if [ $? -ne 0 ]
     then
         printf "$out\n"
