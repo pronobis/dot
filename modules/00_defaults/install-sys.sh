@@ -1,7 +1,8 @@
 #!/bin/sh
 
-. ${0%/*}/../../shell/install_module_header.sh
+dot_shell=$(cd "${0%/*}/../../shell" && pwd); . "$dot_shell/install_module_header.sh"
 check_root  # Check if run as root
+check_virtualenv  # Check for virtualenv
 
 
 ## -------------------------------------------------------------
@@ -23,4 +24,4 @@ print_status "Done!"
 ## -------------------------------------------------------------
 ## Done!
 ## -------------------------------------------------------------
-. ${0%/*}/../../shell/install_module_footer.sh
+. "$dot_shell/install_module_footer.sh"
