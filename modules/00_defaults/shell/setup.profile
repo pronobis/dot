@@ -1,8 +1,5 @@
 # -*- mode: sh -*-
 ## ----------------------------------------------------------
-## This file is executed for login shells only
-## Must be compatible with ash/dash.
+## Executed for interactive and non-interactive login
+## sessions for any POSIX shell.
 ## ----------------------------------------------------------
-
-# Set up your paths here
-#export PATH="$DOT_MODULE_DIR/opt/xxxx:$PATH"

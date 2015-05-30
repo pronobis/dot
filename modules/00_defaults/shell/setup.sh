@@ -1,7 +1,5 @@
 # -*- mode: sh -*-
 ## ----------------------------------------------------------
-## This file is executed for both login and non-login shells
-## Must be compatible with ash/dash.
+## Executed for interactive and non-interactive,
+## login and non-login sessions for any POSIX shell.
 ## ----------------------------------------------------------
-
-alias cdot='cd $DOT_DIR'
