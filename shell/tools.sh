@@ -519,3 +519,17 @@ check_ubuntu()
         exit 1
     fi
 }
+
+
+# Return true if on Ubuntu with version at least ver
+is_min_ubuntu_version()
+{
+    release="$(lsb_release -d 2>/dev/null | grep Ubuntu || true)"
+    if [ -n "$release" ]
+    then  # On Ubuntu
+        cur_ver=$(echo $release | awk '{print $3}')
+        [ "$(echo "$cur_ver >= $1" | bc -l)" = "1" ]
+    else
+        return 1
+    fi
+}
