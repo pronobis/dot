@@ -8,7 +8,7 @@ sys_dir="$DOT_DIR/system"
 if [ ! -d "$sys_dir" ]
 then
     print_error "No system is currently selected!"
-    exit -1
+    exit 1
 fi
 
 # Set variables
@@ -18,7 +18,7 @@ cmd_file="$sys_dir/commands.conf"
 if [ ! -f "$cmd_file" ]
 then
     print_error "The current system's commands file ($cmd_file) does not exist!"
-    exit -1
+    exit 1
 fi
 
 # Load all commands
@@ -47,7 +47,7 @@ menu_result=$(whiptail --title "Select Command" --menu "" 30 50 20 "${menu_args[
 if [ "$menu_result" == "" ]
 then
     print_warning "Canceled!"
-    exit -1
+    exit 1
 else
     # Get path to the system folder
     menu_nr=${menu_result/(/}
