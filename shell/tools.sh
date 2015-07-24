@@ -507,3 +507,15 @@ check_virtualenv()
         exit 1
     fi
 }
+
+
+# Check if on Ubuntu
+check_ubuntu()
+{
+    release="$(lsb-release -d) | grep Ubuntu"
+    if [ -z "$release" ]
+    then
+        print_error "This module can only be installed on Ubuntu!"
+        exit 1
+    fi
+}
