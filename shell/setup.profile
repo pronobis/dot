@@ -7,6 +7,9 @@
 # Include guard
 [ -n "$DOT_SETUP_PROFILE" ] && return || readonly DOT_SETUP_PROFILE=1
 
+# Add binary dir to PATH
+PATH="$DOT_DIR/bin:$PATH"
+
 # Run setup.profile in all modules
 if [ -d $DOT_DIR/modules ]
 then
@@ -14,7 +17,7 @@ then
         i="$DOT_DIR/modules/$i"
         if [ -d $i ]
         then
-            # Set PATH to all module internal binary folders
+            # Add  all module internal binary dirs to path
             PATH="$i/bin:$PATH"
             # Run the setup.profile in each module
             if [ -f "$i/shell/setup.profile" ]
