@@ -527,7 +527,7 @@ is_min_ubuntu_version()
     dist_id=$(lsb_release -si 2>/dev/null || true)
     if [ "$dist_id" = "Ubuntu" ]
     then  # On Ubuntu
-        cur_ver=$(lsb_rlease -sr)
+        cur_ver=$(lsb_release -sr)
         [ "$(echo "$cur_ver >= $1" | bc -l)" = "1" ]
     else
         return 1
