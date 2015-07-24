@@ -512,8 +512,8 @@ check_virtualenv()
 # Check if on Ubuntu
 check_ubuntu()
 {
-    release="$(lsb_release -d 2>/dev/null | grep Ubuntu || true)"
-    if [ -z "$release" ]
+    dist_id=$(lsb_release -si 2>/dev/null || true)
+    if [ "$dist_id" != "Ubuntu" ]
     then
         print_error "This module can only be installed on Ubuntu!"
         exit 1
@@ -524,10 +524,10 @@ check_ubuntu()
 # Return true if on Ubuntu with version at least ver
 is_min_ubuntu_version()
 {
-    release="$(lsb_release -d 2>/dev/null | grep Ubuntu || true)"
-    if [ -n "$release" ]
+    dist_id=$(lsb_release -si 2>/dev/null || true)
+    if [ "$dist_id" = "Ubuntu" ]
     then  # On Ubuntu
-        cur_ver=$(echo $release | awk '{print $3}')
+        cur_ver=$(lsb_rlease -sr)
         [ "$(echo "$cur_ver >= $1" | bc -l)" = "1" ]
     else
         return 1
