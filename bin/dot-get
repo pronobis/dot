@@ -55,7 +55,7 @@ get_modules()
     DOT_MODULES=""
     for i in `ls $DOT_DIR/modules | sort`
     do
-        p="$DOT_DIR/modules/$i"
+        local p="$DOT_DIR/modules/$i"
         if [ -d "$p" ] && [ -f $p/.git/config ]
         then
             DOT_MODULES=${DOT_MODULES:+${DOT_MODULES}:}$i
@@ -70,10 +70,10 @@ get_module_urls()
     local IFS=':'
     for i in $DOT_MODULES
     do
-        p="$DOT_DIR/modules/$i"
+        local p="$DOT_DIR/modules/$i"
         # Get url
         cd $p
-        u=$(git remote show -n origin | grep "Fetch URL")
+        local u=$(git remote show -n origin | grep "Fetch URL")
         u=${u##*URL: }
         DOT_MODULE_URLS=${DOT_MODULE_URLS:+${DOT_MODULE_URLS} }$u
     done
@@ -81,11 +81,11 @@ get_module_urls()
 
 is_updated()
 {
-    name=$1
+    local name=$1
     cd "$DOT_DIR/modules/$name"
-    cur_branch=$(git rev-parse --abbrev-ref @{u})
-    sha_remote=$(git ls-remote ${cur_branch%/*} ${cur_branch#*/} | cut -f1)
-    sha_local=$(git rev-parse HEAD)
+    local cur_branch=$(git rev-parse --abbrev-ref @{u})
+    local sha_remote=$(git ls-remote ${cur_branch%/*} ${cur_branch#*/} | cut -f1)
+    local sha_local=$(git rev-parse HEAD)
 
     if [ "$sha_local" = "$sha_remote" ]
     then
@@ -97,7 +97,7 @@ is_updated()
 
 is_installed()
 {
-    name=$1
+    local name=$1
     echo -n "0"
 }
 
@@ -105,8 +105,8 @@ is_installed()
 clone_module()
 {
     # Args
-    url=$1
-    name=$2
+    local url=$1
+    local name=$2
 
     # Delete temporary dir
     if [ -d $DOT_DIR/modules/temp_clone ]
@@ -152,8 +152,8 @@ clone_module()
 cmd_add()
 {
     # Arguments
-    url=$1
-    name=$2
+    local url=$1
+    local name=$2
     if [ -z "$url" ]
     then
         print_error "Incorrect command arguments!"
@@ -177,7 +177,7 @@ cmd_add()
     done
 
     # Download
-    clone_module
+    clone_module $url $name
 }
 
 
@@ -208,7 +208,7 @@ cmd_stat()
     get_modules
 
     # For each module, get name length
-    max_len=$(echo $DOT_MODULES | awk '
+    local max_len=$(echo $DOT_MODULES | awk '
 BEGIN{FS=":"}
 {
   ml=0
@@ -228,7 +228,7 @@ BEGIN{FS=":"}
 
     # Get results
     local IFS=':'
-    RESULTS=""
+    local RESULTS=''
     for i in $DOT_MODULES
     do
         # Since awk has problems with terminal escape \e in printf, we just print char 27
