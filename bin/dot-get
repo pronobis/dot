@@ -1,0 +1,270 @@
+#!/bin/sh
+
+# Check dependencies
+if [ -z $DOT_DIR ]
+then
+    echo "ERROR: dot is not properly installed or re-login is needed."
+    exit 1
+fi
+. $DOT_DIR/shell/tools.sh
+if ! which git > /dev/null
+then
+    print_error "git is not installed."
+    exit 1
+fi
+
+
+# ------------------------------------------------------------------------------
+# Usage
+# ------------------------------------------------------------------------------
+print_usage()
+{
+    echo "Usage:"
+    echo "  dot-get <command> <command_args>"
+    echo
+    echo "Commands:"
+    echo "  stat    - Show module status."
+    echo
+    echo "  add     - Add a new module. Usage:"
+    echo "              dot-get add <url> [<name>]"
+    echo "            Arguments: "
+    echo "              <url> - Module repository url"
+    echo "              <name> - Module dir name. If not given, default is used."
+    echo
+    echo "  install - Install a module. Usage:"
+    echo "              dot-get install [<name>]"
+    echo "            Arguments: "
+    echo "              <name> - Module dir name or it's unique portion."
+    echo "                       If not given, use the module in the current directory."
+    echo "                       Can be 'all' in which case all modules are installed."
+    echo
+    echo "  update  - Update a module. Usage:"
+    echo "              dot-get update [<name>]"
+    echo "            Arguments: "
+    echo "              <name> - Module dir name or it's unique portion."
+    echo "                       If not given, use the module in the current directory."
+    echo "                       Can be 'all' in which case all modules are updated."
+}
+
+
+# ------------------------------------------------------------------------------
+# Functions
+# ------------------------------------------------------------------------------
+get_modules()
+{
+    DOT_MODULES=""
+    for i in `ls $DOT_DIR/modules | sort`
+    do
+        p="$DOT_DIR/modules/$i"
+        if [ -d "$p" ] && [ -f $p/.git/config ]
+        then
+            DOT_MODULES=${DOT_MODULES:+${DOT_MODULES}:}$i
+        fi
+    done
+}
+
+
+get_module_urls()
+{
+    DOT_MODULE_URLS=""
+    local IFS=':'
+    for i in $DOT_MODULES
+    do
+        p="$DOT_DIR/modules/$i"
+        # Get url
+        cd $p
+        u=$(git remote show -n origin | grep "Fetch URL")
+        u=${u##*URL: }
+        DOT_MODULE_URLS=${DOT_MODULE_URLS:+${DOT_MODULE_URLS} }$u
+    done
+}
+
+is_updated()
+{
+    name=$1
+    cd "$DOT_DIR/modules/$name"
+    cur_branch=$(git rev-parse --abbrev-ref @{u})
+    sha_remote=$(git ls-remote ${cur_branch%/*} ${cur_branch#*/} | cut -f1)
+    sha_local=$(git rev-parse HEAD)
+
+    if [ "$sha_local" = "$sha_remote" ]
+    then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+is_installed()
+{
+    name=$1
+    echo -n "0"
+}
+
+
+clone_module()
+{
+    # Args
+    url=$1
+    name=$2
+
+    # Delete temporary dir
+    if [ -d $DOT_DIR/modules/temp_clone ]
+    then
+        rm -r $DOT_DIR/modules/temp_clone
+    fi
+
+    # Download
+    print_status "Cloning module from the repo..."
+    git clone --recursive $url $DOT_DIR/modules/temp_clone
+    print_status "Done!"
+
+    # Get final name
+    if [ -z $name ]
+    then
+        # Get default name and trim it
+        if [ -f $DOT_DIR/modules/temp_clone/default_name ]
+        then
+            name=$(cat $DOT_DIR/modules/temp_clone/default_name)
+            name="${name#"${name%%[![:space:]]*}"}"
+            name="${name%"${name##*[![:space:]]}"}"
+        else
+            print_error "No name was given and no default name is specified."
+            exit 1
+        fi
+    fi
+
+    # Does this name already exist?
+    if [ -e "$DOT_DIR/modules/$name" ]
+    then
+        print_error "A module with such name already exists."
+        exit 1
+    fi
+
+    # Move to final name
+    mv $DOT_DIR/modules/temp_clone $DOT_DIR/modules/$name
+}
+
+
+# ------------------------------------------------------------------------------
+# Adding
+# ------------------------------------------------------------------------------
+cmd_add()
+{
+    # Arguments
+    url=$1
+    name=$2
+    if [ -z "$url" ]
+    then
+        print_error "Incorrect command arguments!"
+        echo
+        print_usage
+        exit 1
+    fi
+
+    # Get list of all modules with urls
+    get_modules
+    get_module_urls
+
+    # Is this url already in the urls?
+    for i in $DOT_MODULE_URLS
+    do
+        if [ "$i" = "$url" ]
+        then
+            print_error "A module with such URL is already added."
+            exit 1
+        fi
+    done
+
+    # Download
+    clone_module
+}
+
+
+# ------------------------------------------------------------------------------
+# Installing
+# ------------------------------------------------------------------------------
+cmd_install()
+{
+    echo "Installing"
+}
+
+
+# ------------------------------------------------------------------------------
+# Updating
+# ------------------------------------------------------------------------------
+cmd_update()
+{
+    echo "Updating"
+}
+
+
+# ------------------------------------------------------------------------------
+# Status
+# ------------------------------------------------------------------------------
+cmd_stat()
+{
+    # Get list of all modules with urls
+    get_modules
+
+    # For each module, get name length
+    max_len=$(echo $DOT_MODULES | awk '
+BEGIN{FS=":"}
+{
+  ml=0
+  for(i=1; i<=NF; ++i)
+  {
+    if(length($i)>ml)
+      ml=length($i)
+  }
+  print ml
+}' )
+
+    # Print header
+    awk "BEGIN{OFS=\"-\"; NF=($max_len+3)
+               printf \"+%s+---------+-----------+\n\",\$0
+               printf \"| ${YELLOW}${BOLD}%-${max_len}s${NO_FORMAT} | ${YELLOW}${BOLD}%-3s${NO_FORMAT} | ${YELLOW}${BOLD}%-3s${NO_FORMAT} |\n\",\"Name\",\"Updated\",\"Installed\"
+               printf \"+%s+---------+-----------+\n\",\$0}"
+
+    # Get results
+    local IFS=':'
+    RESULTS=""
+    for i in $DOT_MODULES
+    do
+        # Since awk has problems with terminal escape \e in printf, we just print char 27
+        echo "$i $(is_updated $i) $(is_installed $i)" | \
+            awk "{printf \"| %-${max_len}s | %c[%sm%-7s%c[0m | %c[%sm%-9s%c[0m |\n\",\$1,27,\$2?\"92\":\"91\",\$2?\"Yes\":\"No\",27,27,\$3?\"92\":\"91\",\$3?\"Yes\":\"No\",27}"
+    done
+
+    # Print footer
+    awk "BEGIN{\$0=\"\"; OFS=\"-\"; NF=($max_len+3); printf \"+%s+---------+-----------+\n\",\$0}"
+
+}
+
+
+# ------------------------------------------------------------------------------
+# Check and run command
+# ------------------------------------------------------------------------------
+command=$1
+if [ "$command" = "add" ]
+then
+    shift
+    cmd_add "$@"
+elif [ "$command" = "install" ]
+then
+    shift
+    cmd_install "$@"
+elif [ "$command" = "update" ]
+then
+    shift
+    cmd_update "$@"
+elif [ "$command" = "stat" ]
+then
+    shift
+    cmd_stat "$@"
+else
+    print_error "Incorrect command!"
+    echo
+    print_usage
+    exit 1
+fi
