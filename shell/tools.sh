@@ -94,21 +94,6 @@ print_error()
 ## -------------------------------------------------------------
 ## Installing
 ## -------------------------------------------------------------
-
-# Get paths to all modules in $DOT_MODULES
-dot_get_modules()
-{
-    DOT_MODULES=""
-    for i in "$DOT_DIR/modules/*"
-    do
-        if [ -d "$i" ]
-        then
-            DOT_MODULES=${DOT_MODULES:+${DOT_MODULES}:}$i
-        fi
-    done
-}
-
-
 # Create a link to a given binary
 # Args:
 #   $1 - Dot root dir
