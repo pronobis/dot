@@ -23,7 +23,9 @@ print_usage()
     echo "  dot-get <command> <command_args>"
     echo
     echo "Commands:"
-    echo "  stat    - Show module status."
+    echo "  list    - List all modules with repo URLs."
+    echo
+    echo "  stat    - Show module update/install status."
     echo
     echo "  add     - Add a new module. Usage:"
     echo "              dot-get add <url> [<name>]"
@@ -53,9 +55,10 @@ print_usage()
 get_modules()
 {
     DOT_MODULES=""
+    local p=""
     for i in `ls $DOT_DIR/modules | sort`
     do
-        local p="$DOT_DIR/modules/$i"
+        p="$DOT_DIR/modules/$i"
         if [ -d "$p" ] && [ -f $p/.git/config ]
         then
             DOT_MODULES=${DOT_MODULES:+${DOT_MODULES}:}$i
@@ -68,12 +71,14 @@ get_module_urls()
 {
     DOT_MODULE_URLS=""
     local IFS=':'
+    local u=""
+    local p=""
     for i in $DOT_MODULES
     do
-        local p="$DOT_DIR/modules/$i"
+        p="$DOT_DIR/modules/$i"
         # Get url
         cd $p
-        local u=$(git remote show -n origin | grep "Fetch URL")
+        u=$(git remote show -n origin | grep "Fetch URL")
         u=${u##*URL: }
         DOT_MODULE_URLS=${DOT_MODULE_URLS:+${DOT_MODULE_URLS} }$u
     done
@@ -146,6 +151,38 @@ clone_module()
 }
 
 
+get_max_module_name_len()
+{
+    MAX_NAME_LEN=$(echo $DOT_MODULES | awk '
+BEGIN{FS=":"}
+{
+  ml=0
+  for(i=1; i<=NF; ++i)
+  {
+    if(length($i)>ml)
+      ml=length($i)
+  }
+  print ml
+}' )
+}
+
+
+get_max_module_url_len()
+{
+    MAX_URL_LEN=$(echo $DOT_MODULE_URLS | awk '
+BEGIN{FS=" "}
+{
+  ml=0
+  for(i=1; i<=NF; ++i)
+  {
+    if(length($i)>ml)
+      ml=length($i)
+  }
+  print ml
+}' )
+}
+
+
 # ------------------------------------------------------------------------------
 # Adding
 # ------------------------------------------------------------------------------
@@ -206,40 +243,80 @@ cmd_update()
 # ------------------------------------------------------------------------------
 cmd_stat()
 {
-    # Get list of all modules with urls
+    # Get list of all modules
     get_modules
-
-    # For each module, get name length
-    local max_len=$(echo $DOT_MODULES | awk '
-BEGIN{FS=":"}
-{
-  ml=0
-  for(i=1; i<=NF; ++i)
-  {
-    if(length($i)>ml)
-      ml=length($i)
-  }
-  print ml
-}' )
+    get_max_module_name_len
 
     # Print header
-    awk "BEGIN{OFS=\"-\"; NF=($max_len+3)
+    awk "BEGIN{OFS=\"-\"; NF=($MAX_NAME_LEN+3)
                printf \"+%s+---------+-----------+\n\",\$0
-               printf \"| ${YELLOW}${BOLD}%-${max_len}s${NO_FORMAT} | ${YELLOW}${BOLD}%-3s${NO_FORMAT} | ${YELLOW}${BOLD}%-3s${NO_FORMAT} |\n\",\"Name\",\"Updated\",\"Installed\"
+               printf \"| ${YELLOW}${BOLD}%-${MAX_NAME_LEN}s${NO_FORMAT} | ${YELLOW}${BOLD}%-3s${NO_FORMAT} | ${YELLOW}${BOLD}%-3s${NO_FORMAT} |\n\",\"Name\",\"Updated\",\"Installed\"
                printf \"+%s+---------+-----------+\n\",\$0}"
 
     # Get results
     local IFS=':'
-    local RESULTS=''
     for i in $DOT_MODULES
     do
         # Since awk has problems with terminal escape \e in printf, we just print char 27
         echo "$i $(is_updated $i) $(is_installed $i)" | \
-            awk "{printf \"| %-${max_len}s | %c[%sm%-7s%c[0m | %c[%sm%-9s%c[0m |\n\",\$1,27,\$2?\"92\":\"91\",\$2?\"Yes\":\"No\",27,27,\$3?\"92\":\"91\",\$3?\"Yes\":\"No\",27}"
+            awk "{printf \"| %-${MAX_NAME_LEN}s | %c[%sm%-7s%c[0m | %c[%sm%-9s%c[0m |\n\",\$1,27,\$2?\"92\":\"91\",\$2?\"Yes\":\"No\",27,27,\$3?\"92\":\"91\",\$3?\"Yes\":\"No\",27}"
     done
 
     # Print footer
-    awk "BEGIN{\$0=\"\"; OFS=\"-\"; NF=($max_len+3); printf \"+%s+---------+-----------+\n\",\$0}"
+    awk "BEGIN{\$0=\"\"; OFS=\"-\"; NF=($MAX_NAME_LEN+3); printf \"+%s+---------+-----------+\n\",\$0}"
+}
+
+
+# ------------------------------------------------------------------------------
+# List
+# ------------------------------------------------------------------------------
+cmd_list()
+{
+    # Get list of all modules with urls
+    get_modules
+    get_module_urls
+    get_max_module_name_len
+    get_max_module_url_len
+
+    # Print header
+    awk "BEGIN{OFS=\"-\";
+               NF=($MAX_NAME_LEN+3)
+               printf \"+%s+\",\$0
+               NF=($MAX_URL_LEN+3)
+               printf \"%s+\n\",\$0
+               printf \"| ${YELLOW}${BOLD}%-${MAX_NAME_LEN}s${NO_FORMAT} | ${YELLOW}${BOLD}%-${MAX_URL_LEN}s${NO_FORMAT} |\n\",\"Name\",\"URL\"
+               NF=($MAX_NAME_LEN+3)
+               printf \"+%s+\",\$0
+               NF=($MAX_URL_LEN+3)
+               printf \"%s+\n\",\$0}"
+
+    # Print content
+    echo "${DOT_MODULES}:::${DOT_MODULE_URLS}" | awk "BEGIN{FS=\":::\"}{
+# Separate input
+a=\$1
+b=\$2
+# Parse names
+FS=\":\"
+\$0=a
+for (i=1; i<=NF; ++i)
+  names[i-1]=\$i
+# Parse urls
+FS=\" \"
+\$0=b
+for (i=1; i<=NF; ++i)
+  urls[i-1]=\$i
+# Print
+for (i=0; i<NF; ++i)
+{
+  printf \"| %-${MAX_NAME_LEN}s | %-${MAX_URL_LEN}s |\n\",names[i],urls[i]
+}}"
+
+    # Print footer
+    awk "BEGIN{OFS=\"-\";
+               NF=($MAX_NAME_LEN+3)
+               printf \"+%s+\",\$0
+               NF=($MAX_URL_LEN+3)
+               printf \"%s+\n\",\$0}"
 }
 
 
@@ -263,6 +340,10 @@ elif [ "$command" = "stat" ]
 then
     shift
     cmd_stat "$@"
+elif [ "$command" = "list" ]
+then
+    shift
+    cmd_list "$@"
 else
     print_error "Incorrect command!"
     echo
