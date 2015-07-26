@@ -1,10 +1,10 @@
 # -*- mode: sh -*-
 
 # Mark that installation has been completed
-cd ${DOT_MODULE_DIR}
-git rev-parse HEAD > ${DOT_MODULE_DIR}/installed
+cd ${TMP_DIR}
+git rev-parse HEAD > ${TMP_DIR}/installed
 
-# Unset "local" vars
+# Unset exported "local" vars
 unset DOT_MODULE_DIR
 
 # Footer

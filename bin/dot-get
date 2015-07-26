@@ -99,9 +99,9 @@ is_installed()
 
     # Read installed sha
     local sha_installed=""
-    if [ -f $DOT_DIR/modules/$name/installed ]
+    if [ -f $DOT_DIR/modules/$name/tmp/installed ]
     then
-        sha_installed=$(cat $DOT_DIR/modules/$name/installed)
+        sha_installed=$(cat $DOT_DIR/modules/$name/tmp/installed)
         sha_installed="${sha_installed#"${sha_installed%%[![:space:]]*}"}"
         sha_installed="${sha_installed%"${sha_installed##*[![:space:]]}"}"
     fi
