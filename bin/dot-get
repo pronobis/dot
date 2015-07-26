@@ -322,6 +322,13 @@ cmd_update()
         fi
     fi
 
+    # Anything to update
+    if [ -z "$modules" ]
+    then
+        print_error "Don't know what to update. Did you mean 'dot-get update all'?"
+        exit 1
+    fi
+
     # Update each module
     local IFS=':'
     for i in $modules
