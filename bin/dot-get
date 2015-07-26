@@ -36,7 +36,7 @@ print_usage()
     echo "  update  - Update a module. Usage:"
     echo "              dot-get update [<name>]"
     echo "            Arguments: "
-    echo "              <name> - Module dir name or it's unique portion."
+    echo "              <name> - Module dir name or it's portion."
     echo "                       If not given, use the module in the current directory."
     echo "                       Can be 'all' in which case all modules are updated."
 }
@@ -289,8 +289,49 @@ cmd_add()
 # ------------------------------------------------------------------------------
 cmd_update()
 {
-    print_error "Not Implemented!"
-    exit 1
+    local name=$1
+    local modules=""
+
+    # Obtain modules based on name
+    get_modules
+    if [ -n "$name" ]
+    then
+        if [ "$name" = "all" ]
+        then
+            # Get all modules
+            modules=$DOT_MODULES
+        else
+            # Try matching the modules to name
+            local IFS=':'
+            for i in $DOT_MODULES
+            do
+                if [ "${i#$name}" != "$i" ]
+                then
+                    modules=${modules:+${modules}:}$i
+                fi
+            done
+        fi
+    else
+        # Check if we are in a module now
+        local cur_dir=$(pwd)
+        local cur_module=${cur_dir#$DOT_DIR/modules/}
+        if [ "$cur_module" != "$cur_dir" ]
+        then
+            cur_module=${cur_module%%/*}
+            modules=$cur_module
+        fi
+    fi
+
+    # Update each module
+    local IFS=':'
+    for i in $modules
+    do
+        print_status "Updating module $i..."
+        cd "$DOT_DIR/modules/$i"
+        git pull --recurse-submodules
+        git submodule update --recursive
+    done
+
 }
 
 
