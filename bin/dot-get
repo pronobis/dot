@@ -25,7 +25,7 @@ print_usage()
     echo "Commands:"
     echo "  list    - List all modules with repo URLs."
     echo
-    echo "  stat    - Show module update/install status."
+    echo "  status  - Show module update/install status."
     echo
     echo "  add     - Add a new module. Usage:"
     echo "              dot-get add <url> [<name>]"
@@ -269,7 +269,6 @@ cmd_add()
             print_status "Ignoring installed dependency $url."
         fi
     done
-
 }
 
 
@@ -296,7 +295,7 @@ cmd_update()
 # ------------------------------------------------------------------------------
 # Status
 # ------------------------------------------------------------------------------
-cmd_stat()
+cmd_status()
 {
     # Get list of all modules
     get_modules
@@ -391,10 +390,10 @@ elif [ "$command" = "update" ]
 then
     shift
     cmd_update "$@"
-elif [ "$command" = "stat" ]
+elif [ "$command" = "status" ]
 then
     shift
-    cmd_stat "$@"
+    cmd_status "$@"
 elif [ "$command" = "list" ]
 then
     shift
