@@ -33,13 +33,6 @@ print_usage()
     echo "              <url> - Module repository url"
     echo "              <name> - Module dir name. If not given, default is used."
     echo
-    echo "  install - Install a module. Usage:"
-    echo "              dot-get install [<name>]"
-    echo "            Arguments: "
-    echo "              <name> - Module dir name or it's unique portion."
-    echo "                       If not given, use the module in the current directory."
-    echo "                       Can be 'all' in which case all modules are installed."
-    echo
     echo "  update  - Update a module. Usage:"
     echo "              dot-get update [<name>]"
     echo "            Arguments: "
@@ -273,16 +266,6 @@ cmd_add()
 
 
 # ------------------------------------------------------------------------------
-# Installing
-# ------------------------------------------------------------------------------
-cmd_install()
-{
-    print_error "Not Implemented!"
-    exit 1
-}
-
-
-# ------------------------------------------------------------------------------
 # Updating
 # ------------------------------------------------------------------------------
 cmd_update()
@@ -382,10 +365,6 @@ if [ "$command" = "add" ]
 then
     shift
     cmd_add "$@"
-elif [ "$command" = "install" ]
-then
-    shift
-    cmd_install "$@"
 elif [ "$command" = "update" ]
 then
     shift
