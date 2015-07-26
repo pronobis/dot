@@ -116,13 +116,11 @@ clone_module()
     # Delete temporary dir
     if [ -d $DOT_DIR/modules/temp_clone ]
     then
-        rm -r $DOT_DIR/modules/temp_clone
+        rm -rf $DOT_DIR/modules/temp_clone
     fi
 
     # Download
-    print_status "Cloning module $name from $url..."
     git clone --recursive $url $DOT_DIR/modules/temp_clone
-    print_status "Done!"
 
     # Get final name
     if [ -z $name ]
@@ -134,7 +132,7 @@ clone_module()
             name="${name#"${name%%[![:space:]]*}"}"
             name="${name%"${name##*[![:space:]]}"}"
         else
-            print_error "No name was given and no default name is specified."
+            print_error "No name was given for the module and no default name is specified."
             exit 1
         fi
     fi
@@ -150,13 +148,15 @@ clone_module()
     mv $DOT_DIR/modules/temp_clone $DOT_DIR/modules/$name
 
     # Get dependencies
+    DEPENDENCIES=""
     if [ -f $DOT_DIR/modules/$name/dependencies ]
     then
-        DEPENDENCIES=$(cat $DOT_DIR/modules/$name/dependencies)
-        DEPENDENCIES="${DEPENDENCIES#"${DEPENDENCIES%%[![:space:]]*}"}"
-        DEPENDENCIES="${DEPENDENCIES%"${DEPENDENCIES##*[![:space:]]}"}"
-    else
-        DEPENDENCIES=""
+        for i in $(cat $DOT_DIR/modules/$name/dependencies)
+        do
+            i="${i#"${i%%[![:space:]]*}"}"
+            i="${i%"${i##*[![:space:]]}"}"
+            DEPENDENCIES=${DEPENDENCIES:+${DEPENDENCIES} }$i
+        done
     fi
 }
 
@@ -225,6 +225,8 @@ cmd_add()
         exit 1
     fi
 
+    print_status "Installing module $url:"
+
     # Get list of all modules with urls
     get_modules
     get_module_urls
@@ -238,18 +240,35 @@ cmd_add()
 
     # Download
     clone_module $url $name
+    # Cannot make this var local due to bug in dash
+    # https://bugs.launchpad.net/ubuntu/+source/dash/+bug/139097
+    all_deps=$DEPENDENCIES
+    print_status "Done!"
 
     # Download dependencies
-    # while [ -n "$DEPENDENCIES" ]
-    # do
-    #     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
-    #     for i in "$DEPENDENCIES"
-    #     do
+    while [ -n "$all_deps" ]
+    do
+        # Get updated list of all modules with urls
+        get_modules
+        get_module_urls
 
-    #     done
-    #     echo $DEPENDENCIES
-    #     DEPENDENCIES=""
-    # done
+        # Get first dependency on the list
+        url=${all_deps%% *}
+        all_deps=${all_deps#$url}
+        all_deps=${all_deps# }
+
+        # If not yet added, clone
+        if ! is_url_added $url
+        then
+            print_status "Installing dependency $url:"
+            clone_module $url
+            # Add dependencies of that one
+            all_deps=${all_deps:+${all_deps} }$DEPENDENCIES
+            print_status "Done!"
+        else
+            print_status "Ignoring installed dependency $url."
+        fi
+    done
 
 }
 
