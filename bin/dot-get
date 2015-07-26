@@ -115,7 +115,7 @@ clone_module()
     fi
 
     # Download
-    print_status "Cloning module from the repo..."
+    print_status "Cloning module $name from $url..."
     git clone --recursive $url $DOT_DIR/modules/temp_clone
     print_status "Done!"
 
