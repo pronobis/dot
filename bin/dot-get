@@ -148,6 +148,16 @@ clone_module()
 
     # Move to final name
     mv $DOT_DIR/modules/temp_clone $DOT_DIR/modules/$name
+
+    # Get dependencies
+    if [ -f $DOT_DIR/modules/$name/dependencies ]
+    then
+        DEPENDENCIES=$(cat $DOT_DIR/modules/$name/dependencies)
+        DEPENDENCIES="${DEPENDENCIES#"${DEPENDENCIES%%[![:space:]]*}"}"
+        DEPENDENCIES="${DEPENDENCIES%"${DEPENDENCIES##*[![:space:]]}"}"
+    else
+        DEPENDENCIES=""
+    fi
 }
 
 
@@ -183,6 +193,22 @@ BEGIN{FS=" "}
 }
 
 
+is_url_added()
+{
+    local url=$1
+
+    # Is this url already in the urls?
+    for i in $DOT_MODULE_URLS
+    do
+        if [ "$i" = "$url" ]
+        then
+            return 0
+        fi
+    done
+    return 1
+}
+
+
 # ------------------------------------------------------------------------------
 # Adding
 # ------------------------------------------------------------------------------
@@ -204,17 +230,27 @@ cmd_add()
     get_module_urls
 
     # Is this url already in the urls?
-    for i in $DOT_MODULE_URLS
-    do
-        if [ "$i" = "$url" ]
-        then
-            print_error "A module with such URL is already added."
-            exit 1
-        fi
-    done
+    if is_url_added "$url"
+    then
+       print_error "A module with such URL is already added."
+       exit 1
+    fi
 
     # Download
     clone_module $url $name
+
+    # Download dependencies
+    # while [ -n "$DEPENDENCIES" ]
+    # do
+    #     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
+    #     for i in "$DEPENDENCIES"
+    #     do
+
+    #     done
+    #     echo $DEPENDENCIES
+    #     DEPENDENCIES=""
+    # done
+
 }
 
 
