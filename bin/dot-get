@@ -186,7 +186,8 @@ cmd_add()
 # ------------------------------------------------------------------------------
 cmd_install()
 {
-    echo "Installing"
+    print_error "Not Implemented!"
+    exit 1
 }
 
 
@@ -195,7 +196,8 @@ cmd_install()
 # ------------------------------------------------------------------------------
 cmd_update()
 {
-    echo "Updating"
+    print_error "Not Implemented!"
+    exit 1
 }
 
 
@@ -238,7 +240,6 @@ BEGIN{FS=":"}
 
     # Print footer
     awk "BEGIN{\$0=\"\"; OFS=\"-\"; NF=($max_len+3); printf \"+%s+---------+-----------+\n\",\$0}"
-
 }
 
 
