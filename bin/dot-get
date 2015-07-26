@@ -96,7 +96,26 @@ is_updated()
 is_installed()
 {
     local name=$1
-    echo -n "0"
+
+    # Read installed sha
+    local sha_installed=""
+    if [ -f $DOT_DIR/modules/$name/installed ]
+    then
+        sha_installed=$(cat $DOT_DIR/modules/$name/installed)
+        sha_installed="${sha_installed#"${sha_installed%%[![:space:]]*}"}"
+        sha_installed="${sha_installed%"${sha_installed##*[![:space:]]}"}"
+    fi
+
+    # Get local HEAD sha
+    cd "$DOT_DIR/modules/$name"
+    local sha_local=$(git rev-parse HEAD)
+
+    if [ "$sha_local" = "$sha_installed" ]
+    then
+        echo "1"
+    else
+        echo "0"
+    fi
 }
 
 
