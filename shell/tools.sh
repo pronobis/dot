@@ -92,6 +92,25 @@ print_error()
 
 
 ## -------------------------------------------------------------
+## Interaction
+## -------------------------------------------------------------
+yes_no_question()
+{
+    local question=$1
+    printf "${BOLD}${YELLOW}$question ${WHITE}(${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}n${WHITE}):${NO_FORMAT} "
+    old_stty_cfg=$(stty -g)
+    stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
+    if echo "$answer" | grep -iq "^y" ;then
+        printf "${BOLD}${LIGHT_GREEN}y${NO_FORMAT}\n"
+        return 0
+    else
+        printf "${BOLD}${LIGHT_RED}n${NO_FORMAT}\n"
+        return 1
+    fi
+}
+
+
+## -------------------------------------------------------------
 ## Installing
 ## -------------------------------------------------------------
 # Create a link to a given binary
@@ -458,7 +477,7 @@ dot_install_pip3()
 
 
 ## -------------------------------------------------------------
-## Other
+## Checks
 ## -------------------------------------------------------------
 
 # Check if the user is root
