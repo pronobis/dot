@@ -477,6 +477,15 @@ dot_install_pip3()
 }
 
 
+# Install given system packages
+# Currently works only for Debian-based systems.
+# Args:
+#   $@ - Package names
+dot_install_packages()
+{
+    sudo apt-get install -y --no-install-recommends $@
+}
+
 
 
 ## -------------------------------------------------------------
@@ -545,7 +554,7 @@ is_min_ubuntu_version()
 # Check if given system packages are installed.
 # Currently works only for Debian-based systems.
 # Args:
-#   $@ - packages
+#   $@ - Package names
 # Return:
 #   $DOT_NOT_INSTALLED - Not installed packages
 #   $? - 1 if something is not installed, 0 otherwise
