@@ -94,6 +94,9 @@ print_error()
 ## -------------------------------------------------------------
 ## Interaction
 ## -------------------------------------------------------------
+## Ask a yes/no question
+## Args:
+##   $1 - Question text
 yes_no_question()
 {
     printf "${BOLD}${YELLOW}$1 ${WHITE}(${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}n${WHITE}):${NO_FORMAT} "
@@ -472,6 +475,7 @@ dot_install_pip3()
     fi
     set -e
 }
+
 
 
 
