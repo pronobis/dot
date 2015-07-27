@@ -540,3 +540,27 @@ is_min_ubuntu_version()
         return 1
     fi
 }
+
+
+# Check if given system packages are installed.
+# Currently works only for Debian-based systems.
+# Args:
+#   $@ - packages
+# Return:
+#   $DOT_NOT_INSTALLED - Not installed packages
+#   $? - 1 if something is not installed, 0 otherwise
+dot_check_packages()
+{
+    DOT_NOT_INSTALLED=""
+    for pkg in $@
+    do
+        installed=$(dpkg -l $pkg > /dev/null 2>&1 && echo "yes" || true)
+        if [ -z "$installed" ]
+        then
+            DOT_NOT_INSTALLED=${DOT_NOT_INSTALLED:+${DOT_NOT_INSTALLED} }$pkg
+        fi
+    done
+
+    # Return false if sth not installed
+    [ -z "$DOT_NOT_INSTALLED" ]
+}
