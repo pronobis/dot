@@ -99,7 +99,7 @@ print_error()
 ##   $1 - Question text
 yes_no_question()
 {
-    printf "${BOLD}${YELLOW}$1 ${WHITE}(${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}n${WHITE}):${NO_FORMAT} "
+    printf "${BOLD}${YELLOW}$1 ${WHITE}(${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}N${WHITE}):${NO_FORMAT} "
     old_stty_cfg=$(stty -g)
     stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
     if echo "$answer" | grep -iq "^y" ;then
