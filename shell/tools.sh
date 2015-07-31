@@ -334,7 +334,7 @@ dot_fill_config_sys()
 #   $2 - Wildcard describing the config files relative to $HOME
 #   $3 - Start tag of the section (typically a config file comment)
 #   $4 - End tag of the section (typically a config file comment)
-dot_append_to_config()
+dot_append_section_to_config()
 {
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config/$2
@@ -374,7 +374,7 @@ dot_append_to_config()
 #   $2 - Wildcard describing the config files relative to $HOME
 #   $3 - Start tag of the section (typically a config file comment)
 #   $4 - End tag of the section (typically a config file comment)
-dot_prepend_to_config()
+dot_prepend_section_to_config()
 {
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config/$2
