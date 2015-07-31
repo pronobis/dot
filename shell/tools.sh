@@ -327,6 +327,37 @@ dot_fill_config_sys()
 }
 
 
+# Append to the end of a possibly existing config file.
+# Args:
+#   $1 - Dot root dir
+#   $2 - Wildcard describing the config files relative to $HOME
+dot_append_to_config()
+{
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
+    for i in $1/config/$2
+    do
+        i=${i#$1/config/}
+        if [ -e "$1/config/$i" ]
+        then
+            mkdir -p $(dirname "${HOME}/$i")
+            if [ -e "${HOME}/$i" ] && [ ! -f "${HOME}/$i" ]
+            then
+                print_error "${HOME}/${i} exists and is not a file!"
+                exit 1
+            fi
+            if [ ! -e "${HOME}/$i" ]
+            then # If file does not exist, create it
+                touch "${HOME}/$i"
+            fi
+            # Append
+            cat "$1/config/$i" >> "${HOME}/$i"
+        else
+            print_warning "No config file $i found!"
+        fi
+    done
+}
+
+
 # Add a section to the end of a possibly existing config file.
 # If the section exists in the file, it is replaced.
 # Args:
