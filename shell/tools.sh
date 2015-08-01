@@ -152,7 +152,7 @@ dot_link_config()
             mkdir -p $(dirname "${HOME}/$i")
             if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
             then # Do not overwrite existing folders
-                print_error "A ${HOME}/${i} already exists and is a directory!"
+                print_error "${HOME}/${i} already exists and is a directory!"
                 exit 1
             fi
             if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
@@ -182,7 +182,7 @@ dot_link_config_sys()
             sudo mkdir -p $(dirname "/$i")
             if sudo test -d "/$i" && sudo test ! -L "/$i"
             then # Do not overwrite existing folders
-                print_error "A /${i} already exists and is a directory!"
+                print_error "/${i} already exists and is a directory!"
                 exit 1
             fi
             if sudo test -e "/$i" || sudo test -h "/$i"
@@ -195,6 +195,36 @@ dot_link_config_sys()
         fi
     done
 }
+
+
+# Create a link to a user config file in the root home
+# Args:
+#   $1 - Wildcard describing the path to config files relative to user's home
+dot_link_user_root()
+{
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
+    for i in $HOME/$1
+    do
+        i=${i#$HOME/}
+        if [ -e "$HOME/$i" ]
+        then
+            sudo mkdir -p $(dirname "/root/$i")
+            if sudo test -d "/root/$i" && sudo test ! -L "/root/$i"
+            then # Do not overwrite existing folders
+                print_error "/root/${i} already exists and is a directory!"
+                exit 1
+            fi
+            if sudo test -e "/root/$i" || sudo test -h "/root/$i"
+            then # To prevent creation of a link on another link (e.g. link to folder)
+                sudo rm "/root/$i"
+            fi
+            sudo ln -s "$HOME/$i" "/root/$i"
+        else
+            print_warning "No config file $i found!"
+        fi
+    done
+}
+
 
 
 # Make a copy of config files
@@ -212,7 +242,7 @@ dot_copy_config()
             mkdir -p $(dirname "${HOME}/$i")
             if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
             then # Do not overwrite existing folders
-                print_error "A ${HOME}/${i} already exists and is a directory!"
+                print_error "${HOME}/${i} already exists and is a directory!"
                 exit 1
             fi
             if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
@@ -242,7 +272,7 @@ dot_copy_config_sys()
             sudo mkdir -p $(dirname "/$i")
             if sudo test -d "/$i" && sudo test ! -L "/$i"
             then # Do not overwrite existing folders
-                print_error "A /${i} already exists and is a directory!"
+                print_error "/${i} already exists and is a directory!"
                 exit 1
             fi
             if sudo test -e "/$i" || sudo test -h "/$i"
@@ -272,7 +302,7 @@ dot_fill_config()
             mkdir -p $(dirname "${HOME}/$i")
             if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
             then # Do not overwrite existing folders
-                print_error "A ${HOME}/${i} already exists and is a directory!"
+                print_error "${HOME}/${i} already exists and is a directory!"
                 exit 1
             fi
             if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
@@ -307,7 +337,7 @@ dot_fill_config_sys()
             sudo mkdir -p $(dirname "/$i")
             if sudo test -d "/$i" && sudo test ! -L "/$i"
             then # Do not overwrite existing folders
-                print_error "A /${i} already exists and is a directory!"
+                print_error "/${i} already exists and is a directory!"
                 exit 1
             fi
             if sudo test -e "/$i" || sudo test -h "/$i"
