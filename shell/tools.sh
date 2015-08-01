@@ -239,17 +239,17 @@ dot_copy_config_sys()
         i=${i#$1/config-sys/}
         if [ -e "$1/config-sys/$i" ]
         then
-            mkdir -p $(dirname "/$i")
-            if [ -d "/$i" ] && [ ! -L "/$i" ]
+            sudo mkdir -p $(dirname "/$i")
+            if sudo test -d "/$i" && sudo test ! -L "/$i"
             then # Do not overwrite existing folders
                 print_error "A /${i} already exists and is a directory!"
                 exit 1
             fi
-            if [ -e "/$i" ] || [ -h "/$i" ]
+            if sudo test -e "/$i" || sudo test -h "/$i"
             then # To prevent copying into a link
-                rm "/$i"
+                sudo rm "/$i"
             fi
-            cp -d "$1/config-sys/$i" "/$i"
+            sudo cp -d "$1/config-sys/$i" "/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -304,22 +304,22 @@ dot_fill_config_sys()
         i=${i#$1/config-sys/}
         if [ -e "$1/config-sys/$i" ]
         then
-            mkdir -p $(dirname "/$i")
-            if [ -d "/$i" ] && [ ! -L "/$i" ]
+            sudo mkdir -p $(dirname "/$i")
+            if sudo test -d "/$i" && sudo test ! -L "/$i"
             then # Do not overwrite existing folders
                 print_error "A /${i} already exists and is a directory!"
                 exit 1
             fi
-            if [ -e "/$i" ] || [ -h "/$i" ]
+            if sudo test -e "/$i" || sudo test -h "/$i"
             then # To prevent copying into a link
-                rm "/$i"
+                sudo rm "/$i"
             fi
             # envsubst < "$1/config-sys/$i" > "/$i"  # Does not work with busybox
             sed \
                 -e 's#${HOME}#'"${HOME}"'#' \
                 -e 's#${DOT_DIR}#'"${DOT_DIR}"'#' \
                 -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#' \
-                "$1/config-sys/$i" > "/$i"
+                "$1/config-sys/$i" | sudo tee "/$i" > /dev/null
         else
             print_warning "No config file $i found!"
         fi
