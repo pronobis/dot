@@ -152,7 +152,7 @@ dot_link_config()
             mkdir -p $(dirname "${HOME}/$i")
             if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
             then # Do not overwrite existing folders
-                print_error "A directory ${HOME}/${i} already exists!"
+                print_error "A ${HOME}/${i} already exists and is a directory!"
                 exit 1
             fi
             if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
@@ -212,7 +212,7 @@ dot_copy_config()
             mkdir -p $(dirname "${HOME}/$i")
             if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
             then # Do not overwrite existing folders
-                print_error "A directory ${HOME}/${i} already exists!"
+                print_error "A ${HOME}/${i} already exists and is a directory!"
                 exit 1
             fi
             if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
@@ -242,7 +242,7 @@ dot_copy_config_sys()
             mkdir -p $(dirname "/$i")
             if [ -d "/$i" ] && [ ! -L "/$i" ]
             then # Do not overwrite existing folders
-                print_error "A directory /${i} already exists!"
+                print_error "A /${i} already exists and is a directory!"
                 exit 1
             fi
             if [ -e "/$i" ] || [ -h "/$i" ]
@@ -272,7 +272,7 @@ dot_fill_config()
             mkdir -p $(dirname "${HOME}/$i")
             if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
             then # Do not overwrite existing folders
-                print_error "A directory ${HOME}/${i} already exists!"
+                print_error "A ${HOME}/${i} already exists and is a directory!"
                 exit 1
             fi
             if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
@@ -307,7 +307,7 @@ dot_fill_config_sys()
             mkdir -p $(dirname "/$i")
             if [ -d "/$i" ] && [ ! -L "/$i" ]
             then # Do not overwrite existing folders
-                print_error "A directory /${i} already exists!"
+                print_error "A /${i} already exists and is a directory!"
                 exit 1
             fi
             if [ -e "/$i" ] || [ -h "/$i" ]
