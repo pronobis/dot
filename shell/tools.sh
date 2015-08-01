@@ -538,12 +538,28 @@ check_root()
 check_not_root()
 {
     uid="$(id -u)"  # The only way that works with dash
-    if [ "$uid" = "0" ] || [ "$HOME" = "/root" ] || [ "$USER" = "root" ]
+    if [ "$uid" = "0" ] || [ "$HOME" = "/root" ] || [ "$USER" = "root" ] || [ "$(whoami)" = "root" ]
     then
         print_error "This script should not be run as root!"
         exit 1
     fi
 }
+
+
+# Check if the user is root
+dot_check_root()
+{
+    uid="$(id -u)"  # The only way that works with dash
+    if [ "$uid" = "0" ] || [ "$HOME" = "/root" ] || [ "$USER" = "root" ] || [ "$(whoami)" = "root" ]
+    then
+        print_warning "You are running the installation script as root!"
+        if ! yes_no_question "Are you sure you want to continue?"
+        then
+            exit 1
+        fi
+    fi
+}
+
 
 # Check if virtualenv is active
 check_virtualenv()
