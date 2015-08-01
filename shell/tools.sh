@@ -544,6 +544,13 @@ dot_install_pip3()
 #   $@ - Package names
 dot_install_packages()
 {
+    # Update package info the first time we install sth
+    if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
+    then
+        sudo apt-get update
+        DOT_MODULE_PACKAGES_UPDATED=1
+    fi
+    # Install
     sudo apt-get install -y --no-install-recommends $@
 }
 
