@@ -554,7 +554,7 @@ dot_install_packages()
 ## -------------------------------------------------------------
 
 # Check if the user is root
-check_root()
+dot_check_root()
 {
     uid="$(id -u)"  # The only way that works with dash
     if [ "$HOME" != "/root" ] || [ "$USER" != "root" ] || [ "$uid" != "0" ]
@@ -565,7 +565,7 @@ check_root()
 }
 
 # Check if the user is root
-check_not_root()
+dot_check_not_root()
 {
     uid="$(id -u)"  # The only way that works with dash
     if [ "$uid" = "0" ] || [ "$HOME" = "/root" ] || [ "$USER" = "root" ] || [ "$(whoami)" = "root" ]
@@ -592,7 +592,7 @@ dot_check_root()
 
 
 # Check if virtualenv is active
-check_virtualenv()
+dot_check_virtualenv()
 {
     if [ -n "$VIRTUAL_ENV" ]
     then
@@ -603,7 +603,7 @@ check_virtualenv()
 
 
 # Check if on Ubuntu
-check_ubuntu()
+dot_check_ubuntu()
 {
     dist_id=$(lsb_release -si 2>/dev/null || true)
     if [ "$dist_id" != "Ubuntu" ]
@@ -615,7 +615,7 @@ check_ubuntu()
 
 
 # Return true if on Ubuntu with version at least ver
-is_min_ubuntu_version()
+dot_is_min_ubuntu_version()
 {
     dist_id=$(lsb_release -si 2>/dev/null || true)
     if [ "$dist_id" = "Ubuntu" ]
