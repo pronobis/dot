@@ -179,17 +179,17 @@ dot_link_config_sys()
         i=${i#$1/config-sys/}
         if [ -e "$1/config-sys/$i" ]
         then
-            mkdir -p $(dirname "/$i")
-            if [ -d "/$i" ] && [ ! -L "/$i" ]
+            sudo mkdir -p $(dirname "/$i")
+            if sudo test -d "/$i" && sudo test ! -L "/$i"
             then # Do not overwrite existing folders
-                print_error "A directory /${i} already exists!"
+                print_error "A /${i} already exists and is a directory!"
                 exit 1
             fi
-            if [ -e "/$i" ] || [ -h "/$i" ]
+            if sudo test -e "/$i" || sudo test -h "/$i"
             then # To prevent creation of a link on another link (e.g. link to folder)
-                rm "/$i"
+                sudo rm "/$i"
             fi
-            ln -s "$1/config-sys/$i" "/$i"
+            sudo ln -s "$1/config-sys/$i" "/$i"
         else
             print_warning "No config file $i found!"
         fi
