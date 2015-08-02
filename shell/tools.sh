@@ -536,6 +536,8 @@ dot_install_pip2()
 ##   $1 - Module name
 dot_install_pip3()
 {
+    local args=""  # To avoid "bad variable name" in dash for some values
+    args="$@"
     print_status "Installing ${args} for Python 3 in default location"
     set +e
     out=$(pip3 install --upgrade $args 2>&1)
