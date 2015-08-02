@@ -102,10 +102,15 @@ yes_no_question()
     printf "${BOLD}${YELLOW}$1 ${WHITE}(${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}N${WHITE}):${NO_FORMAT} "
     old_stty_cfg=$(stty -g)
     stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
-    if echo "$answer" | grep -iq "^y" ;then
+    if echo "$answer" | grep -iq "^y"
+    then # Yes
         printf "${BOLD}${LIGHT_GREEN}y${NO_FORMAT}\n"
         return 0
-    else
+    elif [ "$answer" = $(printf \\003) ]
+    then # ^C detected
+        printf "${BOLD}${LIGHT_RED}interrupted${NO_FORMAT}\n"
+        exit 1
+    else # No
         printf "${BOLD}${LIGHT_RED}n${NO_FORMAT}\n"
         return 1
     fi
