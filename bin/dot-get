@@ -395,7 +395,7 @@ cmd_list()
     fi
     if [ "$MAX_URL_LEN" = "0" ]
     then
-        MAX_URL_LEN=2
+        MAX_URL_LEN=3
     fi
 
     # Print header
