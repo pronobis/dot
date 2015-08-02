@@ -491,22 +491,6 @@ dot_install_pip2_user()
 }
 
 
-# ## Install Python 2 PIP module in ~/.local only if it's not in latest version already
-# ## Args:
-# ##   $1 - Module name
-# dot_update_pip2_user()
-# {
-#     local pkg=""  # To avoid "bad variable name" in dash for some values
-#     pkg="$@"
-#     if dot_check_pip2_latest_user "$pkg"
-#     then
-#         print_status "${pkg} is installed in latest version $PIP_PACKAGE_VERSION_INSTALLED"
-#     else
-#         dot_install_pip2_user "$pkg"
-#     fi
-# }
-
-
 ## Install Python 3 PIP module in ~/.local
 ## Args:
 ##   $1 - Module name
@@ -525,22 +509,6 @@ dot_install_pip3_user()
     fi
     set -e
 }
-
-
-# ## Install Python 3 PIP module in ~/.local only if it's not in latest version already
-# ## Args:
-# ##   $1 - Module name
-# dot_update_pip3_user()
-# {
-#     local pkg=""  # To avoid "bad variable name" in dash for some values
-#     pkg="$@"
-#     if dot_check_pip3_latest_user "$pkg"
-#     then
-#         print_status "${pkg} is installed in latest version $PIP_PACKAGE_VERSION_INSTALLED"
-#     else
-#         dot_install_pip3_user "$pkg"
-#     fi
-# }
 
 
 ## Install Python 2 PIP module in default location
@@ -787,78 +755,3 @@ dot_check_builddep()
     # Check if there is anything to install
     ! printf "%s\n""$ret_val" | grep -q "^Inst "
 }
-
-# # Check if the pip installed package in ~/.local is in the latest version
-# # Args:
-# #   $1 - Package name
-# # Return:
-# #   PIP_PACKAGE_VERSION_INSTALLED - the installed version of the package
-# #   PIP_PACKAGE_VERSION_LATEST - the latest version of the package
-# #   $? - 0 if latest is installed, 1 otherwise
-# dot_check_pip2_latest_user()
-# {
-#     local pkg=""  # To avoid "bad variable name" in dash for some values
-#     pkg="$1"
-
-#     # Get latest version
-#     PIP_PACKAGE_VERSION_LATEST=$(wget -qO- "https://pypi.python.org/pypi/${pkg}/json" | awk '/"version":/{gsub(/"|,/,"",$2); print $2}')
-
-#     # Get installed info
-#     local tmp=""
-#     tmp=$(pip2 show "$pkg")
-
-#     # Check if installed in user location
-#     local pkg_path=""
-#     pkg_path=$(printf "%s" "$tmp" | grep "Location:")
-#     pkg_path=${pkg_path#Location: }
-#     if [ "${pkg_path#${HOME}/.local}" = "$pkg_path" ]
-#     then
-#         PIP_PACKAGE_VERSION_INSTALLED=""
-#         return 1
-#     fi
-
-#     # Get installed version
-#     PIP_PACKAGE_VERSION_INSTALLED=$(printf "%s" "$tmp" | grep "Version:")
-#     PIP_PACKAGE_VERSION_INSTALLED=${PIP_PACKAGE_VERSION_INSTALLED#Version: }
-
-#     # Compare versions
-#     [ "$PIP_PACKAGE_VERSION_INSTALLED" = "$PIP_PACKAGE_VERSION_LATEST" ]
-# }
-
-
-# # Check if the pip installed package in ~/.local is in the latest version
-# # Args:
-# #   $1 - Package name
-# # Return:
-# #   PIP_PACKAGE_VERSION_INSTALLED - the installed version of the package
-# #   PIP_PACKAGE_VERSION_LATEST - the latest version of the package
-# #   $? - 0 if latest is installed, 1 otherwise
-# dot_check_pip3_latest_user()
-# {
-#     local pkg=""  # To avoid "bad variable name" in dash for some values
-#     pkg="$1"
-
-#     # Get latest version
-#     PIP_PACKAGE_VERSION_LATEST=$(wget -qO- "https://pypi.python.org/pypi/${pkg}/json" | awk '/"version":/{gsub(/"|,/,"",$2); print $2}')
-
-#     # Get installed info
-#     local tmp=""
-#     tmp=$(pip3 show "$pkg")
-
-#     # Check if installed in user location
-#     local pkg_path=""
-#     pkg_path=$(printf "%s" "$tmp" | grep "Location:")
-#     pkg_path=${pkg_path#Location: }
-#     if [ "${pkg_path#${HOME}/.local}" = "$pkg_path" ]
-#     then
-#         PIP_PACKAGE_VERSION_INSTALLED=""
-#         return 1
-#     fi
-
-#     # Get installed version
-#     PIP_PACKAGE_VERSION_INSTALLED=$(printf "%s" "$tmp" | grep "Version:")
-#     PIP_PACKAGE_VERSION_INSTALLED=${PIP_PACKAGE_VERSION_INSTALLED#Version: }
-
-#     # Compare versions
-#     [ "$PIP_PACKAGE_VERSION_INSTALLED" = "$PIP_PACKAGE_VERSION_LATEST" ]
-# }
