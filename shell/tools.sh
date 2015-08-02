@@ -703,11 +703,13 @@ dot_check_packages()
     do
         status=$(dpkg-query -W -f='${db:Status-Status}' $pkg 2> /dev/null || true)
         # Check if package missing
-        if [ -z "$status" ]
-        then
-            print_error "Package $pkg not found!"
-            exit 1
-        fi
+        # This is temporarily disabled since dpkg-query does not see some of the
+        # uninstalled packages e.g. libssl-dev
+        # if [ -z "$status" ]
+        # then
+        #     print_error "Package $pkg not found!"
+        #     exit 1
+        # fi
         # Check if package installed
         if [ "$status" != "installed" ]
         then
