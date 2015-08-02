@@ -476,9 +476,10 @@ dot_prepend_section_to_config()
 ##   $1 - Module name
 dot_install_pip2_user()
 {
-    print_status "Installing $@ for Python 2 in ~/.local"
+    args="$@"
+    print_status "Installing ${args} for Python 2 in ~/.local"
     set +e
-    out=$(pip2 install --user --upgrade "$@" 2>&1)
+    out=$(pip2 install --user --upgrade $args 2>&1)
     if [ $? -ne 0 ]
     then
         printf "%s\n" "$out"
@@ -494,9 +495,10 @@ dot_install_pip2_user()
 ##   $1 - Module name
 dot_install_pip3_user()
 {
-    print_status "Installing $@ for Python 3 in ~/.local"
+    args="$@"
+    print_status "Installing ${args} for Python 3 in ~/.local"
     set +e
-    out=$(pip3 install --user --upgrade "$@" 2>&1)
+    out=$(pip3 install --user --upgrade $args 2>&1)
     if [ $? -ne 0 ]
     then
         printf "%s\n" "$out"
@@ -512,9 +514,10 @@ dot_install_pip3_user()
 ##   $1 - Module name
 dot_install_pip2()
 {
-    print_status "Installing $@ for Python 2 in default location"
+    args="$@"
+    print_status "Installing ${args} for Python 2 in default location"
     set +e
-    out=$( pip2 install --upgrade "$@" 2>&1)
+    out=$( pip2 install --upgrade $args 2>&1)
     if [ $? -ne 0 ]
     then
         printf "%s\n" "$out"
@@ -530,9 +533,9 @@ dot_install_pip2()
 ##   $1 - Module name
 dot_install_pip3()
 {
-    print_status "Installing $@ for Python 3 in default location"
+    print_status "Installing ${args} for Python 3 in default location"
     set +e
-    out=$(pip3 install --upgrade "$@" 2>&1)
+    out=$(pip3 install --upgrade $args 2>&1)
     if [ $? -ne 0 ]
     then
         printf "%s\n" "$out"
@@ -549,6 +552,7 @@ dot_install_pip3()
 #   $@ - Package names
 dot_install_packages()
 {
+    args="$@"
     # Update package list the first time we install sth
     if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
     then
@@ -565,8 +569,8 @@ dot_install_packages()
         set -e
     fi
     # Install
-    print_status "Installing $@..."
-    sudo apt-get install -y --no-install-recommends $@
+    print_status "Installing ${args}..."
+    sudo apt-get install -y --no-install-recommends $args
 }
 
 
@@ -659,8 +663,9 @@ dot_is_min_ubuntu_version()
 #   $? - 1 if something is not installed, 0 otherwise
 dot_check_packages()
 {
+    args="$@"
     DOT_NOT_INSTALLED=""
-    for pkg in $@
+    for pkg in $args
     do
         installed=$(dpkg -l $pkg > /dev/null 2>&1 && echo "yes" || true)
         if [ -z "$installed" ]
