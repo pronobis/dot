@@ -476,7 +476,7 @@ dot_prepend_section_to_config()
 ##   $1 - Module name
 dot_install_pip2_user()
 {
-    args="$@"
+    local args="$@"
     print_status "Installing ${args} for Python 2 in ~/.local"
     set +e
     out=$(pip2 install --user --upgrade $args 2>&1)
@@ -495,7 +495,7 @@ dot_install_pip2_user()
 ##   $1 - Module name
 dot_install_pip3_user()
 {
-    args="$@"
+    local args="$@"
     print_status "Installing ${args} for Python 3 in ~/.local"
     set +e
     out=$(pip3 install --user --upgrade $args 2>&1)
@@ -514,7 +514,7 @@ dot_install_pip3_user()
 ##   $1 - Module name
 dot_install_pip2()
 {
-    args="$@"
+    local args="$@"
     print_status "Installing ${args} for Python 2 in default location"
     set +e
     out=$( pip2 install --upgrade $args 2>&1)
@@ -552,7 +552,7 @@ dot_install_pip3()
 #   $@ - Package names
 dot_install_packages()
 {
-    args="$@"
+    local args="$@"
     # Update package list the first time we install sth
     if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
     then
@@ -663,16 +663,18 @@ dot_is_min_ubuntu_version()
 #   $? - 1 if something is not installed, 0 otherwise
 dot_check_packages()
 {
-    args="$@"
+    local args="$@"
     DOT_NOT_INSTALLED=""
     for pkg in $args
     do
         status=$(dpkg-query -W -f='${db:Status-Status}' $pkg 2> /dev/null || true)
+        # Check if package missing
         if [ -z "$status" ]
         then
             print_error "Package $pkg not found!"
             exit 1
         fi
+        # Check if package installed
         if [ "$status" != "installed" ]
         then
             DOT_NOT_INSTALLED=${DOT_NOT_INSTALLED:+${DOT_NOT_INSTALLED} }$pkg
