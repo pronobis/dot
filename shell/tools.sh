@@ -476,7 +476,8 @@ dot_prepend_section_to_config()
 ##   $1 - Module name
 dot_install_pip2_user()
 {
-    local args="$@"
+    local args=""  # To avoid "bad variable name" in dash for some values
+    args="$@"
     print_status "Installing ${args} for Python 2 in ~/.local"
     set +e
     out=$(pip2 install --user --upgrade $args 2>&1)
@@ -495,7 +496,8 @@ dot_install_pip2_user()
 ##   $1 - Module name
 dot_install_pip3_user()
 {
-    local args="$@"
+    local args=""  # To avoid "bad variable name" in dash for some values
+    args="$@"
     print_status "Installing ${args} for Python 3 in ~/.local"
     set +e
     out=$(pip3 install --user --upgrade $args 2>&1)
@@ -514,7 +516,8 @@ dot_install_pip3_user()
 ##   $1 - Module name
 dot_install_pip2()
 {
-    local args="$@"
+    local args=""  # To avoid "bad variable name" in dash for some values
+    args="$@"
     print_status "Installing ${args} for Python 2 in default location"
     set +e
     out=$( pip2 install --upgrade $args 2>&1)
@@ -552,7 +555,8 @@ dot_install_pip3()
 #   $@ - Package names
 dot_install_packages()
 {
-    local args="$@"
+    local args=""  # To avoid "bad variable name" in dash for some values
+    args="$@"
     # Update package list the first time we install sth
     if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
     then
@@ -580,7 +584,8 @@ dot_install_packages()
 #   $1 - Package name
 dot_install_builddep()
 {
-    local pkg="$1"
+    local pkg=""  # To avoid "bad variable name" in dash for some values
+    pkg="$1"
     # Update package list the first time we install sth
     if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
     then
@@ -691,7 +696,8 @@ dot_is_min_ubuntu_version()
 #   $? - 1 if something is not installed, 0 otherwise
 dot_check_packages()
 {
-    local args="$@"
+    local args=""  # To avoid "bad variable name" in dash for some values
+    args="$@"
     DOT_NOT_INSTALLED=""
     for pkg in $args
     do
@@ -726,7 +732,8 @@ dot_check_packages()
 #   $? - 1 if something is not installed, 0 otherwise
 dot_check_builddep()
 {
-    local pkg="$1"
+    local pkg=""  # To avoid "bad variable name" in dash for some values
+    pkg="$1"
     local ret_val=""
     local ret_code=""
     # Get output from apt-get build-dep simulation
