@@ -667,8 +667,13 @@ dot_check_packages()
     DOT_NOT_INSTALLED=""
     for pkg in $args
     do
-        installed=$(dpkg -l $pkg > /dev/null 2>&1 && echo "yes" || true)
-        if [ -z "$installed" ]
+        status=$(dpkg-query -W -f='${db:Status-Status}' $pkg 2> /dev/null || true)
+        if [ -z "$status" ]
+        then
+            print_error "Package $pkg not found!"
+            exit 1
+        fi
+        if [ "$status" != "installed" ]
         then
             DOT_NOT_INSTALLED=${DOT_NOT_INSTALLED:+${DOT_NOT_INSTALLED} }$pkg
         fi
