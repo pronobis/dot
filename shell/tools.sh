@@ -574,6 +574,34 @@ dot_install_packages()
 }
 
 
+# Install build dependencies of the given system package
+# Currently works only for Debian-based systems.
+# Args:
+#   $1 - Package name
+dot_install_builddep()
+{
+    local pkg="$1"
+    # Update package list the first time we install sth
+    if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
+    then
+        print_status "Retrieving updated list of packages..."
+        set +e
+        out=$(sudo apt-get update 2>&1)
+        if [ $? -ne 0 ]
+        then
+            printf "%s\n" "$out"
+            print_error "Error while running apt-get update!"
+            exit 1
+        fi
+        DOT_MODULE_PACKAGES_UPDATED=1
+        set -e
+    fi
+    # Install
+    print_status "Installing build dependencies of ${pkg}..."
+    sudo apt-get build-dep -y --no-install-recommends $pkg
+}
+
+
 
 ## -------------------------------------------------------------
 ## Checks
@@ -683,4 +711,35 @@ dot_check_packages()
 
     # Return false if sth not installed
     [ -z "$DOT_NOT_INSTALLED" ]
+}
+
+
+# Check if build dependencies of the given package are installed.
+# Currently works only for Debian-based systems.
+# Note: We intentionally do not run apt-get update first, since
+# that would make the checking process very long. We assume that
+# this check can only be used for packages in standard repository
+# and that the dependencies do not change that much.
+# Args:
+#   $1 - Package names
+# Return:
+#   $? - 1 if something is not installed, 0 otherwise
+dot_check_builddep()
+{
+    local pkg="$1"
+    local ret_val=""
+    local ret_code=""
+    # Get output from apt-get build-dep simulation
+    set +e
+    ret_val=$(apt-get build-dep -s $pkg 2>/dev/null)
+    ret_code=$?
+    set -e
+    # Check if package missing
+    if [ "$ret_code" != "0" ]
+    then
+        print_error "Package $pkg not found!"
+        exit 1
+    fi
+    # Check if there is anything to install
+    ! printf "%s\n""$ret_val" | grep -q "^Inst "
 }
