@@ -351,6 +351,12 @@ cmd_status()
     get_modules
     get_max_module_name_len
 
+    # If no modules, set name len fixed
+    if [ "$MAX_NAME_LEN" = "0" ]
+    then
+        MAX_NAME_LEN=4
+    fi
+
     # Print header
     awk "BEGIN{OFS=\"-\"; NF=($MAX_NAME_LEN+3)
                printf \"+%s+---------+-----------+\n\",\$0
@@ -381,6 +387,16 @@ cmd_list()
     get_module_urls
     get_max_module_name_len
     get_max_module_url_len
+
+    # If no modules, set name len fixed
+    if [ "$MAX_NAME_LEN" = "0" ]
+    then
+        MAX_NAME_LEN=4
+    fi
+    if [ "$MAX_URL_LEN" = "0" ]
+    then
+        MAX_URL_LEN=6
+    fi
 
     # Print header
     awk "BEGIN{OFS=\"-\";
