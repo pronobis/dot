@@ -552,7 +552,7 @@ dot_install_packages()
     # Update package list the first time we install sth
     if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
     then
-        print_status "Retrieving the list of packages..."
+        print_status "Retrieving updated list of packages..."
         set +e
         out=$(sudo apt-get update 2>&1)
         if [ $? -ne 0 ]
