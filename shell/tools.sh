@@ -59,34 +59,34 @@ print_header()
     set_format ${BOLD}${LIGHT_BLUE}
     echo
     echo "-------------------------------"
-    printf "$1\n"
+    printf "$1\n" "$2"
     echo "-------------------------------"
     clear_format
 }
 
 print_info()
 {
-    printf "$1\n"
+    printf "$1\n" "$2"
 }
 
 print_status()
 {
     set_format ${LIGHT_GREEN}
-    printf "$1\n"
+    printf "$1\n" "$2"
     clear_format
 }
 
 print_warning()
 {
     set_format ${YELLOW}
-    printf "WARNING: $1\n"
+    printf "WARNING: $1\n" "$2"
     clear_format
 }
 
 print_error()
 {
     set_format ${LIGHT_RED}
-    printf "ERROR: $1\n" 1>&2
+    printf "ERROR: $1\n" "$2" 1>&2
     clear_format
 }
 
@@ -476,7 +476,7 @@ dot_install_pip2_user()
     out=$(pip2 install --user --upgrade "$@" 2>&1)
     if [ $? -ne 0 ]
     then
-        printf "$out\n"
+        printf "%s\n" "$out"
         print_error "Error while running pip!"
         exit 1
     fi
@@ -494,7 +494,7 @@ dot_install_pip3_user()
     out=$(pip3 install --user --upgrade "$@" 2>&1)
     if [ $? -ne 0 ]
     then
-        printf "$out\n"
+        printf "%s\n" "$out"
         print_error "Error while running pip!"
         exit 1
     fi
@@ -512,7 +512,7 @@ dot_install_pip2()
     out=$( pip2 install --upgrade "$@" 2>&1)
     if [ $? -ne 0 ]
     then
-        printf "$out\n"
+        printf "%s\n" "$out"
         print_error "Error while running pip!"
         exit 1
     fi
@@ -530,7 +530,7 @@ dot_install_pip3()
     out=$(pip3 install --upgrade "$@" 2>&1)
     if [ $? -ne 0 ]
     then
-        printf "$out\n"
+        printf "%s\n" "$out"
         print_error "Error while running pip!"
         exit 1
     fi
@@ -544,13 +544,23 @@ dot_install_pip3()
 #   $@ - Package names
 dot_install_packages()
 {
-    # Update package info the first time we install sth
+    # Update package list the first time we install sth
     if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
     then
-        sudo apt-get update
+        print_status "Retrieving the list of packages..."
+        set +e
+        out=$(sudo apt-get update 2>&1)
+        if [ $? -ne 0 ]
+        then
+            printf "%s\n" "$out"
+            print_error "Error while running apt-get update!"
+            exit 1
+        fi
         DOT_MODULE_PACKAGES_UPDATED=1
+        set -e
     fi
     # Install
+    print_status "Installing $@..."
     sudo apt-get install -y --no-install-recommends $@
 }
 
