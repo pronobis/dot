@@ -231,6 +231,36 @@ dot_link_user_root()
 }
 
 
+# A generic link function for files in user's home folder
+# with some convenience and safety features
+# Args:
+#   $1 - Target relative to $HOME
+#   $2 - Link path relative to $HOME
+dot_link_user()
+{
+    local from=""
+    local to=""
+    from="$HOME/$1"
+    to="$HOME/$2"
+    if [ ! -e "$from" ]
+    then
+        print_warning "Link target $from not found. Link will still be created."
+    fi
+
+    mkdir -p $(dirname "$to")
+    if [ -d "$to" ] && [ ! -L "$to" ]
+    then # Do not overwrite existing folders
+        print_error "$to already exists and is a directory!"
+        exit 1
+    fi
+    if [ -e "$to" ] || [ -h "$to" ]
+    then # To prevent creation of a link on another link (e.g. link to folder)
+        rm "$to"
+    fi
+    ln -s "$from" "$to"
+}
+
+
 
 # Make a copy of config files
 # Args:
