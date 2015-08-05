@@ -720,6 +720,7 @@ dot_is_min_ubuntu_version()
 
 
 # Check if given system packages are installed.
+# If package is not found, it should be assumed uninstalled.
 # Currently works only for Debian-based systems.
 # Args:
 #   $@ - Package names
@@ -734,15 +735,6 @@ dot_check_packages()
     for pkg in $args
     do
         status=$(dpkg-query -W -f='${db:Status-Status}' $pkg 2> /dev/null || true)
-        # Check if package missing
-        # This is disabled since dpkg-query is not aware of uninstalled packages
-        # that are not in the dependencies of any installed package. If detecting
-        # missing packages becomes important, apt-cache should be used for that.
-        # if [ -z "$status" ]
-        # then
-        #     print_error "Package $pkg not found!"
-        #     exit 1
-        # fi
         # Check if package installed
         if [ "$status" != "installed" ]
         then
