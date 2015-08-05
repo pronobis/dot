@@ -581,14 +581,9 @@ dot_install_pip3()
 }
 
 
-# Install given system packages
-# Currently works only for Debian-based systems.
-# Args:
-#   $@ - Package names
-dot_install_packages()
+## Retrieve updated package list if not yet retrieved
+dot_update_package_list()
 {
-    local args=""  # To avoid "bad variable name" in dash for some values
-    args="$@"
     # Update package list the first time we install sth
     if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
     then
@@ -604,6 +599,19 @@ dot_install_packages()
         DOT_MODULE_PACKAGES_UPDATED=1
         set -e
     fi
+}
+
+
+# Install given system packages
+# Currently works only for Debian-based systems.
+# Args:
+#   $@ - Package names
+dot_install_packages()
+{
+    local args=""  # To avoid "bad variable name" in dash for some values
+    args="$@"
+    # Update package list
+    dot_update_package_list
     # Install
     print_status "Installing ${args}..."
     sudo apt-get install -y --no-install-recommends $args
@@ -618,21 +626,8 @@ dot_install_builddep()
 {
     local pkg=""  # To avoid "bad variable name" in dash for some values
     pkg="$1"
-    # Update package list the first time we install sth
-    if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
-    then
-        print_status "Retrieving updated list of packages..."
-        set +e
-        out=$(sudo apt-get update 2>&1)
-        if [ $? -ne 0 ]
-        then
-            printf "%s\n" "$out"
-            print_error "Error while running apt-get update!"
-            exit 1
-        fi
-        DOT_MODULE_PACKAGES_UPDATED=1
-        set -e
-    fi
+    # Update package list
+    dot_update_package_list
     # Install
     print_status "Installing build dependencies of ${pkg}..."
     sudo apt-get build-dep -y --no-install-recommends $pkg
