@@ -120,6 +120,33 @@ yes_no_question()
 ## -------------------------------------------------------------
 ## Installing
 ## -------------------------------------------------------------
+# Get an appropriate su/sudo command or nothing if running as root
+# Return:
+#   DOT_SU - the su command
+dot_get_su()
+{
+    uid="$(id -u)"  # The only way that works with dash
+    if [ "$uid" = "0" ] || [ "$HOME" = "/root" ] || [ "$USER" = "root" ] || [ "$(whoami)" = "root" ]
+    then
+        # Running as root, don't use su
+        DOT_SU=""
+    else
+        if dot_check_cmd sudo
+        then
+            # Prefer sudo if available
+            DOT_SU="sudo"
+        elif dot_check_cmd su
+        then
+            # Use su if available
+            DOT_SU="su"
+        else
+            # Fallback to nothing
+            DOT_SU=""
+        fi
+    fi
+}
+
+
 # Create a link to a given binary
 # Args:
 #   $1 - Dot root dir
@@ -178,23 +205,25 @@ dot_link_config()
 #   $2 - Wildcard describing the path to config files relative to /
 dot_link_config_sys()
 {
+    dot_get_su
+
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config-sys/$2
     do
         i=${i#$1/config-sys/}
         if [ -e "$1/config-sys/$i" ]
         then
-            sudo mkdir -p $(dirname "/$i")
-            if sudo test -d "/$i" && sudo test ! -L "/$i"
+            $DOT_SU mkdir -p $(dirname "/$i")
+            if $DOT_SU test -d "/$i" && $DOT_SU test ! -L "/$i"
             then # Do not overwrite existing folders
                 print_error "/${i} already exists and is a directory!"
                 exit 1
             fi
-            if sudo test -e "/$i" || sudo test -h "/$i"
+            if $DOT_SU test -e "/$i" || $DOT_SU test -h "/$i"
             then # To prevent creation of a link on another link (e.g. link to folder)
-                sudo rm "/$i"
+                $DOT_SU rm "/$i"
             fi
-            sudo ln -s "$1/config-sys/$i" "/$i"
+            $DOT_SU ln -s "$1/config-sys/$i" "/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -207,23 +236,25 @@ dot_link_config_sys()
 #   $1 - Wildcard describing the path to config files relative to user's home
 dot_link_user_root()
 {
+    dot_get_su
+
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $HOME/$1
     do
         i=${i#$HOME/}
         if [ -e "$HOME/$i" ]
         then
-            sudo mkdir -p $(dirname "/root/$i")
-            if sudo test -d "/root/$i" && sudo test ! -L "/root/$i"
+            $DOT_SU mkdir -p $(dirname "/root/$i")
+            if $DOT_SU test -d "/root/$i" && $DOT_SU test ! -L "/root/$i"
             then # Do not overwrite existing folders
                 print_error "/root/${i} already exists and is a directory!"
                 exit 1
             fi
-            if sudo test -e "/root/$i" || sudo test -h "/root/$i"
+            if $DOT_SU test -e "/root/$i" || $DOT_SU test -h "/root/$i"
             then # To prevent creation of a link on another link (e.g. link to folder)
-                sudo rm "/root/$i"
+                $DOT_SU rm "/root/$i"
             fi
-            sudo ln -s "$HOME/$i" "/root/$i"
+            $DOT_SU ln -s "$HOME/$i" "/root/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -298,23 +329,25 @@ dot_copy_config()
 #   $2 - Wildcard describing the path to config files relative to $HOME
 dot_copy_config_sys()
 {
+    dot_get_su
+
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config-sys/$2
     do
         i=${i#$1/config-sys/}
         if [ -e "$1/config-sys/$i" ]
         then
-            sudo mkdir -p $(dirname "/$i")
-            if sudo test -d "/$i" && sudo test ! -L "/$i"
+            $DOT_SU mkdir -p $(dirname "/$i")
+            if $DOT_SU test -d "/$i" && $DOT_SU test ! -L "/$i"
             then # Do not overwrite existing folders
                 print_error "/${i} already exists and is a directory!"
                 exit 1
             fi
-            if sudo test -e "/$i" || sudo test -h "/$i"
+            if $DOT_SU test -e "/$i" || $DOT_SU test -h "/$i"
             then # To prevent copying into a link
-                sudo rm "/$i"
+                $DOT_SU rm "/$i"
             fi
-            sudo cp -d "$1/config-sys/$i" "/$i"
+            $DOT_SU cp -d "$1/config-sys/$i" "/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -363,28 +396,30 @@ dot_fill_config()
 #   $2 - Wildcard describing the path to config files relative to /
 dot_fill_config_sys()
 {
+    dot_get_su
+
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in $1/config-sys/$2
     do
         i=${i#$1/config-sys/}
         if [ -e "$1/config-sys/$i" ]
         then
-            sudo mkdir -p $(dirname "/$i")
-            if sudo test -d "/$i" && sudo test ! -L "/$i"
+            $DOT_SU mkdir -p $(dirname "/$i")
+            if $DOT_SU test -d "/$i" && $DOT_SU test ! -L "/$i"
             then # Do not overwrite existing folders
                 print_error "/${i} already exists and is a directory!"
                 exit 1
             fi
-            if sudo test -e "/$i" || sudo test -h "/$i"
+            if $DOT_SU test -e "/$i" || $DOT_SU test -h "/$i"
             then # To prevent copying into a link
-                sudo rm "/$i"
+                $DOT_SU rm "/$i"
             fi
             # envsubst < "$1/config-sys/$i" > "/$i"  # Does not work with busybox
             sed \
                 -e 's#${HOME}#'"${HOME}"'#' \
                 -e 's#${DOT_DIR}#'"${DOT_DIR}"'#' \
                 -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#' \
-                "$1/config-sys/$i" | sudo tee "/$i" > /dev/null
+                "$1/config-sys/$i" | $DOT_SU tee "/$i" > /dev/null
         else
             print_warning "No config file $i found!"
         fi
@@ -584,12 +619,14 @@ dot_install_pip3()
 ## Retrieve updated package list if not yet retrieved
 dot_update_package_list()
 {
+    dot_get_su
+
     # Update package list the first time we install sth
     if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
     then
         print_status "Retrieving updated list of packages..."
         set +e
-        out=$(sudo apt-get update 2>&1)
+        out=$($DOT_SU apt-get update 2>&1)
         if [ $? -ne 0 ]
         then
             printf "%s\n" "$out"
@@ -608,13 +645,15 @@ dot_update_package_list()
 #   $@ - Package names
 dot_install_packages()
 {
+    dot_get_su
+
     local args=""  # To avoid "bad variable name" in dash for some values
     args="$@"
     # Update package list
     dot_update_package_list
     # Install
     print_status "Installing ${args}..."
-    sudo apt-get install -y --no-install-recommends $args
+    $DOT_SU apt-get install -y --no-install-recommends $args
 }
 
 
@@ -624,13 +663,15 @@ dot_install_packages()
 #   $1 - Package name
 dot_install_builddep()
 {
+    dot_get_su
+
     local pkg=""  # To avoid "bad variable name" in dash for some values
     pkg="$1"
     # Update package list
     dot_update_package_list
     # Install
     print_status "Installing build dependencies of ${pkg}..."
-    sudo apt-get build-dep -y --no-install-recommends $pkg
+    $DOT_SU apt-get build-dep -y --no-install-recommends $pkg
 }
 
 
@@ -638,29 +679,6 @@ dot_install_builddep()
 ## -------------------------------------------------------------
 ## Checks
 ## -------------------------------------------------------------
-
-# Check if the user is root
-dot_check_root()
-{
-    uid="$(id -u)"  # The only way that works with dash
-    if [ "$HOME" != "/root" ] || [ "$USER" != "root" ] || [ "$uid" != "0" ]
-    then
-        print_error "This script must be run as root!"
-        exit 1
-    fi
-}
-
-# Check if the user is root
-dot_check_not_root()
-{
-    uid="$(id -u)"  # The only way that works with dash
-    if [ "$uid" = "0" ] || [ "$HOME" = "/root" ] || [ "$USER" = "root" ] || [ "$(whoami)" = "root" ]
-    then
-        print_error "This script should not be run as root!"
-        exit 1
-    fi
-}
-
 
 # Check if the user is root
 dot_check_root()
@@ -772,4 +790,22 @@ dot_check_builddep()
     fi
     # Check if there is anything to install
     ! printf "%s\n""$ret_val" | grep -q "^Inst "
+}
+
+
+# Check if the given command exists
+# Args:
+#   $1 - command name
+# Return:
+#   $? - 0 if exists, 1 otherwise
+dot_check_cmd()
+{
+    # 'type' seems to work as expected in bash/dash/ash(busybox)
+    # 'command' does not work in ash/busybox
+    if type >/dev/null 2>&1
+    then
+        return 0
+    else
+        return 1
+    fi
 }
