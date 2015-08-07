@@ -278,7 +278,7 @@ cmd_add()
             all_deps=${all_deps:+${all_deps} }$DEPENDENCIES
             print_status "Done!"
         else
-            print_status "Ignoring installed dependency $url."
+            print_status "Dependency $url is already installed."
         fi
     done
 }
