@@ -657,6 +657,22 @@ dot_install_packages()
 }
 
 
+# Remove given system packages
+# Currently works only for Debian-based systems.
+# Args:
+#   $@ - Package names
+dot_remove_packages()
+{
+    dot_get_su
+
+    local args=""  # To avoid "bad variable name" in dash for some values
+    args="$@"
+    # Remove
+    print_status "Removing ${args}..."
+    $DOT_SU apt-get remove $args
+}
+
+
 # Install build dependencies of the given system package
 # Currently works only for Debian-based systems.
 # Args:
@@ -745,6 +761,7 @@ dot_check_packages()
     local args=""  # To avoid "bad variable name" in dash for some values
     args="$@"
     DOT_NOT_INSTALLED=""
+    DOT_INSTALLED=""
     for pkg in $args
     do
         status=$(dpkg-query -W -f='${db:Status-Status}' $pkg 2> /dev/null || true)
@@ -753,6 +770,8 @@ dot_check_packages()
         if [ "$status" != "installed" ] && [ "$status" != "installedinstalled" ]
         then
             DOT_NOT_INSTALLED=${DOT_NOT_INSTALLED:+${DOT_NOT_INSTALLED} }$pkg
+        else
+            DOT_INSTALLED=${DOT_INSTALLED:+${DOT_INSTALLED} }$pkg
         fi
     done
 
