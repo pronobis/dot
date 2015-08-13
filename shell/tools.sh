@@ -669,7 +669,7 @@ dot_remove_packages()
     args="$@"
     # Remove
     print_status "Removing ${args}..."
-    $DOT_SU apt-get remove $args
+    $DOT_SU apt-get purge $args
 }
 
 
