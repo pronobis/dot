@@ -821,7 +821,7 @@ dot_check_cmd()
 {
     # 'type' seems to work as expected in bash/dash/ash(busybox)
     # 'command' does not work in ash/busybox
-    if type >/dev/null 2>&1
+    if type $1 >/dev/null 2>&1
     then
         return 0
     else
