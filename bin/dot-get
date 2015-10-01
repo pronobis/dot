@@ -52,7 +52,7 @@ get_modules()
     for i in `ls $DOT_DIR/modules | sort`
     do
         p="$DOT_DIR/modules/$i"
-        if [ -d "$p" ] && [ -f $p/.git/config ]
+        if [ -d "$p" ] && [ $(basename "$p") != "temp_clone" ] && [ -f $p/.git/config ]
         then
             DOT_MODULES=${DOT_MODULES:+${DOT_MODULES}:}$i
         fi
