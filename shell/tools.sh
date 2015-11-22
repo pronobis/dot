@@ -117,6 +117,23 @@ yes_no_question()
 }
 
 
+## Wait for any user input
+wait_for_key()
+{
+    printf "${BOLD}${YELLOW}Press any key to continue...${NO_FORMAT} "
+    old_stty_cfg=$(stty -g)
+    stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
+    if [ "$answer" = $(printf \\003) ]
+    then # ^C detected
+        printf "${BOLD}${LIGHT_RED}interrupted${NO_FORMAT}\n"
+        exit 1
+    else # any other key
+        printf "\n"
+        return 1
+    fi
+}
+
+
 ## -------------------------------------------------------------
 ## Installing
 ## -------------------------------------------------------------
