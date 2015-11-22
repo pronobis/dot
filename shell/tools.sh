@@ -129,7 +129,6 @@ wait_for_key()
         exit 1
     else # any other key
         printf "\n"
-        return 1
     fi
 }
 
@@ -574,6 +573,7 @@ dot_prepend_section_to_config()
 dot_install_pip2_user()
 {
     local args=""  # To avoid "bad variable name" in dash for some values
+    local out=""
     args="$@"
     print_status "Installing ${args} for Python 2 in ~/.local"
     set +e
@@ -594,6 +594,7 @@ dot_install_pip2_user()
 dot_install_pip3_user()
 {
     local args=""  # To avoid "bad variable name" in dash for some values
+    local out=""
     args="$@"
     print_status "Installing ${args} for Python 3 in ~/.local"
     set +e
@@ -614,6 +615,7 @@ dot_install_pip3_user()
 dot_install_pip2()
 {
     local args=""  # To avoid "bad variable name" in dash for some values
+    local out=""
     args="$@"
     print_status "Installing ${args} for Python 2 in default location"
     set +e
@@ -634,6 +636,7 @@ dot_install_pip2()
 dot_install_pip3()
 {
     local args=""  # To avoid "bad variable name" in dash for some values
+    local out=""
     args="$@"
     print_status "Installing ${args} for Python 3 in default location"
     set +e
