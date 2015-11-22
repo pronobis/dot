@@ -136,6 +136,30 @@ wait_for_key()
 ## -------------------------------------------------------------
 ## Installing
 ## -------------------------------------------------------------
+# Execute the command and inhibit the output unless an error
+# occurs, in which case print stdout and stderr of the original
+# command to stdout. Return the original exit status.
+# Args:
+#   $@ - command with arguments
+# Return:
+#   $? - command exit status
+dot_inhibit()
+{
+    local out=""  # To avoid "bad variable name" in dash for some values
+    local ret_status=""
+    set +e
+    out=$("$@" 2>&1)
+    ret_status=$?
+    if [ $ret_status -ne 0 ]
+    then
+        printf "%s\n" "$out"
+        print_error "Command '%s' failed!\n" "$@"
+    fi
+    set -e
+    return $ret_status
+}
+
+
 # Get an appropriate su/sudo command or nothing if running as root
 # Return:
 #   DOT_SU - the su command
@@ -572,19 +596,12 @@ dot_prepend_section_to_config()
 ##   $1 - Module name
 dot_install_pip2_user()
 {
-    local args=""  # To avoid "bad variable name" in dash for some values
-    local out=""
-    args="$@"
-    print_status "Installing ${args} for Python 2 in ~/.local"
-    set +e
-    out=$(pip2 install --user --upgrade $args 2>&1)
-    if [ $? -ne 0 ]
+    print_status "Installing $@ for Python 2 in ~/.local"
+    if ! dot_inhibit pip2 install --user --upgrade "$@"
     then
-        printf "%s\n" "$out"
         print_error "Error while running pip!"
         exit 1
     fi
-    set -e
 }
 
 
@@ -593,19 +610,12 @@ dot_install_pip2_user()
 ##   $1 - Module name
 dot_install_pip3_user()
 {
-    local args=""  # To avoid "bad variable name" in dash for some values
-    local out=""
-    args="$@"
-    print_status "Installing ${args} for Python 3 in ~/.local"
-    set +e
-    out=$(pip3 install --user --upgrade $args 2>&1)
-    if [ $? -ne 0 ]
+    print_status "Installing $@ for Python 3 in ~/.local"
+    if ! dot_inhibit pip3 install --user --upgrade "$@"
     then
-        printf "%s\n" "$out"
         print_error "Error while running pip!"
         exit 1
     fi
-    set -e
 }
 
 
@@ -614,19 +624,12 @@ dot_install_pip3_user()
 ##   $1 - Module name
 dot_install_pip2()
 {
-    local args=""  # To avoid "bad variable name" in dash for some values
-    local out=""
-    args="$@"
-    print_status "Installing ${args} for Python 2 in default location"
-    set +e
-    out=$( pip2 install --upgrade $args 2>&1)
-    if [ $? -ne 0 ]
+    print_status "Installing $@ for Python 2 in default location"
+    if ! dot_inhibit pip2 install --upgrade "$@"
     then
-        printf "%s\n" "$out"
         print_error "Error while running pip!"
         exit 1
     fi
-    set -e
 }
 
 
@@ -635,19 +638,12 @@ dot_install_pip2()
 ##   $1 - Module name
 dot_install_pip3()
 {
-    local args=""  # To avoid "bad variable name" in dash for some values
-    local out=""
-    args="$@"
-    print_status "Installing ${args} for Python 3 in default location"
-    set +e
-    out=$(pip3 install --upgrade $args 2>&1)
-    if [ $? -ne 0 ]
+    print_status "Installing $@ for Python 3 in default location"
+    if ! dot_inhibit pip3 install --upgrade "$@"
     then
-        printf "%s\n" "$out"
         print_error "Error while running pip!"
         exit 1
     fi
-    set -e
 }
 
 
@@ -660,16 +656,12 @@ dot_update_package_list()
     if [ -z $DOT_MODULE_PACKAGES_UPDATED ]
     then
         print_status "Retrieving updated list of packages..."
-        set +e
-        out=$($DOT_SU apt-get update 2>&1)
-        if [ $? -ne 0 ]
+        if ! dot_inhibit $DOT_SU apt-get update
         then
-            printf "%s\n" "$out"
             print_error "Error while running apt-get update!"
             exit 1
         fi
         DOT_MODULE_PACKAGES_UPDATED=1
-        set -e
     fi
 }
 
@@ -879,6 +871,7 @@ dot_check_cmd()
 #   $? - 0 if installed, 1 otherwise
 dot_get_package_version()
 {
+    # This forgets the dpkg exit status, but we rely on the output only anyway
     DOT_PACKAGE_VERSION=$(dpkg -s "$1" 2>/dev/null | grep "Version:" | sed 's/Version: //g')
 
     # Return false if  version retrieved
