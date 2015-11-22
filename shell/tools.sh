@@ -844,7 +844,7 @@ dot_check_builddep()
         exit 1
     fi
     # Check if there is anything to install
-    ! printf "%s\n""$ret_val" | grep -q "^Inst "
+    ! printf "%s\n" "$ret_val" | grep -q "^Inst "
 }
 
 
