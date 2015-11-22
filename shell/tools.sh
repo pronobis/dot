@@ -309,6 +309,21 @@ dot_link_user()
 }
 
 
+# Create a directory in the user's home folder
+# Args:
+#   $1 - Path relative to $HOME
+dot_mkdir_user()
+{
+    local pth=""
+    pth="$HOME/$1"
+    if [ -f "$pth" ]
+    then
+        print_error "Target $pth exists and is a file!"
+        exit 1
+    fi
+    mkdir -p "$pth"
+}
+
 
 # Make a copy of config files
 # Args:
