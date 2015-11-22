@@ -728,7 +728,7 @@ dot_install_builddep()
 ## Checks
 ## -------------------------------------------------------------
 
-# Check if the user is root
+# Check if the current user is root and ask for confirmation.
 dot_check_root()
 {
     uid="$(id -u)"  # The only way that works with dash
@@ -743,7 +743,7 @@ dot_check_root()
 }
 
 
-# Check if virtualenv is active
+# Check if Python virtualenv is active and exit if it is the case.
 dot_check_virtualenv()
 {
     if [ -n "$VIRTUAL_ENV" ]
@@ -754,7 +754,7 @@ dot_check_virtualenv()
 }
 
 
-# Check if on Ubuntu
+# Check if we are on Ubuntu and exit otherwise.
 dot_check_ubuntu()
 {
     dist_id=$(lsb_release -si 2>/dev/null || true)
@@ -766,7 +766,11 @@ dot_check_ubuntu()
 }
 
 
-# Return true if on Ubuntu with version at least ver
+# Check if we are on Ubuntu with version >= given.
+# Args:
+#   $1 - Min Ubuntu version
+# Return:
+#   $? - 0 if version number >= given, 1 otherwise
 dot_is_min_ubuntu_version()
 {
     dist_id=$(lsb_release -si 2>/dev/null || true)
