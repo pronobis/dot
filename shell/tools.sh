@@ -685,7 +685,7 @@ dot_install_packages()
     dot_update_package_list
     # Install
     print_status "Installing ${args}..."
-    $DOT_SU apt-get install -y --no-install-recommends $args
+    $DOT_SU apt-get install --no-install-recommends $args
 }
 
 
@@ -719,7 +719,7 @@ dot_install_builddep()
     dot_update_package_list
     # Install
     print_status "Installing build dependencies of ${pkg}..."
-    $DOT_SU apt-get build-dep -y --no-install-recommends $pkg
+    $DOT_SU apt-get build-dep --no-install-recommends $pkg
 }
 
 
