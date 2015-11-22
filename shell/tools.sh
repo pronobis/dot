@@ -864,3 +864,17 @@ dot_check_cmd()
         return 1
     fi
 }
+
+
+# Return version of the given package if installed
+# or an empty string if not installed.
+# Args:
+#   $1 - package name
+# Return:
+#   $DOT_PACKAGE_VERSION - version of the package
+#   $? - 0 if installed, 1 otherwise
+dot_get_package_version()
+{
+    # $() will preserve the exit status
+    DOT_PACKAGE_VERSION=$(dpkg -s "$1" 2>/dev/null | grep "Version:" | sed 's/Version: //g')
+}
