@@ -30,8 +30,7 @@ Each module is typically stored in its own repo which will be cloned into the `m
     * `setup-interactive.sh` - Executed for interactive, login and non-login sessions for any POSIX shell.
 * `systems` - Systems provided by the module. See the systems description below.
 * `tmp` - Temporary folder used for storing files during module installation. You can safely delete the files/folders there after the installation finishes.
-* `install.sh` - Installation script installing local user configuration.
-* `install-sys.sh` - Installation script installing global system configuration. Requires root/sudo access.
+* `install.sh` - Installation script installing user configuration and packages.
 
 ## Systems
 
