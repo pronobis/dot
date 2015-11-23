@@ -1,11 +1,19 @@
 # dot
 
-Ubuntu-oriented dot file management system providing:
-* modular architecture with modules for specific configuration sets (e.g. for your public terminal configuration, for your public GUI configuration, for your private laptop configuration etc.) that can be stacked on top of each other
-* console GUI tools for selecting configuration subsets provided by the modules (called systems) that can modify your environment variables and automatically run init scripts
-* console GUI menu for running commands that can be customized for each system
+Versatile configuration (dot files) and package installation system for POSIX (currently, with particular focus on Ubuntu and embedded Linux). Designed to support wide range of custom configurations, yet making package and dot file installation clean and easy. Offers:
+* modular architecture with modules for specific configuration sets (e.g. for your public terminal configuration, for your public GUI configuration, for your private laptop configuration etc.) and dependencies between the modules
+* scripts for automatic module downloading and updating from git repositories
+* console GUI tools for selecting configuration subsets provided by the modules (called systems) that can modify your environment variables in real time and automatically run init scripts
+* console GUI menu for running custom commands that can be customized for each system
 
 Check out the default module provided with this package for inspiration.
+
+
+
+## How it Works?
+
+The basic idea behind dot is simple. You clone the dot repository into a convenient location (e.g. `~/.dot`) and run `install.sh`. This will add one line to your `.profile` and `.bashrc` files. No other fiels are modified by dot itself. Then, you create your own configuration sets in the `modules` folder. Each module should be stored in its own git repository. The name of the module determines it's priority as it is often the case for Linux `.d` folders. Using number prefixes such as `10_dot-module-my` is a good idea. Your module is detected and used automatically.
+
 
 ## Module Structure
 
@@ -44,6 +52,6 @@ Please see the empty system in the default module for the definition of a system
 1. Clone the repository to a convenient location e.g. `~/.dot` using `git clone git@github.com:pronobis/dot.git ~/.dot`
 2. Go to that directory `cd ~/.dot` and run `./install.sh`
 3. If you have access to sudo/root and want to install system-wide module configuration, run `sudo -EH ./install.sh`. Don't forget about the `-EH` options!
-4. Clone/install your modules in `./modules`. The name of the module determines it's priority as it is often the case in Ubuntu `.d` folders. Using number prefixes such as `10_dot-module-my` is a good idea.
+4. Clone/install your modules in `./modules`. 
 5. Install each module. This typically means running (optionally) `sudo -EH ./install-sys.sh` of that module for installing global system configuration and `install.sh` for installing local user configuration. Please note that some modules might require system-wide dependency installation before user local installation can be performed.
 6. Re-login
