@@ -871,9 +871,16 @@ dot_check_cmd()
 #   $? - 0 if installed, 1 otherwise
 dot_get_package_version()
 {
-    # This forgets the dpkg exit status, but we rely on the output only anyway
-    DOT_PACKAGE_VERSION=$(dpkg -s "$1" 2>/dev/null | grep "Version:" | sed 's/Version: //g')
-
-    # Return false if  version retrieved
-    [ -n "$DOT_PACKAGE_VERSION" ]
+    local out=""
+    local version=""
+    local status=""
+    out=$(dpkg-query -W -f='${db:Status-Status}|${Version}' "$1" 2> /dev/null || true)
+    status=${out%|*}
+    version=${out#*|}
+    if [ "$status" = "installed" ] || [ "$status" = "installedinstalled" ]
+    then
+        DOT_PACKAGE_VERSION=$version
+        return 0
+    fi
+    return 1
 }
