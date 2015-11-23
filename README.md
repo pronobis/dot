@@ -48,6 +48,8 @@ Please see the empty system in the default module for the definition of a system
 
 ## Installation
 
+The instructions below are outdated. Module installation has been greatly simplified thanks to the `dot-get` script.
+
 0. Close any app that you will be re-configuring by changing its config files.
 1. Clone the repository to a convenient location e.g. `~/.dot` using `git clone git@github.com:pronobis/dot.git ~/.dot`
 2. Go to that directory `cd ~/.dot` and run `./install.sh`
