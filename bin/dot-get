@@ -36,9 +36,10 @@ print_usage()
     echo "  update  - Update a module. Usage:"
     echo "              dot-get update [<name>]"
     echo "            Arguments: "
-    echo "              <name> - Module dir name or it's portion."
+    echo "              <name> - Module dir name or a wildcard."
     echo "                       If not given, use the module in the current directory."
-    echo "                       Can be 'all' in which case all modules are updated."
+    echo "                       Use 'dot' to update dot."
+    echo "                       Use 'all' to update all modules and dot itself."
 }
 
 
@@ -80,7 +81,15 @@ get_module_urls()
 is_updated()
 {
     local name=$1
-    cd "$DOT_DIR/modules/$name"
+    
+    # Are we checking a module or dot itself?
+    if [ "$name" = "dot" ]
+    then
+        cd "$DOT_DIR"
+    else
+        cd "$DOT_DIR/modules/$name"
+    fi
+
     local cur_branch=$(git rev-parse --abbrev-ref @{u})
     local sha_remote=$(git ls-remote ${cur_branch%/*} ${cur_branch#*/} | cut -f1)
     local sha_local=$(git rev-parse HEAD)
@@ -97,11 +106,19 @@ is_installed()
 {
     local name=$1
 
+    # Special case for dot itself
+    if [ "$name" = "dot" ]
+    then
+        # Return 1 since this script assumes dot is installed
+        echo "1"
+        return 0
+    fi
+
     # Read installed sha
     local sha_installed=""
-    if [ -f $DOT_DIR/modules/$name/tmp/installed ]
+    if [ -f "$DOT_DIR/modules/$name/tmp/installed" ]
     then
-        sha_installed=$(cat $DOT_DIR/modules/$name/tmp/installed)
+        sha_installed=$(cat "$DOT_DIR/modules/$name/tmp/installed")
         sha_installed="${sha_installed#"${sha_installed%%[![:space:]]*}"}"
         sha_installed="${sha_installed%"${sha_installed##*[![:space:]]}"}"
     fi
@@ -299,7 +316,11 @@ cmd_update()
         if [ "$name" = "all" ]
         then
             # Get all modules
-            modules=$DOT_MODULES
+            modules="dot:$DOT_MODULES"
+        elif [ "$name" = "dot" ]
+        then
+            # dot itself
+            modules="dot"
         else
             # Try matching the modules to name
             local IFS=':'
@@ -333,10 +354,18 @@ cmd_update()
     local IFS=':'
     for i in $modules
     do
-        print_status "Updating module $i..."
-        cd "$DOT_DIR/modules/$i"
-        git pull --recurse-submodules
-        git submodule update --recursive
+        if [ "$i" = "dot" ]
+        then
+            print_status "Updating dot..."
+            cd "$DOT_DIR"
+            git pull --recurse-submodules
+            git submodule update --recursive
+        else
+            print_status "Updating module $i..."
+            cd "$DOT_DIR/modules/$i"
+            git pull --recurse-submodules
+            git submodule update --recursive
+        fi
     done
 
 }
@@ -365,7 +394,7 @@ cmd_status()
 
     # Get results
     local IFS=':'
-    for i in $DOT_MODULES
+    for i in dot $DOT_MODULES
     do
         # Since awk has problems with terminal escape \e in printf, we just print char 27
         echo "$i $(is_updated $i) $(is_installed $i)" | \
