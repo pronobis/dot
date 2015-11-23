@@ -78,10 +78,11 @@ get_module_urls()
     done
 }
 
+
 is_updated()
 {
     local name=$1
-    
+
     # Are we checking a module or dot itself?
     if [ "$name" = "dot" ]
     then
@@ -101,6 +102,7 @@ is_updated()
         echo "0"
     fi
 }
+
 
 is_installed()
 {
