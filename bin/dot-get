@@ -9,12 +9,8 @@ fi
 . $DOT_DIR/shell/tools.sh
 
 # Find git
-git=$(which git)
-# Try finding git, even it PATH is not set properly
-[ -z "$git" ] && [ -x /usr/bin/git ] && git=/usr/bin/git
-[ -z "$git" ] && [ -x /opt/bin/git ] && git=/opt/bin/git
-[ -z "$git" ] && [ -x /bin/git ] && git=/bin/git
-if [ -z $git ]
+dot_get_git
+if [ -z $DOT_GIT ]
 then
     print_error "git is not installed."
     exit 1
@@ -79,7 +75,7 @@ get_module_urls()
         p="$DOT_DIR/modules/$i"
         # Get url
         cd $p
-        u=$($git remote show -n origin | grep "Fetch URL")
+        u=$($DOT_GIT remote show -n origin | grep "Fetch URL")
         u=${u##*URL: }
         DOT_MODULE_URLS=${DOT_MODULE_URLS:+${DOT_MODULE_URLS} }$u
     done
@@ -98,9 +94,9 @@ is_updated()
         cd "$DOT_DIR/modules/$name"
     fi
 
-    local cur_branch=$($git rev-parse --abbrev-ref @{u})
-    local sha_remote=$($git ls-remote ${cur_branch%/*} ${cur_branch#*/} | cut -f1)
-    local sha_local=$($git rev-parse HEAD)
+    local cur_branch=$($DOT_GIT rev-parse --abbrev-ref @{u})
+    local sha_remote=$($DOT_GIT ls-remote ${cur_branch%/*} ${cur_branch#*/} | cut -f1)
+    local sha_local=$($DOT_GIT rev-parse HEAD)
 
     if [ "$sha_local" = "$sha_remote" ]
     then
@@ -134,7 +130,7 @@ is_installed()
 
     # Get local HEAD sha
     cd "$DOT_DIR/modules/$name"
-    local sha_local=$($git rev-parse HEAD)
+    local sha_local=$($DOT_GIT rev-parse HEAD)
 
     if [ "$sha_local" = "$sha_installed" ]
     then
@@ -158,7 +154,7 @@ clone_module()
     fi
 
     # Download
-    $git clone --recursive $url $DOT_DIR/modules/temp_clone
+    $DOT_GIT clone --recursive $url $DOT_DIR/modules/temp_clone
 
     # Get final name
     if [ -z $name ]
@@ -367,13 +363,13 @@ cmd_update()
         then
             print_status "Updating dot..."
             cd "$DOT_DIR"
-            $git pull --recurse-submodules
-            $git submodule update --recursive
+            $DOT_GIT pull --recurse-submodules
+            $DOT_GIT submodule update --recursive
         else
             print_status "Updating module $i..."
             cd "$DOT_DIR/modules/$i"
-            $git pull --recurse-submodules
-            $git submodule update --recursive
+            $DOT_GIT pull --recurse-submodules
+            $DOT_GIT submodule update --recursive
         fi
     done
 

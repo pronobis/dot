@@ -160,6 +160,21 @@ dot_inhibit()
 }
 
 
+# Try finding git, even if PATH is not set
+# Return:
+#   DOT_GIT - absolute path to the git command
+dot_get_git()
+{
+    set +e
+    DOT_GIT=$(which git)
+    # Try finding git, even it PATH is not set properly
+    [ -z "$git" ] && [ -x /usr/bin/git ] && DOT_GIT=/usr/bin/git
+    [ -z "$git" ] && [ -x /opt/bin/git ] && DOT_GIT=/opt/bin/git
+    [ -z "$git" ] && [ -x /bin/git ] && DOT_GIT=/bin/git
+    set -e
+}
+
+
 # Get an appropriate su/sudo command or nothing if running as root
 # Return:
 #   DOT_SU - the su command
