@@ -1,8 +1,9 @@
 # -*- mode: sh -*-
 
 # Mark that installation has been completed
+dot_get_git
 cd ${TMP_DIR}
-git rev-parse HEAD > ${TMP_DIR}/installed
+$DOT_GIT rev-parse HEAD > ${TMP_DIR}/installed
 
 # Unset exported "local" vars
 unset DOT_MODULE_DIR
