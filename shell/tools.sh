@@ -918,15 +918,15 @@ dot_check_cmd()
 }
 
 
-# Return version of the given package if installed  or an empty
+# Return version of the given package if installed or an empty
 # string if not installed. Works on Debian-based distros only
 # at this point.
 # Args:
 #   $1 - package name
 # Return:
-#   $DOT_PACKAGE_VERSION - version of the package
+#   $DOT_PACKAGE_VERSION - version of the installed package
 #   $? - 0 if installed, 1 otherwise
-dot_get_package_version()
+dot_get_installed_package_version()
 {
     local out=""
     local version=""
@@ -940,4 +940,19 @@ dot_get_package_version()
         return 0
     fi
     return 1
+}
+
+
+# Return version of the given package if available, but not
+# necessary installed. Works on Debian-based distros only
+# at this point.
+# Args:
+#   $1 - package name
+# Return:
+#   $DOT_PACKAGE_VERSION - version of the available package
+#   $? - 0 if available, 1 otherwise
+dot_get_available_package_version()
+{
+    DOT_PACKAGE_VERSION=$(apt-cache policy "$1" 2>/dev/null | grep Candidate | sed -e 's/[ ]*Candidate:[ ]*//g')
+    [ -n "$DOT_PACKAGE_VERSION" ]
 }
