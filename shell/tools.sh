@@ -568,6 +568,48 @@ dot_append_section_to_config()
 }
 
 
+# Add a section to the end of a possibly existing config file.
+# If the section exists in the file, it is replaced.
+# Args:
+#   $1 - Dot root dir
+#   $2 - Wildcard describing the config files relative to $HOME
+#   $3 - Start tag of the section (typically a config file comment)
+#   $4 - End tag of the section (typically a config file comment)
+dot_append_section_to_config_sys()
+{
+    dot_get_su
+
+    local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
+    for i in $1/config-sys/$2
+    do
+        i=${i#$1/config-sys/}
+        if [ -e "$1/config-sys/$i" ]
+        then
+            $DOT_SU mkdir -p $(dirname "/$i")
+            if $DOT_SU test -e "/$i" && $DOT_SU test ! -f "/$i"
+            then
+                print_error "/${i} exists and is not a file!"
+                exit 1
+            fi
+            if $DOT_SU test ! -e "/$i"
+            then # If file does not exist, create it
+                $DOT_SU touch "/$i"
+            fi
+            # Now remove the old section that might exist
+            local safe3=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
+            local safe4=$(printf '%s\n' "$4" | sed 's/[[\.*^$/]/\\&/g')
+            $DOT_SU sed -i "/$safe3/,/$safe4/d" "/$i"
+            # Add our section
+            echo "$3" | $DOT_SU tee -a "/$i" > /dev/null
+            cat "$1/config-sys/$i" | $DOT_SU tee -a "/$i" > /dev/null
+            echo "$4" | $DOT_SU tee -a "/$i" > /dev/null
+        else
+            print_warning "No config file $i found!"
+        fi
+    done
+}
+
+
 # Add a section to the beginning of a possibly existing config file.
 # If the section exists in the file, it is replaced.
 # Args:
