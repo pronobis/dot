@@ -825,6 +825,41 @@ dot_is_min_ubuntu_version()
 }
 
 
+# Check if we are on Ubuntu with version <= given.
+# Args:
+#   $1 - Max Ubuntu version
+# Return:
+#   $? - 0 if version number <= given, 1 otherwise
+dot_is_max_ubuntu_version()
+{
+    dist_id=$(lsb_release -si 2>/dev/null || true)
+    if [ "$dist_id" = "Ubuntu" ]
+    then  # On Ubuntu
+        cur_ver=$(lsb_release -sr)
+        [ "$(echo "$cur_ver <= $1" | bc -l)" = "1" ]
+    else
+        return 1
+    fi
+}
+
+
+# Check if we are on Ubuntu with the given codename.
+# Args:
+#   $1 - Ubuntu codename, e.g. trusty
+# Return:
+#   $? - 0 if on the given codename, 1 otherwise
+dot_is_ubuntu_codename()
+{
+    dist_id=$(lsb_release -si 2>/dev/null || true)
+    if [ "$dist_id" = "Ubuntu" ]
+    then  # On Ubuntu
+        [ "$(lsb_release -cs)" = "$1" ]
+    else
+        return 1
+    fi
+}
+
+
 # Check if given system packages are installed.
 # If package is not found, it should be assumed uninstalled.
 # Currently works only for Debian-based systems.
