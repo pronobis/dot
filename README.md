@@ -1,3 +1,5 @@
+[![License GPL 3][badge-license]](http://www.gnu.org/licenses/gpl-3.0.txt)
+
 # dot
 
 dot is a versatile framework for package installation and configuration file management (dot files) for POSIX systems (currently, with particular focus on Ubuntu and embedded Linux). Designed to support wide range of custom configurations, yet making package and dot file installation clean and easy. Offers:
