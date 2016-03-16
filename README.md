@@ -59,7 +59,9 @@ Please see the empty system in the default module `modules/00_defaults` for an e
 The first step is to install dot itself. To do so:
 * Make sure that `git` is installed on your system
 * Clone and install dot:
-  `git clone https://github.com/pronobis/dot.git ~/.dot; ~/.dot/install.sh`
+  ```
+  git clone https://github.com/pronobis/dot.git ~/.dot; ~/.dot/install.sh
+  ```
   Here, dot was installed in `~/.dot`, but any location can be used.
 * Re-login
 
