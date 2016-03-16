@@ -7,7 +7,7 @@ dot is a versatile framework for package installation and configuration file man
 * configuration sets within modules (called systems) that can be used to specialize environment variables in real time depending on the currently performed task
 * console GUI menus for bookmarking custom commands that can be customized for each system
 
-Check out the default module provided with this package for inspiration.
+Check out the default module provided with this package in `modules/00_defaults` for inspiration.
 
 
 ## How it Works?
@@ -19,43 +19,58 @@ The basic idea behind dot is simple. You clone the dot repository into a conveni
 
 Each module should be stored in its own git repo which will be cloned into the `modules` folder. This way, it is easy to download and install a specific set of modules to configure a specific system. Each module typically consists of the following folders:
 * `bin` - Folder added automatically to your `$PATH`. The installer will put links to your scripts and binaries there.
-* `config` - Local user config files in the same folder structure in which they should be placed in your `$HOME`. Don't worry, you get to choose if they are copied there, linked there or appended/prepended to existing files.
-* `config-sys` - Global system config files in the same folder structure in which they should be placed in your system root folder `/`.
+* `config` - Local user config files in the same folder structure in which they should be placed in `$HOME`. You get to choose if they are copied, linked or appended/prepended to existing files.
+* `config-sys` - Global system config files in the same folder structure in which they should be placed in the system root folder `/`.
 * `opt` - Folder where local dependencies are installed.
-* `shell` - Shell scripts configuring your environment. Several files can be present there:
+* `shell` - Shell scripts configuring the environment. Several files can be present there:
     * `setup.profile` - Executed for interactive and non-interactive login sessions for any POSIX shell.
     * `setup.bash` - Executed for interactive and non-interactive, login and non-login Bash sessions.
     * `setup.sh` - Executed for interactive and non-interactive, login and non-login sessions for any POSIX shell.
     * `setup-interactive.bash` - Executed for interactive, login and non-login Bash sessions.
     * `setup-interactive.sh` - Executed for interactive, login and non-login sessions for any POSIX shell.
 * `systems` - Systems provided by the module. See the systems description below.
-* `tmp` - Temporary folder used for storing files during module installation. You can safely delete the files/folders there after the installation finishes.
-* `install.sh` - Installation script installing user configuration and packages.
+* `tmp` - Temporary folder used for storing temporary files during module installation. The files in this folder can be safely deleted after the installation finishes.
+* `default_name` - File containing the default name of the module used by the `dot-get` installer.
+* `dependencies` - File containing the URLs of the git repos of modules on which this module depends.
+* `install.sh` - Main installation script installing user configuration and packages.
 
-The installation script `install.sh` is used to install the module. It should be written by the user and use a set of predefined installation commands provided by dot. To see the available installation commands, check out the [`shell/tools.sh`](shell/tools.sh) file.
+The default module provided with this package in `modules/00_defaults` serves as an example of a module and can be used to initialize a new git repo with a custom module.
+
+The installation script `install.sh` is used to install the module. It should be written by the user and use the predefined installation commands provided by dot. To see the available installation commands, check out the [`shell/tools.sh`](shell/tools.sh) file.
 
 
 ## Systems
 
-A system is a:
-* set of environment settings
-* an initialization scripts
-* a set of commands to be easily run in a terminal console GUI
+*Systems* are configuration sets within modules that can be used to specialize/modify environment variables in real time depending on the currently performed task. A system is a:
+* set of environment settings activated when the system is enabled
+* an initialization script run when the system is enabled
 
-Each module can provide systems and all those systems will be available. A special commadn `sys` allows you to select which system to use at a given time. Only one system from all the modules can be used at a time. Once a system is selected with the command `sys` the current console environment as well as the environment of all the consoles started from then on will be affected by the system configuration. Additionally, the system initialization script will be run.
+Additionally, a system provides a set of command line bookmarks that can be easily run using a terminal console GUI.
 
-When a system is selected, the command `cmd` opens a console GUI that allows you to select a command to be run in the console. This is useful for executing complex commands and serves a similar purpose as bash aliases, but allows you to specify a name for each command and the commands are listed by the GUI.
+Each module can provide multiple *systems*. A special command `sys` is used to select and enable a *system* and only one *system* can be active at a given time. Once a *system* is selected with the command `sys`, the environment of the current console  as well as all the consoles opened from then on will be modified by the *system*. Additionally, the initialization script will be run.
 
-Please see the empty system in the default module for the definition of a system.
+When a *system* is selected, the command `cmd` opens a console GUI that provides access to bookmarks. Each bookmark corresponds to a single command to be executed in the console. This is useful for executing complex commands.
+
+Please see the empty system in the default module `modules/00_defaults` for an example of a definition of a *system*.
+
 
 ## Installation
 
-The instructions below are outdated. Module installation has been greatly simplified thanks to the `dot-get` script.
+The first step is to install dot itself. To do so:
+1) Make sure that `git` is installed on your system
+2) Clone and install dot:
 
-0. Close any app that you will be re-configuring by changing its config files.
-1. Clone the repository to a convenient location e.g. `~/.dot` using `git clone git@github.com:pronobis/dot.git ~/.dot`
-2. Go to that directory `cd ~/.dot` and run `./install.sh`
-3. If you have access to sudo/root and want to install system-wide module configuration, run `sudo -EH ./install.sh`. Don't forget about the `-EH` options!
-4. Clone/install your modules in `./modules`. 
-5. Install each module. This typically means running (optionally) `sudo -EH ./install-sys.sh` of that module for installing global system configuration and `install.sh` for installing local user configuration. Please note that some modules might require system-wide dependency installation before user local installation can be performed.
-6. Re-login
+    git clone https://github.com/pronobis/dot.git ~/.dot; ~/.dot/install.sh
+
+    Here, dot was installed in `~/.dot`, but any location can be used.
+3) Re-login
+
+Now, it's time to install modules. Modules are downloaded (and later updated) using the `dot-get` command. To install a new module, run `dot-get add <repo_url> [<module_name>]`. If no name is given, the one defined in the file `default_name` in the module will be used. All module dependencies will be downloaded automatically. Once modules are downloaded, manually run the `install.sh` script of each module. Re-login when done.
+
+
+## Commands Provided by dot
+
+* `cdot` - `cd` to the folder where dot is installed
+* `dot-get` - download/update modules, run `dot-get` without arguments for help
+* `cmd` - select and run bookmark commands
+* `sys` - select and activate a system
