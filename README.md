@@ -15,6 +15,12 @@ Check out the default module provided with this package in `modules/00_defaults`
 The basic idea behind dot is simple. You clone the dot repository into a convenient location (e.g. `~/.dot`) and run `install.sh`. This will add one line to your `.profile` and `.bashrc` files. No other fiels are modified by dot itself. Then, you create your own configuration sets in the `modules` sub-folder. Each module should be stored in its own git repository. The name of the module determines it's priority as it is often the case for Linux `.d` folders. Using number prefixes such as `10_dot-module-my` is a good idea. Every module placed in the `modules` folder is detected and used automatically.
 
 
+## Module Examples
+
+The following public modules are available for dot and can be used as an example:
+* https://github.com/pronobis/dot-module-sara-uw
+
+
 ## Building Modules
 
 Each module should be stored in its own git repo which will be cloned into the `modules` folder. This way, it is easy to download and install a specific set of modules to configure a specific system. Each module typically consists of the following folders:
