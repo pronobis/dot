@@ -59,10 +59,8 @@ Please see the empty system in the default module `modules/00_defaults` for an e
 The first step is to install dot itself. To do so:
 1) Make sure that `git` is installed on your system
 2) Clone and install dot:
-
-    git clone https://github.com/pronobis/dot.git ~/.dot; ~/.dot/install.sh
-
-    Here, dot was installed in `~/.dot`, but any location can be used.
+   `git clone https://github.com/pronobis/dot.git ~/.dot; ~/.dot/install.sh`
+   Here, dot was installed in `~/.dot`, but any location can be used.
 3) Re-login
 
 Now, it's time to install modules. Modules are downloaded (and later updated) using the `dot-get` command. To install a new module, run `dot-get add <repo_url> [<module_name>]`. If no name is given, the one defined in the file `default_name` in the module will be used. All module dependencies will be downloaded automatically. Once modules are downloaded, manually run the `install.sh` script of each module. Re-login when done.
