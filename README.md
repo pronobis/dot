@@ -32,7 +32,7 @@ Each module should be stored in its own git repo which will be cloned into the `
 * `tmp` - Temporary folder used for storing files during module installation. You can safely delete the files/folders there after the installation finishes.
 * `install.sh` - Installation script installing user configuration and packages.
 
-The installation script `install.sh` is used to install the module. It should be written by the user and use a set of predefined installation commands provided by dot. To see the available installation commands, check out the [`shell/tools.sh`](../shell/tools.sh) file.
+The installation script `install.sh` is used to install the module. It should be written by the user and use a set of predefined installation commands provided by dot. To see the available installation commands, check out the [`shell/tools.sh`](shell/tools.sh) file.
 
 
 ## Systems
