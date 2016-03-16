@@ -204,17 +204,16 @@ dot_get_su()
 
 # Create a link to a given binary
 # Args:
-#   $1 - Dot root dir
-#   $2 - Path to the bin file relative to the dot root dir
+#   $1 - Path to the bin file relative to the dot root dir
 dot_link_bin()
 {
-    if [ -d "$1/bin" ]
+    if [ -d "${DOT_MODULE_DIR}/bin" ]
     then
-        if [ -x $1/$2 ]
+        if [ -x "${DOT_MODULE_DIR}/$1" ]
         then
-           ln -sf "$1/$2" "$1/bin"
+            ln -sf "${DOT_MODULE_DIR}/$1" "${DOT_MODULE_DIR}/bin"
         else
-            print_error "File $2 is not executable or does not exist!"
+            print_error "File $1 is not executable or does not exist!"
             exit 1
         fi
     else
@@ -226,15 +225,14 @@ dot_link_bin()
 
 # Create a link to config files
 # Args:
-#   $1 - Dot root dir
-#   $2 - Wildcard describing the path to config files relative to $HOME
+#   $1 - Wildcard describing the path to config files relative to $HOME
 dot_link_config()
 {
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
-    for i in $1/config/$2
+    for i in ${DOT_MODULE_DIR}/config/$1
     do
-        i=${i#$1/config/}
-        if [ -e "$1/config/$i" ]
+        i=${i#${DOT_MODULE_DIR}/config/}
+        if [ -e "${DOT_MODULE_DIR}/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
             if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
@@ -246,7 +244,7 @@ dot_link_config()
             then # To prevent creation of a link on another link (e.g. link to folder)
                 rm "${HOME}/$i"
             fi
-            ln -s "$1/config/$i" "${HOME}/$i"
+            ln -s "${DOT_MODULE_DIR}/config/$i" "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -256,17 +254,16 @@ dot_link_config()
 
 # Create a link to system-wide config files
 # Args:
-#   $1 - Dot root dir
-#   $2 - Wildcard describing the path to config files relative to /
+#   $1 - Wildcard describing the path to config files relative to /
 dot_link_config_sys()
 {
     dot_get_su
 
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
-    for i in $1/config-sys/$2
+    for i in ${DOT_MODULE_DIR}/config-sys/$1
     do
-        i=${i#$1/config-sys/}
-        if [ -e "$1/config-sys/$i" ]
+        i=${i#${DOT_MODULE_DIR}/config-sys/}
+        if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
             $DOT_SU mkdir -p $(dirname "/$i")
             if $DOT_SU test -d "/$i" && $DOT_SU test ! -L "/$i"
@@ -278,7 +275,7 @@ dot_link_config_sys()
             then # To prevent creation of a link on another link (e.g. link to folder)
                 $DOT_SU rm "/$i"
             fi
-            $DOT_SU ln -s "$1/config-sys/$i" "/$i"
+            $DOT_SU ln -s "${DOT_MODULE_DIR}/config-sys/$i" "/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -365,15 +362,14 @@ dot_mkdir_user()
 
 # Make a copy of config files
 # Args:
-#   $1 - Dot root dir
-#   $2 - Wildcard describing the path to config files relative to $HOME
+#   $1 - Wildcard describing the path to config files relative to $HOME
 dot_copy_config()
 {
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
-    for i in $1/config/$2
+    for i in ${DOT_MODULE_DIR}/config/$1
     do
-        i=${i#$1/config/}
-        if [ -e "$1/config/$i" ]
+        i=${i#${DOT_MODULE_DIR}/config/}
+        if [ -e "${DOT_MODULE_DIR}/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
             if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
@@ -385,7 +381,7 @@ dot_copy_config()
             then # To prevent copying into a link
                 rm "${HOME}/$i"
             fi
-            cp -d "$1/config/$i" "${HOME}/$i"
+            cp -d "${DOT_MODULE_DIR}/config/$i" "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -395,17 +391,16 @@ dot_copy_config()
 
 # Make a copy of config files system-wide
 # Args:
-#   $1 - Dot root dir
-#   $2 - Wildcard describing the path to config files relative to $HOME
+#   $1 - Wildcard describing the path to config files relative to $HOME
 dot_copy_config_sys()
 {
     dot_get_su
 
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
-    for i in $1/config-sys/$2
+    for i in ${DOT_MODULE_DIR}/config-sys/$1
     do
-        i=${i#$1/config-sys/}
-        if [ -e "$1/config-sys/$i" ]
+        i=${i#${DOT_MODULE_DIR}/config-sys/}
+        if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
             $DOT_SU mkdir -p $(dirname "/$i")
             if $DOT_SU test -d "/$i" && $DOT_SU test ! -L "/$i"
@@ -417,7 +412,7 @@ dot_copy_config_sys()
             then # To prevent copying into a link
                 $DOT_SU rm "/$i"
             fi
-            $DOT_SU cp -d "$1/config-sys/$i" "/$i"
+            $DOT_SU cp -d "${DOT_MODULE_DIR}/config-sys/$i" "/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -427,15 +422,14 @@ dot_copy_config_sys()
 
 # Copy config files and fill env. variables inside
 # Args:
-#   $1 - Dot root dir
-#   $2 - Wildcard describing the path to config files relative to $HOME
+#   $1 - Wildcard describing the path to config files relative to $HOME
 dot_fill_config()
 {
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
-    for i in $1/config/$2
+    for i in ${DOT_MODULE_DIR}/config/$1
     do
-        i=${i#$1/config/}
-        if [ -e "$1/config/$i" ]
+        i=${i#${DOT_MODULE_DIR}/config/}
+        if [ -e "${DOT_MODULE_DIR}/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
             if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
@@ -447,12 +441,12 @@ dot_fill_config()
             then # To prevent copying into a link
                 rm "${HOME}/$i"
             fi
-            # envsubst < "$1/config/$i" > "${HOME}/$i"  # Does not work with busybox
+            # envsubst < "${DOT_MODULE_DIR}/config/$i" > "${HOME}/$i"  # Does not work with busybox
             sed \
                 -e 's#${HOME}#'"${HOME}"'#' \
                 -e 's#${DOT_DIR}#'"${DOT_DIR}"'#' \
                 -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#' \
-                "$1/config/$i" > "${HOME}/$i"
+                "${DOT_MODULE_DIR}/config/$i" > "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -462,17 +456,16 @@ dot_fill_config()
 
 # Copy system-wide config files and fill env. variables inside
 # Args:
-#   $1 - Dot root dir
-#   $2 - Wildcard describing the path to config files relative to /
+#   $1 - Wildcard describing the path to config files relative to /
 dot_fill_config_sys()
 {
     dot_get_su
 
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
-    for i in $1/config-sys/$2
+    for i in ${DOT_MODULE_DIR}/config-sys/$1
     do
-        i=${i#$1/config-sys/}
-        if [ -e "$1/config-sys/$i" ]
+        i=${i#${DOT_MODULE_DIR}/config-sys/}
+        if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
             $DOT_SU mkdir -p $(dirname "/$i")
             if $DOT_SU test -d "/$i" && $DOT_SU test ! -L "/$i"
@@ -484,12 +477,12 @@ dot_fill_config_sys()
             then # To prevent copying into a link
                 $DOT_SU rm "/$i"
             fi
-            # envsubst < "$1/config-sys/$i" > "/$i"  # Does not work with busybox
+            # envsubst < "${DOT_MODULE_DIR}/config-sys/$i" > "/$i"  # Does not work with busybox
             sed \
                 -e 's#${HOME}#'"${HOME}"'#' \
                 -e 's#${DOT_DIR}#'"${DOT_DIR}"'#' \
                 -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#' \
-                "$1/config-sys/$i" | $DOT_SU tee "/$i" > /dev/null
+                "${DOT_MODULE_DIR}/config-sys/$i" | $DOT_SU tee "/$i" > /dev/null
         else
             print_warning "No config file $i found!"
         fi
@@ -499,15 +492,14 @@ dot_fill_config_sys()
 
 # Append to the end of a possibly existing config file.
 # Args:
-#   $1 - Dot root dir
-#   $2 - Wildcard describing the config files relative to $HOME
+#   $1 - Wildcard describing the config files relative to $HOME
 dot_append_to_config()
 {
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
-    for i in $1/config/$2
+    for i in ${DOT_MODULE_DIR}/config/$1
     do
-        i=${i#$1/config/}
-        if [ -e "$1/config/$i" ]
+        i=${i#${DOT_MODULE_DIR}/config/}
+        if [ -e "${DOT_MODULE_DIR}/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
             if [ -e "${HOME}/$i" ] && [ ! -f "${HOME}/$i" ]
@@ -520,7 +512,7 @@ dot_append_to_config()
                 touch "${HOME}/$i"
             fi
             # Append
-            cat "$1/config/$i" >> "${HOME}/$i"
+            cat "${DOT_MODULE_DIR}/config/$i" >> "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -531,17 +523,16 @@ dot_append_to_config()
 # Add a section to the end of a possibly existing config file.
 # If the section exists in the file, it is replaced.
 # Args:
-#   $1 - Dot root dir
-#   $2 - Wildcard describing the config files relative to $HOME
-#   $3 - Start tag of the section (typically a config file comment)
-#   $4 - End tag of the section (typically a config file comment)
+#   $1 - Wildcard describing the config files relative to $HOME
+#   $2 - Start tag of the section (typically a config file comment)
+#   $3 - End tag of the section (typically a config file comment)
 dot_append_section_to_config()
 {
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
-    for i in $1/config/$2
+    for i in ${DOT_MODULE_DIR}/config/$1
     do
-        i=${i#$1/config/}
-        if [ -e "$1/config/$i" ]
+        i=${i#${DOT_MODULE_DIR}/config/}
+        if [ -e "${DOT_MODULE_DIR}/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
             if [ -e "${HOME}/$i" ] && [ ! -f "${HOME}/$i" ]
@@ -554,13 +545,13 @@ dot_append_section_to_config()
                 touch "${HOME}/$i"
             fi
             # Now remove the old section that might exist
-            local safe3=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
-            local safe4=$(printf '%s\n' "$4" | sed 's/[[\.*^$/]/\\&/g')
+            local safe3=$(printf '%s\n' "$2" | sed 's/[[\.*^$/]/\\&/g')
+            local safe4=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
             sed -i "/$safe3/,/$safe4/d" "${HOME}/$i"
             # Add our section
+            echo "$2" >> "${HOME}/$i"
+            cat "${DOT_MODULE_DIR}/config/$i" >> "${HOME}/$i"
             echo "$3" >> "${HOME}/$i"
-            cat "$1/config/$i" >> "${HOME}/$i"
-            echo "$4" >> "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi
@@ -571,19 +562,18 @@ dot_append_section_to_config()
 # Add a section to the end of a possibly existing config file.
 # If the section exists in the file, it is replaced.
 # Args:
-#   $1 - Dot root dir
-#   $2 - Wildcard describing the config files relative to $HOME
-#   $3 - Start tag of the section (typically a config file comment)
-#   $4 - End tag of the section (typically a config file comment)
+#   $1 - Wildcard describing the config files relative to $HOME
+#   $2 - Start tag of the section (typically a config file comment)
+#   $3 - End tag of the section (typically a config file comment)
 dot_append_section_to_config_sys()
 {
     dot_get_su
 
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
-    for i in $1/config-sys/$2
+    for i in ${DOT_MODULE_DIR}/config-sys/$1
     do
-        i=${i#$1/config-sys/}
-        if [ -e "$1/config-sys/$i" ]
+        i=${i#${DOT_MODULE_DIR}/config-sys/}
+        if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
             $DOT_SU mkdir -p $(dirname "/$i")
             if $DOT_SU test -e "/$i" && $DOT_SU test ! -f "/$i"
@@ -596,13 +586,13 @@ dot_append_section_to_config_sys()
                 $DOT_SU touch "/$i"
             fi
             # Now remove the old section that might exist
-            local safe3=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
-            local safe4=$(printf '%s\n' "$4" | sed 's/[[\.*^$/]/\\&/g')
+            local safe3=$(printf '%s\n' "$2" | sed 's/[[\.*^$/]/\\&/g')
+            local safe4=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
             $DOT_SU sed -i "/$safe3/,/$safe4/d" "/$i"
             # Add our section
+            echo "$2" | $DOT_SU tee -a "/$i" > /dev/null
+            cat "${DOT_MODULE_DIR}/config-sys/$i" | $DOT_SU tee -a "/$i" > /dev/null
             echo "$3" | $DOT_SU tee -a "/$i" > /dev/null
-            cat "$1/config-sys/$i" | $DOT_SU tee -a "/$i" > /dev/null
-            echo "$4" | $DOT_SU tee -a "/$i" > /dev/null
         else
             print_warning "No config file $i found!"
         fi
@@ -613,17 +603,16 @@ dot_append_section_to_config_sys()
 # Add a section to the beginning of a possibly existing config file.
 # If the section exists in the file, it is replaced.
 # Args:
-#   $1 - Dot root dir
-#   $2 - Wildcard describing the config files relative to $HOME
-#   $3 - Start tag of the section (typically a config file comment)
-#   $4 - End tag of the section (typically a config file comment)
+#   $1 - Wildcard describing the config files relative to $HOME
+#   $2 - Start tag of the section (typically a config file comment)
+#   $3 - End tag of the section (typically a config file comment)
 dot_prepend_section_to_config()
 {
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
-    for i in $1/config/$2
+    for i in ${DOT_MODULE_DIR}/config/$1
     do
-        i=${i#$1/config/}
-        if [ -e "$1/config/$i" ]
+        i=${i#${DOT_MODULE_DIR}/config/}
+        if [ -e "${DOT_MODULE_DIR}/config/$i" ]
         then
             mkdir -p $(dirname "${HOME}/$i")
             if [ -e "${HOME}/$i" ] && [ ! -f "${HOME}/$i" ]
@@ -636,11 +625,11 @@ dot_prepend_section_to_config()
                 touch "${HOME}/$i"
             fi
             # Now remove the old section that might exist
-            local safe3=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
-            local safe4=$(printf '%s\n' "$4" | sed 's/[[\.*^$/]/\\&/g')
+            local safe3=$(printf '%s\n' "$2" | sed 's/[[\.*^$/]/\\&/g')
+            local safe4=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
             sed -i "/$safe3/,/$safe4/d" "${HOME}/$i"
             # Add our section
-            printf "$3\n$(cat "$1/config/$i")\n$4\n$(cat ${HOME}/$i)\n" > "${HOME}/$i"
+            printf "$2\n$(cat "${DOT_MODULE_DIR}/config/$i")\n$3\n$(cat ${HOME}/$i)\n" > "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi

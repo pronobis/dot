@@ -28,22 +28,22 @@ print_warning "This is just an example that does nothing!"
 
 ## -------------------------------------------------------------
 # print_header "Creating links to binaries"
-# dot_link_bin $DOT_MODULE_DIR "scripts/my-binary"
+# dot_link_bin "scripts/my-binary"
 # print_status "Done!"
 
 
 ## -------------------------------------------------------------
 # print_header "Installing user-local config files"
-# dot_link_config $DOT_MODULE_DIR ".local/share/icons/*"
-# dot_copy_config $DOT_MODULE_DIR ".kde/share/config/digikamrc"
+# dot_link_config ".local/share/icons/*"
+# dot_copy_config ".kde/share/config/digikamrc"
 # print_status "Done!"
 
 
 ## -------------------------------------------------------------
 # print_header "Installing system-wide config files"
-# dot_link_config_sys $DOT_MODULE_DIR "etc/default/crda"
-# dot_copy_config_sys $DOT_MODULE_DIR "usr/lib/pm-utils/power.d/powertop_toggables"
-# dot_fill_config_sys $DOT_MODULE_DIR "usr/share/sddm/scripts/Xsetup"
+# dot_link_config_sys "etc/default/crda"
+# dot_copy_config_sys "usr/lib/pm-utils/power.d/powertop_toggables"
+# dot_fill_config_sys "usr/share/sddm/scripts/Xsetup"
 # Done
 # print_status "Done!"
 
