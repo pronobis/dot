@@ -4,4 +4,4 @@
 ## sessions for any POSIX shell.
 ## ----------------------------------------------------------
 
-alias cdot='cd $DOT_DIR'
+alias cdot='cd $DOT_DIR/modules'
