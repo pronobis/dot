@@ -962,8 +962,10 @@ dot_get_installed_package_version()
     local out=""
     local version=""
     local status=""
-    out=$(dpkg-query -W -f='${db:Status-Status}|${Version}' "$1" 2> /dev/null || true)
+    # Note: db:Status-Status is only available in newer dpkg-query, so we use Status
+    out=$(dpkg-query -W -f='${Status}|${Version}' "$1" 2> /dev/null || true)
     status=${out%|*}
+    status=${status#* * }
     version=${out#*|}
     if [ "$status" = "installed" ] || [ "$status" = "installedinstalled" ]
     then
