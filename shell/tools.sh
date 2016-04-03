@@ -628,8 +628,15 @@ dot_prepend_section_to_config()
             local safe3=$(printf '%s\n' "$2" | sed 's/[[\.*^$/]/\\&/g')
             local safe4=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
             sed -i "/$safe3/,/$safe4/d" "${HOME}/$i"
-            # Add our section
-            printf "$2\n$(cat "${DOT_MODULE_DIR}/config/$i")\n$3\n$(cat ${HOME}/$i)\n" > "${HOME}/$i"
+            # Prepend our section
+            local orig_file="$(cat ${HOME}/$i)"
+            echo "$2" > "${HOME}/$i"
+            cat "${DOT_MODULE_DIR}/config/$i" >> "${HOME}/$i"
+            echo "$3" >> "${HOME}/$i"
+            echo -n "$orig_file" >> "${HOME}/$i"
+            # Prepanding with printf doesn't work since it's considering
+            # some characters in the file as formatting characters
+            # printf "$2\n$(cat "${DOT_MODULE_DIR}/config/$i")\n$3\n$(cat ${HOME}/$i)\n" > "${HOME}/$i"
         else
             print_warning "No config file $i found!"
         fi
