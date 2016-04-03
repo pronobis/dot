@@ -883,7 +883,9 @@ dot_check_packages()
     DOT_INSTALLED=""
     for pkg in $args
     do
-        status=$(dpkg-query -W -f='${db:Status-Status}' $pkg 2> /dev/null || true)
+        # Note: db:Status-Status is only available in newer dpkg-query, so we use Status
+        status=$(dpkg-query -W -f='${Status}' $pkg 2> /dev/null || true)
+        status=${status#* * }
         # Check if package installed
         # The 'installedinstalled' will be reported if both i386 and amd64 versions are installed
         if [ "$status" != "installed" ] && [ "$status" != "installedinstalled" ]
