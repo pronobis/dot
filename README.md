@@ -3,6 +3,7 @@
 # dot
 
 dot is a versatile framework for package installation and configuration file management (dot files) for POSIX systems (currently, with particular focus on Ubuntu and embedded Linux). Designed to support wide range of custom configurations, yet making package and dot file installation clean and easy. Offers:
+
 * modular architecture with modules for specific configuration sets (e.g. public terminal-only configuration, public desktop configuration, private laptop configuration etc.)
 * specifying dependencies between the modules
 * automatic module downloading and updating from git repositories
@@ -20,12 +21,14 @@ The basic idea behind dot is simple. You clone the dot repository into a conveni
 ## Module Examples
 
 The following public modules are available for dot and can be used as an example:
-* https://github.com/pronobis/dot-module-sara-uw
+
+* <https://github.com/pronobis/dot-module-sara-uw>
 
 
 ## Building Modules
 
 Each module should be stored in its own git repo which will be cloned into the `modules` folder. This way, it is easy to download and install a specific set of modules to configure a specific system. Each module typically consists of the following folders:
+
 * `bin` - Folder added automatically to your `$PATH`. The installer will put links to your scripts and binaries there.
 * `config` - Local user config files in the same folder structure in which they should be placed in `$HOME`. You get to choose if they are copied, linked or appended/prepended to existing files.
 * `config-sys` - Global system config files in the same folder structure in which they should be placed in the system root folder `/`.
@@ -50,6 +53,7 @@ The installation script `install.sh` is used to install the module. It should be
 ## Systems
 
 *Systems* are configuration sets within modules that can be used to specialize/modify environment variables in real time depending on the currently performed task. A system is a:
+
 * set of environment settings activated when the system is enabled
 * an initialization script run when the system is enabled
 
@@ -65,13 +69,14 @@ Please see the empty system in the default module `modules/00_defaults` for an e
 ## Installation
 
 The first step is to install dot itself. To do so:
+
 * Make sure that `git` is installed on your system
 * Clone and install dot:
 
-  ```
+  ```sh
   git clone https://github.com/pronobis/dot.git ~/.dot; ~/.dot/install.sh
   ```
-  
+
   Here, dot was installed in `~/.dot`, but any location can be used.
 * Re-login
 
