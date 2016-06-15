@@ -700,6 +700,34 @@ dot_install_pip3()
 }
 
 
+## Install a Ruby gem in default location
+## Args:
+##   $1 - Module name
+dot_install_gem()
+{
+    print_status "Installing the Ruby gem $@ in default location"
+    if ! dot_inhibit gem install "$@"
+    then
+        print_error "Error while running gem!"
+        exit 1
+    fi
+}
+
+
+## Install a Ruby gem in ~/.gem
+## Args:
+##   $1 - Module name
+dot_install_gem_user()
+{
+    print_status "Installing the Ruby gem $@ in ~/.gem"
+    if ! dot_inhibit gem install --user-install "$@"
+    then
+        print_error "Error while running gem!"
+        exit 1
+    fi
+}
+
+
 ## Retrieve updated package list if not yet retrieved
 dot_update_package_list()
 {
