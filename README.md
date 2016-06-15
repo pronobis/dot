@@ -34,11 +34,11 @@ Each module should be stored in its own git repo which will be cloned into the `
 * `config-sys` - Global system config files in the same folder structure in which they should be placed in the system root folder `/`.
 * `opt` - Folder where local dependencies are installed.
 * `shell` - Shell scripts configuring the environment. Several files can be present there:
-    * `setup.profile` - Executed for interactive and non-interactive login sessions for any POSIX shell.
-    * `setup.bash` - Executed for interactive and non-interactive, login and non-login Bash sessions.
-    * `setup.sh` - Executed for interactive and non-interactive, login and non-login sessions for any POSIX shell.
-    * `setup-interactive.bash` - Executed for interactive, login and non-login Bash sessions.
-    * `setup-interactive.sh` - Executed for interactive, login and non-login sessions for any POSIX shell.
+  * `setup.profile` - Executed for interactive and non-interactive login sessions for any POSIX shell.
+  * `setup.bash` - Executed for interactive and non-interactive, login and non-login Bash sessions.
+  * `setup.sh` - Executed for interactive and non-interactive, login and non-login sessions for any POSIX shell.
+  * `setup-interactive.bash` - Executed for interactive, login and non-login Bash sessions.
+  * `setup-interactive.sh` - Executed for interactive, login and non-login sessions for any POSIX shell.
 * `systems` - Systems provided by the module. See the systems description below.
 * `tmp` - Temporary folder used for storing temporary files during module installation. The files in this folder can be safely deleted after the installation finishes.
 * `default_name` - File containing the default name of the module used by the `dot-get` installer.
