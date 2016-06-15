@@ -919,13 +919,20 @@ dot_check_builddep()
     local ret_code=""
     # Get output from apt-get build-dep simulation
     set +e
-    ret_val=$(apt-get build-dep -s $pkg 2>/dev/null)
+    ret_val=$(apt-get build-dep -s $pkg 2>&1)
     ret_code=$?
     set -e
+    # Remove anything up till NOTE: which gets in the way with error detection
+    ret_val="${ret_val##NOTE: }"
     # Check if package missing
     if [ "$ret_code" != "0" ]
     then
-        print_error "Package $pkg not found!"
+        if [ "${ret_val#*E: }" != "${ret_val}" ]
+        then
+            print_error "${ret_val#*E: }"
+        else
+            print_error "Unknown build-dep error!"
+        fi
         exit 1
     fi
     # Check if there is anything to install
