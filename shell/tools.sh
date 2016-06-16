@@ -801,6 +801,7 @@ dot_install_builddep()
 
 # Clone a git repository (with sub-modules) and switch to a branch or
 # pull the requested branch from origin if it is already cloned.
+# WARNING: All local changes to the repo will be overwritten!
 # Args:
 #   $1 - Path to where it should be cloned
 #   $2 - Repo URL
@@ -819,7 +820,7 @@ dot_git_clone_or_update()
             print_error "The origin of the repo in $1 is different than $2!"
             exit 1
         fi
-        git checkout "$3"
+        git checkout --force "$3"
         git pull --recurse-submodules origin "$3"
         git submodule update --recursive
     else
@@ -830,6 +831,8 @@ dot_git_clone_or_update()
             exit 1
         fi
         git clone --recurse-submodules "$2" "$1"
+        git checkout --force "$3"
+        git submodule update --recursive
     fi
 }
 
