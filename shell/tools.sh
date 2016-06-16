@@ -799,18 +799,18 @@ dot_install_builddep()
 }
 
 
-# Clone a git repository (with sub-modules) and switch to a branch or
-# pull the requested branch from origin if it is already cloned.
+# Clone a git repository (with sub-modules), if it is not yet cloned, and
+# checkout a branch or a tag. If the repository is already cloned, fetch
+# the origin and update the requested branch or checkout the requested tag.
 # WARNING: All local changes to the repo will be overwritten!
 # Args:
 #   $1 - Path to where it should be cloned
 #   $2 - Repo URL
-#   $3 - Branch name
+#   $3 - Branch/tag name
 dot_git_clone_or_update()
 {
     if [ -d "$1/.git" ]
     then
-        print_status "Pulling branch $3 from $2..."
         # Repository exists at this path, check if the origin is correct
         cd "$1"
         local url=""  # To avoid "bad variable name" in dash for some values
@@ -820,11 +820,28 @@ dot_git_clone_or_update()
             print_error "The origin of the repo in $1 is different than $2!"
             exit 1
         fi
-        git checkout --force "$3"
-        git pull --recurse-submodules origin "$3"
-        git submodule update --recursive
+        # Verify if $3 is a tag
+        local is_tag=""
+        set +e
+        git show-ref -q --verify "refs/tags/$3"
+        is_tag=$?
+        set -e
+        # Update
+        if [ "$is_tag" = "0" ]
+        then
+            print_status "Fetching tag $3 from $2..."
+            git fetch origin
+            git checkout --force "$3"
+            git submodule update --recursive
+        else
+            print_status "Pulling branch $3 from $2..."
+            git fetch origin
+            git checkout --force "$3"
+            git merge origin/"$3"
+            git submodule update --recursive
+        fi
     else
-        print_status "Cloning branch $3 from $2..."
+        print_status "Cloning $3 from $2..."
         if [ -e "$1" ]
         then
             print_error "$1 exists, but is not a git repo!"
