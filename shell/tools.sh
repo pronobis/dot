@@ -799,6 +799,41 @@ dot_install_builddep()
 }
 
 
+# Clone a git repository (with sub-modules) and switch to a branch or
+# pull the requested branch from origin if it is already cloned.
+# Args:
+#   $1 - Path to where it should be cloned
+#   $2 - Repo URL
+#   $3 - Branch name
+dot_git_clone_or_update()
+{
+    if [ -d "$1/.git" ]
+    then
+        print_status "Pulling branch $3 from $2..."
+        # Repository exists at this path, check if the origin is correct
+        cd "$1"
+        local url=""  # To avoid "bad variable name" in dash for some values
+        url=$(git config --get remote.origin.url || true)
+        if [ "$url" != "$2" ]
+        then
+            print_error "The origin of the repo in $1 is different than $2!"
+            exit 1
+        fi
+        git checkout "$3"
+        git pull --recurse-submodules origin "$3"
+        git submodule update --recursive
+    else
+        print_status "Cloning branch $3 from $2..."
+        if [ -e "$1" ]
+        then
+            print_error "$1 exists, but is not a git repo!"
+            exit 1
+        fi
+        git clone --recurse-submodules "$2" "$1"
+    fi
+}
+
+
 
 ## -------------------------------------------------------------
 ## Checks
