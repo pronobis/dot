@@ -1061,3 +1061,17 @@ dot_get_available_package_version()
     DOT_PACKAGE_VERSION=$(apt-cache policy "$1" 2>/dev/null | grep Candidate | sed -e 's/[ ]*Candidate:[ ]*//g')
     [ -n "$DOT_PACKAGE_VERSION" ]
 }
+
+
+
+## -------------------------------------------------------------
+## Other
+## -------------------------------------------------------------
+
+# Run parallel build using make and the number of available processors.
+dot_parallel_make()
+{
+    local cpus=""  # To avoid "bad variable name" in dash for some values
+    cpus=$(grep -c ^processor /proc/cpuinfo)
+    make -j${cpus}
+}
