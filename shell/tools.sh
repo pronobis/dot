@@ -812,33 +812,26 @@ dot_git_clone_or_update()
     if [ -d "$1/.git" ]
     then
         # Repository exists at this path, check if the origin is correct
-        cd "$1"
         local url=""  # To avoid "bad variable name" in dash for some values
-        url=$(git config --get remote.origin.url || true)
+        url=$(git -C "$1" config --get remote.origin.url || true)
         if [ "$url" != "$2" ]
         then
             print_error "The origin of the repo in $1 is different than $2!"
             exit 1
         fi
-        # Verify if $3 is a tag
-        local is_tag=""
-        set +e
-        git show-ref -q --verify "refs/tags/$3"
-        is_tag=$?
-        set -e
         # Update
-        if [ "$is_tag" = "0" ]
+        if git -C "$1" show-ref -q --verify "refs/tags/$3"
         then
             print_status "Fetching tag $3 from $2..."
-            git fetch origin
-            git checkout --force "$3"
-            git submodule update --recursive
+            git -C "$1" fetch origin
+            git -C "$1" checkout --force "$3"
+            git -C "$1" submodule update --recursive
         else
             print_status "Pulling branch $3 from $2..."
-            git fetch origin
-            git checkout --force "$3"
-            git merge origin/"$3"
-            git submodule update --recursive
+            git -C "$1" fetch origin
+            git -C "$1" checkout --force "$3"
+            git -C "$1" merge origin/"$3"
+            git -C "$1" submodule update --recursive
         fi
     else
         print_status "Cloning $3 from $2..."
@@ -848,8 +841,8 @@ dot_git_clone_or_update()
             exit 1
         fi
         git clone --recurse-submodules "$2" "$1"
-        git checkout --force "$3"
-        git submodule update --recursive
+        git -C "$1" checkout --force "$3"
+        git -C "$1" submodule update --recursive
     fi
 }
 
