@@ -1076,6 +1076,19 @@ dot_get_available_package_version()
 }
 
 
+# Compare version strings and check if version1 >= version2.
+# Currently, works on Debian-based distros only.
+# Args:
+#   $1 - Version 1
+#   $2 - Version 2
+# Return:
+#   $? - 0 if version1 >= version2, 1 otherwise
+dot_versions_ge()
+{
+    dpkg --compare-versions "$1" ge "$2"
+}
+
+
 
 ## -------------------------------------------------------------
 ## Other
