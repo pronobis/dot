@@ -959,12 +959,15 @@ dot_check_packages()
     DOT_INSTALLED=""
     for pkg in $args
     do
-        # Note: db:Status-Status is only available in newer dpkg-query, so we use Status
-        status=$(dpkg-query -W -f='${Status}' $pkg 2> /dev/null || true)
-        status=${status#* * }
-        # Check if package installed
-        # The 'installedinstalled' will be reported if both i386 and amd64 versions are installed
-        if [ "$status" != "installed" ] && [ "$status" != "installedinstalled" ]
+        # We tried several methods of detecting if package is installed before:
+        # - dpkg-query -W -f='${Status}' $pkg 2> /dev/null || true
+        #   The status values differed between system versions. In Ubuntu 16.04
+        #   and in Ubuntu 14.04 the output was different when package was installed
+        #   for multiple architectures.
+        # - dpkg-query -W -f='${db:Status-Status}' $pkg 2> /dev/null || true
+        #   Not available in dpkg-query in Ubuntu 14.04
+        status=$(dpkg -l $pkg | grep $pkg | awk '$1=="ii" {print $1}' 2> /dev/null || true)
+        if [ -z "$status" ]
         then
             DOT_NOT_INSTALLED=${DOT_NOT_INSTALLED:+${DOT_NOT_INSTALLED} }$pkg
         else
