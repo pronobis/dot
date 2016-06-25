@@ -966,7 +966,7 @@ dot_check_packages()
         #   for multiple architectures.
         # - dpkg-query -W -f='${db:Status-Status}' $pkg 2> /dev/null || true
         #   Not available in dpkg-query in Ubuntu 14.04
-        status=$(dpkg -l $pkg | grep $pkg | awk '$1=="ii" {print $1}' 2> /dev/null || true)
+        status=$(dpkg -l $pkg 2> /dev/null | grep $pkg | awk '$1=="ii" {print $1}' || true)
         if [ -z "$status" ]
         then
             DOT_NOT_INSTALLED=${DOT_NOT_INSTALLED:+${DOT_NOT_INSTALLED} }$pkg
