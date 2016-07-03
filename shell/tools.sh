@@ -443,9 +443,9 @@ dot_fill_config()
             fi
             # envsubst < "${DOT_MODULE_DIR}/config/$i" > "${HOME}/$i"  # Does not work with busybox
             sed \
-                -e 's#${HOME}#'"${HOME}"'#' \
-                -e 's#${DOT_DIR}#'"${DOT_DIR}"'#' \
-                -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#' \
+                -e 's#${HOME}#'"${HOME}"'#g' \
+                -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
+                -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
                 "${DOT_MODULE_DIR}/config/$i" > "${HOME}/$i"
         else
             print_warning "No config file $i found!"
@@ -479,9 +479,9 @@ dot_fill_config_sys()
             fi
             # envsubst < "${DOT_MODULE_DIR}/config-sys/$i" > "/$i"  # Does not work with busybox
             sed \
-                -e 's#${HOME}#'"${HOME}"'#' \
-                -e 's#${DOT_DIR}#'"${DOT_DIR}"'#' \
-                -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#' \
+                -e 's#${HOME}#'"${HOME}"'#g' \
+                -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
+                -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
                 "${DOT_MODULE_DIR}/config-sys/$i" | $DOT_SU tee "/$i" > /dev/null
         else
             print_warning "No config file $i found!"
