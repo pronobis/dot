@@ -1059,8 +1059,10 @@ dot_get_installed_package_version()
     then
         DOT_PACKAGE_VERSION=$version
         return 0
+    else
+        DOT_PACKAGE_VERSION=""
+        return 1
     fi
-    return 1
 }
 
 
