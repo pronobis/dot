@@ -1106,3 +1106,17 @@ dot_parallel_make()
     cpus=$(grep -c ^processor /proc/cpuinfo)
     make -j${cpus}
 }
+
+
+# Check if a string contains a substring
+# Args:
+#   $1 - String
+#   $2 - Substring
+# Return:
+#   $? - 0 if string contains substring, 1 otherwise
+dot_contains()
+{
+    string="$1"
+    substring="$2"
+    [ "${string#*$substring}" != "$string" ]
+}
