@@ -39,10 +39,16 @@ print_usage()
     echo "  update  - Update a module. Usage:"
     echo "              dot-get update [<name>]"
     echo "            Arguments: "
-    echo "              <name> - Module dir name or a wildcard."
+    echo "              <name> - Module dir name or a part of it."
     echo "                       If not given, use the module in the current directory."
     echo "                       Use 'dot' to update dot."
     echo "                       Use 'all' to update all modules and dot itself."
+    echo
+    echo "  install - Install a module. Usage:"
+    echo "              dot-get install [<name>]"
+    echo "            Arguments: "
+    echo "              <name> - Module dir name or a part of it."
+    echo "                       If not given, use the module in the current directory."
 }
 
 
@@ -313,14 +319,8 @@ cmd_update()
             modules="dot"
         else
             # Try matching the modules to name
-            local IFS=':'
-            for i in $DOT_MODULES
-            do
-                if [ "${i#$name}" != "$i" ]
-                then
-                    modules=${modules:+${modules}:}$i
-                fi
-            done
+            dot_get_modules_matching_name "$name"
+            modules=$DOT_MATCHING_MODULES
         fi
     else
         # Check if we are in a module now
@@ -357,7 +357,50 @@ cmd_update()
             $DOT_GIT submodule update --recursive
         fi
     done
+}
 
+
+# ------------------------------------------------------------------------------
+# Installing
+# ------------------------------------------------------------------------------
+cmd_install()
+{
+    local name=$1
+    local modules=""
+
+    # Obtain modules based on name
+    dot_get_modules
+    if [ -n "$name" ]
+    then
+        # Try matching the modules to name
+        dot_get_modules_matching_name "$name"
+        modules=$DOT_MATCHING_MODULES
+    else
+        # Check if we are in a module now
+        local cur_dir=$(pwd)
+        local cur_module=${cur_dir#$DOT_DIR/modules/}
+        if [ "$cur_module" != "$cur_dir" ]
+        then
+            cur_module=${cur_module%%/*}
+            modules=$cur_module
+        fi
+    fi
+
+    # Anything to install
+    if [ -z "$modules" ]
+    then
+        print_error "Don't know what to install."
+        exit 1
+    fi
+
+    # Update each module
+    local IFS=':'
+    for i in $modules
+    do
+        print_status "Installing module $i..."
+        cd "$DOT_DIR/modules/$i"
+        ./install.sh
+    done
 }
 
 
@@ -471,6 +514,10 @@ elif [ "$command" = "update" ]
 then
     shift
     cmd_update "$@"
+elif [ "$command" = "install" ]
+then
+    shift
+    cmd_install "$@"
 elif [ "$command" = "status" ]
 then
     shift
