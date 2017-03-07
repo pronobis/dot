@@ -1140,9 +1140,9 @@ dot_get_modules()
 }
 
 
-# Return names of modules starting with the argument
+# Return names of modules containing the argument
 # Args:
-#   $1 - First characters of the module name
+#   $1 - Part of module name
 # Return:
 #   $DOT_MATCHING_MODULES - a list of matching modules (separated by colons)
 dot_get_modules_matching_name()
@@ -1151,7 +1151,7 @@ dot_get_modules_matching_name()
     local IFS=':'
     for i in $DOT_MODULES
     do
-        if [ "${i#$name}" != "$i" ]
+        if [ "${i#*$name}" != "$i" ]
         then
             DOT_MATCHING_MODULES=${DOT_MATCHING_MODULES:+${DOT_MATCHING_MODULES}:}$i
         fi
