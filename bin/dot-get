@@ -7,6 +7,7 @@ then
     exit 1
 fi
 . $DOT_DIR/shell/tools.sh
+. $DOT_DIR/shell/tools-shell.sh
 
 # Find git
 dot_get_git
@@ -254,7 +255,7 @@ cmd_add()
     print_status "Installing module $url:"
 
     # Get list of all modules with urls
-    dot_get_modules
+    _dot_get_modules
     get_module_urls
 
     # Is this url already in the urls?
@@ -275,7 +276,7 @@ cmd_add()
     while [ -n "$all_deps" ]
     do
         # Get updated list of all modules with urls
-        dot_get_modules
+        _dot_get_modules
         get_module_urls
 
         # Get first dependency on the list
@@ -307,7 +308,7 @@ cmd_update()
     local modules=""
 
     # Obtain modules based on name
-    dot_get_modules
+    _dot_get_modules
     if [ -n "$name" ]
     then
         if [ "$name" = "all" ]
@@ -320,7 +321,7 @@ cmd_update()
             modules="dot"
         else
             # Try matching the modules to name
-            dot_get_modules_matching_name "$name"
+            _dot_get_modules_matching_name "$name"
             modules=$DOT_MATCHING_MODULES
         fi
     else
@@ -370,7 +371,7 @@ cmd_install()
     local modules=""
 
     # Obtain modules based on name
-    dot_get_modules
+    _dot_get_modules
     if [ -n "$name" ]
     then
         if [ "$name" = "all" ]
@@ -379,7 +380,7 @@ cmd_install()
             modules="$DOT_MODULES"
         else
             # Try matching the modules to name
-            dot_get_modules_matching_name "$name"
+            _dot_get_modules_matching_name "$name"
             modules="$DOT_MATCHING_MODULES"
         fi
     else
@@ -418,7 +419,7 @@ cmd_install()
 cmd_status()
 {
     # Get list of all modules
-    dot_get_modules
+    _dot_get_modules
     get_max_module_name_len
 
     # If no modules, set name len fixed
@@ -453,7 +454,7 @@ cmd_status()
 cmd_list()
 {
     # Get list of all modules with urls
-    dot_get_modules
+    _dot_get_modules
     get_module_urls
     get_max_module_name_len
     get_max_module_url_len
