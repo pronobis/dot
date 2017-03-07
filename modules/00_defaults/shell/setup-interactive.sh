@@ -16,7 +16,7 @@ cdot()
         # Find first module matching name
         for i in `ls $DOT_DIR/modules | sort`
         do
-            if [ "${i/$name/}" != "$i" ]
+            if [ "${i#*$name}" != "$i" ]
             then
                 cd $DOT_DIR/modules/$i
                 break
