@@ -49,6 +49,7 @@ print_usage()
     echo "            Arguments: "
     echo "              <name> - Module dir name or a part of it."
     echo "                       If not given, use the module in the current directory."
+    echo "                       Use 'all' to install all modules."
 }
 
 
@@ -311,7 +312,7 @@ cmd_update()
     then
         if [ "$name" = "all" ]
         then
-            # Get all modules
+            # Use all modules and dot
             modules="dot:$DOT_MODULES"
         elif [ "$name" = "dot" ]
         then
@@ -372,9 +373,15 @@ cmd_install()
     dot_get_modules
     if [ -n "$name" ]
     then
-        # Try matching the modules to name
-        dot_get_modules_matching_name "$name"
-        modules=$DOT_MATCHING_MODULES
+        if [ "$name" = "all" ]
+        then
+            # Use all modules
+            modules="$DOT_MODULES"
+        else
+            # Try matching the modules to name
+            dot_get_modules_matching_name "$name"
+            modules="$DOT_MATCHING_MODULES"
+        fi
     else
         # Check if we are in a module now
         local cur_dir=$(pwd)
@@ -400,6 +407,7 @@ cmd_install()
         print_status "Installing module $i..."
         cd "$DOT_DIR/modules/$i"
         ./install.sh
+        echo
     done
 }
 
