@@ -1,5 +1,9 @@
 # -*- mode: sh -*-
 
+## ----------------------------------------------------------
+## Functions used by dot scripts
+## ----------------------------------------------------------
+
 # Include guard
 [ -n "$DOT_SETUP_TOOLS" ] && return || readonly DOT_SETUP_TOOLS=1
 
