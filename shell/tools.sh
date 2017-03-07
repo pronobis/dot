@@ -650,7 +650,7 @@ dot_prepend_section_to_config()
 dot_install_pip2_user()
 {
     print_status "Installing $@ for Python 2 in ~/.local"
-    if ! dot_inhibit pip2 install --user --upgrade "$@"
+    if ! dot_inhibit pip install --user --upgrade "$@"
     then
         print_error "Error while running pip!"
         exit 1
@@ -678,7 +678,7 @@ dot_install_pip3_user()
 dot_install_pip2()
 {
     print_status "Installing $@ for Python 2 in default location"
-    if ! dot_inhibit pip2 install --upgrade "$@"
+    if ! dot_inhibit pip install --upgrade "$@"
     then
         print_error "Error while running pip!"
         exit 1
