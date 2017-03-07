@@ -58,5 +58,4 @@ _dotget_completion()
             ;;
     esac
 }
-complete -o nospace -F _dotget_completion dot-get
-
+complete -F _dotget_completion dot-get

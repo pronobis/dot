@@ -15,4 +15,4 @@ _cdot_completion()
     COMPREPLY=( $(compgen -W "${DOT_MODULES//:/ }" -- ${cur}) )
     return 0
 }
-complete -o nospace -F _cdot_completion cdot
+complete -F _cdot_completion cdot
