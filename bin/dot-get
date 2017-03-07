@@ -49,21 +49,6 @@ print_usage()
 # ------------------------------------------------------------------------------
 # Functions
 # ------------------------------------------------------------------------------
-get_modules()
-{
-    DOT_MODULES=""
-    local p=""
-    for i in `ls $DOT_DIR/modules | sort`
-    do
-        p="$DOT_DIR/modules/$i"
-        if [ -d "$p" ] && [ $(basename "$p") != "temp_clone" ] && [ -f $p/.git/config ]
-        then
-            DOT_MODULES=${DOT_MODULES:+${DOT_MODULES}:}$i
-        fi
-    done
-}
-
-
 get_module_urls()
 {
     DOT_MODULE_URLS=""
@@ -262,7 +247,7 @@ cmd_add()
     print_status "Installing module $url:"
 
     # Get list of all modules with urls
-    get_modules
+    dot_get_modules
     get_module_urls
 
     # Is this url already in the urls?
@@ -283,7 +268,7 @@ cmd_add()
     while [ -n "$all_deps" ]
     do
         # Get updated list of all modules with urls
-        get_modules
+        dot_get_modules
         get_module_urls
 
         # Get first dependency on the list
@@ -315,7 +300,7 @@ cmd_update()
     local modules=""
 
     # Obtain modules based on name
-    get_modules
+    dot_get_modules
     if [ -n "$name" ]
     then
         if [ "$name" = "all" ]
@@ -382,7 +367,7 @@ cmd_update()
 cmd_status()
 {
     # Get list of all modules
-    get_modules
+    dot_get_modules
     get_max_module_name_len
 
     # If no modules, set name len fixed
@@ -417,7 +402,7 @@ cmd_status()
 cmd_list()
 {
     # Get list of all modules with urls
-    get_modules
+    dot_get_modules
     get_module_urls
     get_max_module_name_len
     get_max_module_url_len

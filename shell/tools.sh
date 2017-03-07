@@ -1120,3 +1120,21 @@ dot_contains()
     substring="$2"
     [ "${string#*$substring}" != "$string" ]
 }
+
+
+# Get a list of downloaded modules
+# Return:
+#    $DOT_MODULES - a list of modules (separated by colons)
+dot_get_modules()
+{
+    DOT_MODULES=""
+    local p=""
+    for i in `ls $DOT_DIR/modules | sort`
+    do
+        p="$DOT_DIR/modules/$i"
+        if [ -d "$p" ] && [ $(basename "$p") != "temp_clone" ] && [ -f $p/.git/config ]
+        then
+            DOT_MODULES=${DOT_MODULES:+${DOT_MODULES}:}$i
+        fi
+    done
+}
