@@ -824,15 +824,15 @@ dot_git_clone_or_update()
             exit 1
         fi
         # Update
+        print_status "Fetching $2..."
+        git -C "$1" fetch origin
         if git -C "$1" show-ref -q --verify "refs/tags/$3"
         then
-            print_status "Fetching tag $3 from $2..."
-            git -C "$1" fetch origin
+            print_status "Checking out tag $3..."
             git -C "$1" checkout --force "$3"
             git -C "$1" submodule update --recursive
         else
-            print_status "Pulling branch $3 from $2..."
-            git -C "$1" fetch origin
+            print_status "Merging branch $3 from $2..."
             git -C "$1" checkout --force "$3"
             git -C "$1" merge origin/"$3"
             git -C "$1" submodule update --recursive
