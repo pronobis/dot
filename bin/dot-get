@@ -100,6 +100,27 @@ is_updated()
 }
 
 
+is_modified()
+{
+    local name=$1
+
+    # Are we checking a module or dot itself?
+    if [ "$name" = "dot" ]
+    then
+        cd "$DOT_DIR"
+    else
+        cd "$DOT_DIR/modules/$name"
+    fi
+
+    if git diff --no-ext-diff --quiet --exit-code
+    then
+        echo "0"
+    else
+        echo "1"
+    fi
+}
+
+
 is_installed()
 {
     local name=$1
@@ -430,21 +451,21 @@ cmd_status()
 
     # Print header
     awk "BEGIN{OFS=\"-\"; NF=($MAX_NAME_LEN+3)
-               printf \"+%s+---------+-----------+\n\",\$0
-               printf \"| ${YELLOW}${BOLD}%-${MAX_NAME_LEN}s${NO_FORMAT} | ${YELLOW}${BOLD}%-3s${NO_FORMAT} | ${YELLOW}${BOLD}%-3s${NO_FORMAT} |\n\",\"Name\",\"Updated\",\"Installed\"
-               printf \"+%s+---------+-----------+\n\",\$0}"
+               printf \"+%s+---------+----------+-----------+\n\",\$0
+               printf \"| ${YELLOW}${BOLD}%-${MAX_NAME_LEN}s${NO_FORMAT} | ${YELLOW}${BOLD}%-3s${NO_FORMAT} | ${YELLOW}${BOLD}%-3s${NO_FORMAT} | ${YELLOW}${BOLD}%-3s${NO_FORMAT} |\n\",\"Name\",\"Updated\",\"Modified\",\"Installed\"
+               printf \"+%s+---------+----------+-----------+\n\",\$0}"
 
     # Get results
     local IFS=':'
     for i in dot $DOT_MODULES
     do
         # Since awk has problems with terminal escape \e in printf, we just print char 27
-        echo "$i $(is_updated $i) $(is_installed $i)" | \
-            awk "{printf \"| %-${MAX_NAME_LEN}s | %c[%sm%-7s%c[0m | %c[%sm%-9s%c[0m |\n\",\$1,27,\$2?\"92\":\"91\",\$2?\"Yes\":\"No\",27,27,\$3?\"92\":\"91\",\$3?\"Yes\":\"No\",27}"
+        echo "$i $(is_updated $i) $(is_modified $i) $(is_installed $i)" | \
+            awk "{printf \"| %-${MAX_NAME_LEN}s | %c[%sm%-7s%c[0m | %c[%sm%-8s%c[0m | %c[%sm%-9s%c[0m |\n\",\$1,27,\$2?\"92\":\"91\",\$2?\"Yes\":\"No\",27,27,\$3?\"91\":\"92\",\$3?\"Yes\":\"No\",27,27,\$4?\"92\":\"91\",\$4?\"Yes\":\"No\",27}"
     done
 
     # Print footer
-    awk "BEGIN{\$0=\"\"; OFS=\"-\"; NF=($MAX_NAME_LEN+3); printf \"+%s+---------+-----------+\n\",\$0}"
+    awk "BEGIN{\$0=\"\"; OFS=\"-\"; NF=($MAX_NAME_LEN+3); printf \"+%s+---------+----------+-----------+\n\",\$0}"
 }
 
 
