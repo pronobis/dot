@@ -45,6 +45,8 @@ print_usage()
     echo "                       Use 'dot' to update dot."
     echo "                       Use 'all' to update all modules and dot itself."
     echo
+    echo "  resolve - Resolve missing dependencies."
+    echo
     echo "  install - Install a module. Usage:"
     echo "              dot-get install [<name>]"
     echo "            Arguments: "
@@ -72,6 +74,24 @@ get_module_urls()
         u=${u##*URL: }
         DOT_MODULE_URLS=${DOT_MODULE_URLS:+${DOT_MODULE_URLS} }$u
     done
+}
+
+
+get_module_dependencies()
+{
+    # Args
+    local name=$1
+
+    DEPENDENCIES=""
+    if [ -f $DOT_DIR/modules/$name/dependencies ]
+    then
+        for i in $(cat $DOT_DIR/modules/$name/dependencies)
+        do
+            i="${i#"${i%%[![:space:]]*}"}"
+            i="${i%"${i##*[![:space:]]}"}"
+            DEPENDENCIES=${DEPENDENCIES:+${DEPENDENCIES} }$i
+        done
+    fi
 }
 
 
@@ -196,16 +216,7 @@ clone_module()
     mv $DOT_DIR/modules/temp_clone $DOT_DIR/modules/$name
 
     # Get dependencies
-    DEPENDENCIES=""
-    if [ -f $DOT_DIR/modules/$name/dependencies ]
-    then
-        for i in $(cat $DOT_DIR/modules/$name/dependencies)
-        do
-            i="${i#"${i%%[![:space:]]*}"}"
-            i="${i%"${i##*[![:space:]]}"}"
-            DEPENDENCIES=${DEPENDENCIES:+${DEPENDENCIES} }$i
-        done
-    fi
+    get_module_dependencies $name
 }
 
 
@@ -311,12 +322,76 @@ cmd_add()
             print_status "Installing dependency $url:"
             clone_module $url
             # Add dependencies of that one
-            all_deps=${all_deps:+${all_deps} }$DEPENDENCIES
+            if [ -n "$DEPENDENCIES" ]
+            then
+                all_deps=${all_deps:+${all_deps} }$DEPENDENCIES
+            fi
             print_status "Done!"
         else
             print_status "Dependency $url is already installed."
         fi
     done
+}
+
+
+# ------------------------------------------------------------------------------
+# Resolving
+# ------------------------------------------------------------------------------
+cmd_resolve()
+{
+    # Get list of all modules with urls
+    _dot_get_modules
+    get_module_urls
+
+    # Cannot make this var local due to bug in dash
+    # https://bugs.launchpad.net/ubuntu/+source/dash/+bug/139097
+    all_deps=""
+
+    # Collect all dependencies of existing modules
+    local OLD_IFS="$IFS"
+    local IFS=':'
+    for i in $DOT_MODULES
+    do
+        local IFS="$OLD_IFS"
+        get_module_dependencies $i
+        if [ -n "$DEPENDENCIES" ]
+        then
+            all_deps=${all_deps:+${all_deps} }$DEPENDENCIES
+        fi
+    done
+
+    # Download dependencies
+    local installed_sth=""
+    while [ -n "$all_deps" ]
+    do
+        # Get updated list of all modules with urls
+        _dot_get_modules
+        get_module_urls
+
+        # Get first dependency on the list
+        url=${all_deps%% *}
+        all_deps=${all_deps#$url}
+        all_deps=${all_deps# }
+
+        # If not yet added, clone
+        if ! is_url_added $url
+        then
+            print_status "Installing dependency $url:"
+            installed_sth="1"
+            clone_module $url
+            # Add dependencies of that one
+            if [ -n "$DEPENDENCIES" ]
+            then
+                all_deps=${all_deps:+${all_deps} }$DEPENDENCIES
+            fi
+            print_status "Done!"
+        fi
+    done
+
+    if [ -z "$installed_sth" ]
+    then
+        print_status "All dependencies are already installed."
+    fi
 }
 
 
@@ -548,6 +623,10 @@ elif [ "$command" = "install" ]
 then
     shift
     cmd_install "$@"
+elif [ "$command" = "resolve" ]
+then
+    shift
+    cmd_resolve
 elif [ "$command" = "status" ]
 then
     shift
