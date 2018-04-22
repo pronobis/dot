@@ -953,6 +953,42 @@ dot_is_max_ubuntu_version()
 }
 
 
+# Check if we are on Debian/Raspbian with version >= given.
+# Args:
+#   $1 - Min Debian version
+# Return:
+#   $? - 0 if version number >= given, 1 otherwise
+dot_is_min_debian_version()
+{
+    dist_id=$(lsb_release -si 2>/dev/null || true)
+    if [ "$dist_id" = "Debian" ] || [ "$dist_id" = "Raspbian" ]
+    then  # On Debian
+        cur_ver=$(lsb_release -sr)
+        [ "$(echo "$cur_ver >= $1" | bc -l)" = "1" ]
+    else
+        return 1
+    fi
+}
+
+
+# Check if we are on Debian/Raspbian with version <= given.
+# Args:
+#   $1 - Max Debian version
+# Return:
+#   $? - 0 if version number <= given, 1 otherwise
+dot_is_max_debian_version()
+{
+    dist_id=$(lsb_release -si 2>/dev/null || true)
+    if [ "$dist_id" = "Debian" ] || [ "$dist_id" = "Raspbian" ]
+    then  # On Debian
+        cur_ver=$(lsb_release -sr)
+        [ "$(echo "$cur_ver <= $1" | bc -l)" = "1" ]
+    else
+        return 1
+    fi
+}
+
+
 # Check if we are on Ubuntu with the given codename.
 # Args:
 #   $1 - Ubuntu codename, e.g. trusty
