@@ -894,6 +894,18 @@ dot_check_ubuntu()
 }
 
 
+# Check if we are on Raspbian and exit otherwise.
+dot_check_raspbian()
+{
+    dist_id=$(lsb_release -si 2>/dev/null || true)
+    if [ "$dist_id" != "Raspbian" ]
+    then
+        print_error "This module can only be installed on Raspbian"
+        exit 1
+    fi
+}
+
+
 # Check if we are on a Debian derivative and exit otherwise.
 dot_check_debian_derivative()
 {
