@@ -894,6 +894,17 @@ dot_check_ubuntu()
 }
 
 
+# Check if we are on a Debian derivative and exit otherwise.
+dot_check_debian_derivative()
+{
+    if [ ! -f /etc/debian_version ]
+    then
+        print_error "This module can only be installed on a Debian derivative!"
+        exit 1
+    fi
+}
+
+
 # Check if we are on Ubuntu with version >= given.
 # Args:
 #   $1 - Min Ubuntu version
