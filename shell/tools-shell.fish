@@ -40,7 +40,7 @@ end
 # Args:
 #   $1 - The path to add
 function __dot_add_path
-    if [ -d $argv[1] ]
+    if not echo "$PATH" | grep -Eq '(^|:)$argv[1]($|:)'; and [ -d $argv[1] ]
         set -gx PATH $argv[1] $PATH
     end
 end

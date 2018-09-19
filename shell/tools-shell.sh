@@ -54,7 +54,7 @@ __dot_get_modules_matching_name()
 #   $1 - The path to add
 __dot_add_path()
 {
-    if [ -d "$1" ]
+    if ! echo "$PATH" | grep -Eq "(^|:)$1($|:)" && [ -d "$1" ]
     then
         export PATH="$1${PATH:+:${PATH}}"
     fi
