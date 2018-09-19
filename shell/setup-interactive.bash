@@ -11,13 +11,13 @@
 
 
 # Run setup-interactive.bash in all modules
-if [ -d $DOT_DIR/modules ]
+if [ -d "$DOT_DIR/modules" ]
 then
     for i in `ls $DOT_DIR/modules | sort`; do
         i="$DOT_DIR/modules/$i"
-        if [ -d $i ]
+        if [ -d "$i" ]
         then
-            # Run the setup.sh in each module
+            # Run the in each module
             if [ -f "$i/shell/setup-interactive.bash" ]
             then
                 DOT_MODULE_DIR="$i"

@@ -16,7 +16,7 @@ then
     touch "${PROFILE_FILE}"
 fi
 
-## Add the setup.profile to the ~/.profile if not yet added
+## Add the setup.profile if not yet added
 if ! grep -q ". $DOT_DIR/shell/setup.profile" "${PROFILE_FILE}"
 then
     cat << EOF >> ${PROFILE_FILE}
@@ -47,7 +47,7 @@ then
     touch "${BASHRC_FILE}"
 fi
 
-## Add the setup.bash to the ~/.profile if not yet added
+## Add the setup.bash if not yet added
 if ! grep -q ". $DOT_DIR/shell/setup.bash" "${BASHRC_FILE}"
 then
     cat << EOF >> ${BASHRC_FILE}

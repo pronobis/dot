@@ -11,15 +11,15 @@
 PATH="$DOT_DIR/bin:$PATH"
 
 # Run setup.profile in all modules
-if [ -d $DOT_DIR/modules ]
+if [ -d "$DOT_DIR/modules" ]
 then
     for i in `ls $DOT_DIR/modules | sort`; do
         i="$DOT_DIR/modules/$i"
-        if [ -d $i ]
+        if [ -d "$i" ]
         then
-            # Add  all module internal binary dirs to path
+            # Add all module internal binary dirs to path
             PATH="$i/bin:$PATH"
-            # Run the setup.profile in each module
+            # Run in each module
             if [ -f "$i/shell/setup.profile" ]
             then
                 DOT_MODULE_DIR="$i"
