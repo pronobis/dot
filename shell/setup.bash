@@ -40,23 +40,3 @@ if [ "${-#*i*}" != "$-" ]
 then
     . "$DOT_DIR/shell/setup-interactive.bash"
 fi
-
-# Functions for accessing the sys and cmd commands
-sys()
-{
-    $DOT_DIR/scripts/sys $@
-    if [ -d "$DOT_DIR/system" ]
-    then
-        [ -f "$DOT_DIR/system/setup.sh" ] && . "$DOT_DIR/system/setup.sh"
-        [ -f "$DOT_DIR/system/setup.bash" ] && . "$DOT_DIR/system/setup.bash"
-    fi
-}
-cmd()
-{
-    $DOT_DIR/scripts/cmd $@
-    if [ -d "$DOT_DIR/system" ]
-    then
-        [ -f "$DOT_DIR/system/setup.sh" ] && . "$DOT_DIR/system/setup.sh"
-        [ -f "$DOT_DIR/system/setup.bash" ] && . "$DOT_DIR/system/setup.bash"
-    fi
-}

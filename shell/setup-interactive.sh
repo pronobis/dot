@@ -31,3 +31,23 @@ if [ -d "$DOT_DIR/system" ] && [ -f "$DOT_DIR/system/setup.sh" ]
 then
     . "$DOT_DIR/system/setup.sh"
 fi
+
+# Functions for accessing the sys and cmd commands
+sys()
+{
+    $DOT_DIR/scripts/sys $@
+    if [ -d "$DOT_DIR/system" ]
+    then
+        [ -f "$DOT_DIR/system/setup.sh" ] && . "$DOT_DIR/system/setup.sh"
+        [ -n "$BASH_VERSION" ] && [ -f "$DOT_DIR/system/setup.bash" ] && . "$DOT_DIR/system/setup.bash"
+    fi
+}
+cmd()
+{
+    $DOT_DIR/scripts/cmd $@
+    if [ -d "$DOT_DIR/system" ]
+    then
+        [ -f "$DOT_DIR/system/setup.sh" ] && . "$DOT_DIR/system/setup.sh"
+        [ -n "$BASH_VERSION" ] && [ -f "$DOT_DIR/system/setup.bash" ] && . "$DOT_DIR/system/setup.bash"
+    fi
+}
