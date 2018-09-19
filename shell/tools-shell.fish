@@ -11,13 +11,12 @@ if [ -z "$DOT_TOOLS_SHELL_FISH" ]
 
 # Get a list of downloaded modules
 # Return:
-#   $DOT_MODULES - a list of modules (separated by colons)
+#   - A list of modules
 function _dot_get_modules
-    set -e DOT_MODULES
     for i in (ls $DOT_DIR/modules | sort)
         set p "$DOT_DIR/modules/$i"
         if [ -d $p ]; and [ (basename $p) != "temp_clone" ]; and [ -f $p/.git/config ]
-            set -g DOT_MODULES $DOT_MODULES $i
+            echo $i
         end
     end
 end
@@ -27,12 +26,11 @@ end
 # Args:
 #   $argv[1] - Part of module name
 # Return:
-#   $DOT_MATCHING_MODULES - a list of matching modules (separated by colons)
+#   - A list of matching modules (separated by colons)
 function _dot_get_modules_matching_name
-    set -e DOT_MATCHING_MODULES
-    for i in $DOT_MODULES
+    for i in (_dot_get_modules)
         if string match -q "*$argv[1]*" "$i"
-            set -g DOT_MATCHING_MODULES $DOT_MATCHING_MODULES $i
+            echo $i
         end
     end
 end
