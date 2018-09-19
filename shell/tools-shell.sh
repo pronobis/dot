@@ -5,7 +5,7 @@
 ## ----------------------------------------------------------
 
 # Include guard
-[ -n "$DOT_SETUP_TOOLS_SHELL" ] && return || readonly DOT_SETUP_TOOLS_SHELL=1
+[ -n "$DOT_TOOLS_SHELL_SH" ] && return || readonly DOT_TOOLS_SHELL_SH=1
 
 
 # Get a list of downloaded modules

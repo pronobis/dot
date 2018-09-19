@@ -1,7 +1,7 @@
 # -*- mode: sh -*-
 
 # Include guard
-[ -n "$DOT_SETUP_FORMATTING" ] && return || readonly DOT_SETUP_FORMATTING=1
+[ -n "$DOT_FORMATTING_SH" ] && return || readonly DOT_FORMATTING_SH=1
 
 # Regular Colors
 BLACK='\033[30m'
