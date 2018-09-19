@@ -66,4 +66,35 @@ fi
 
 
 ## ---------------------------------------------------------
+## Install setup.fish
+## ---------------------------------------------------------
+CONFIG_FISH_FILE="$HOME/.config/fish/config.fish"
+# Header
+print_header "Setting up $CONFIG_FISH_FILE"
+
+# Create config.fish
+if [ ! -f ${CONFIG_FISH_FILE} ]
+then
+    touch "${CONFIG_FISH_FILE}"
+fi
+
+## Add the setup.fish if not yet added
+if ! grep -q ". $DOT_DIR/shell/setup.fish" "${CONFIG_FISH_FILE}"
+then
+    cat << EOF >> ${CONFIG_FISH_FILE}
+
+## ---------------
+## Setup dot files
+## ---------------
+set -x DOT_DIR "${DOT_DIR}"
+source ${DOT_DIR}/shell/setup.fish
+
+EOF
+    print_status "Done!"
+else
+    print_status "Already set up, doing nothing!"
+fi
+
+
+## ---------------------------------------------------------
 . "$dot_shell/install_main_footer.sh"
