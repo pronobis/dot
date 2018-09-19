@@ -2,7 +2,7 @@
 
 # dot
 
-dot is a versatile framework for package installation and configuration file management (dot files) for POSIX systems (currently, with particular focus on Ubuntu and embedded Linux). Designed to support wide range of custom configurations, yet making package and dot file installation clean and easy. Offers:
+dot is a versatile framework for package installation and configuration file management (dot files) for POSIX systems (even with non-POSIX compliant shells, currently, with particular focus on Ubuntu and embedded Linux). Designed to support wide range of custom configurations, yet making package and dot file installation clean and easy. Offers:
 
 * modular architecture with modules for specific configuration sets (e.g. public terminal-only configuration, public desktop configuration, private laptop configuration etc.)
 * specifying dependencies between the modules
@@ -15,7 +15,7 @@ Check out the default module provided with this package in `modules/00_defaults`
 
 ## How it Works?
 
-The basic idea behind dot is simple. You clone the dot repository into a convenient location (e.g. `~/.dot`) and run `install.sh`. This will add one line to your `.profile` and `.bashrc` files. No other fiels are modified by dot itself. Then, you create your own configuration sets in the `modules` sub-folder. Each module should be stored in its own git repository. The name of the module determines it's priority as it is often the case for Linux `.d` folders. Using number prefixes such as `10_dot-module-my` is a good idea. Every module placed in the `modules` folder is detected and used automatically.
+The basic idea behind dot is simple. You clone the dot repository into a convenient location (e.g. `~/.dot`) and run `install.sh`. This will add one line to your `.profile`, `.bashrc`, and `.config/fish/config.fish` files. No other fiels are modified by dot itself. Then, you create your own configuration sets in the `modules` sub-folder. Each module should be stored in its own git repository. The name of the module determines it's priority as it is often the case for Linux `.d` folders. Using number prefixes such as `10_dot-module-my` is a good idea. Every module placed in the `modules` folder is detected and used automatically.
 
 
 ## Module Examples
@@ -34,11 +34,16 @@ Each module should be stored in its own git repo which will be cloned into the `
 * `config-sys` - Global system config files in the same folder structure in which they should be placed in the system root folder `/`.
 * `opt` - Folder where local dependencies are installed.
 * `shell` - Shell scripts configuring the environment. Several files can be present there:
-  * `setup.profile` - Executed for interactive and non-interactive login sessions for any POSIX shell.
-  * `setup.bash` - Executed for interactive and non-interactive, login and non-login Bash sessions.
+  * `setup.profile` - Executed for interactive and non-interactive login sessions for any POSIX and non-POSIX shell. Must be compatible with any login shell used.
   * `setup.sh` - Executed for interactive and non-interactive, login and non-login sessions for any POSIX shell.
-  * `setup-interactive.bash` - Executed for interactive, login and non-login Bash sessions.
+  * `setup.bash` - Executed for interactive and non-interactive, login and non-login Bash sessions.
+  * `setup.fish` - Executed for interactive and non-interactive, login and non-login Fish sessions.
+  * `setup-login.sh` - Executed for interactive and non-interactive login sessions for any POSIX shell. Guaranteed to run once even if the login shell is not-POSIX compliant.
+  * `setup-login.bash` - Executed for interactive and non-interactive login Bash sessions. Guaranteed to run once even if the login shell is not Bash.
+  * `setup-login.fish` - Executed for interactive and non-interactive login Fish sessions. Guaranteed to run once even if the login shell is not Fish.
   * `setup-interactive.sh` - Executed for interactive, login and non-login sessions for any POSIX shell.
+  * `setup-interactive.bash` - Executed for interactive, login and non-login Bash sessions.
+  * `setup-interactive.fish` - Executed for interactive, login and non-login Fish sessions.
 * `systems` - Systems provided by the module. See the systems description below.
 * `tmp` - Temporary folder used for storing temporary files during module installation. The files in this folder can be safely deleted after the installation finishes.
 * `default_name` - File containing the default name of the module used by the `dot-get` installer.
