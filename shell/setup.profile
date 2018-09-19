@@ -30,6 +30,15 @@ then
     done
 fi
 
+# Run setup-login.sh
+. "$DOT_DIR/shell/setup-login.sh"
+
+# Run setup-login.bash if running bash
+if [ -n "$BASH_VERSION" ]
+then
+    . "$DOT_DIR/shell/setup-login.bash"
+fi
+
 # Run setup.sh if not yet run
 . "$DOT_DIR/shell/setup.sh"
 

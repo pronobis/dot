@@ -12,7 +12,7 @@ set -g DOT_SETUP_FISH 1
 # Handle common login shell setup
 if status is-login
     # Add binary dir to PATH
-    set -x PATH "$DOT_DIR/bin" $PATH
+    set -gx PATH "$DOT_DIR/bin" $PATH
 
     # Run setup.profile in all modules if login shell
     if [ -d "$DOT_DIR/modules" ]
@@ -20,7 +20,7 @@ if status is-login
             set -l i "$DOT_DIR/modules/$i"
             if [ -d "$i" ]
                 # Add all module internal binary dirs to path
-                set -x PATH "$i/bin" $PATH
+                set -gx PATH "$i/bin" $PATH
                 # Run in each module
                 if [ -f "$i/shell/setup.profile" ]
                     set -g DOT_MODULE_DIR "$i"
@@ -30,6 +30,9 @@ if status is-login
             end
         end
     end
+
+    # Run setup-login.fish in all modules
+    source "$DOT_DIR/shell/setup-login.fish"
 end
 
 # Run setup.fish in all modules
@@ -45,11 +48,6 @@ if [ -d $DOT_DIR/modules ]
             end
         end
     end
-end
-
-# Run setup-login.fish in all modules if login shell
-if status is-login
-    source "$DOT_DIR/shell/setup-login.fish"
 end
 
 # Run setup-interactive.fish in all modules if interactive shell

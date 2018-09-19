@@ -6,6 +6,9 @@
 
 . "$DOT_DIR/shell/tools-shell.sh"
 
+# Debugging info
+export DOT_DEBUG="setup-interactive.sh:$$ $DOT_DEBUG"
+
 # Go to the module directory indicated by part of its name.
 # If no argument is given, go to the directory containing all modules.
 # Args:

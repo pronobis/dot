@@ -5,8 +5,8 @@
 ## ----------------------------------------------------------
 
 # Include guard
-if [ -z "$DOT_SETUP_INTERACTIVE_FISH" ]
-    set -g DOT_SETUP_INTERACTIVE_FISH 1
+if [ -z "$DOT_SETUP_LOGIN_FISH" ]
+    set -g DOT_SETUP_LOGIN_FISH 1
 
 
 # Run setup-login.fish in all modules

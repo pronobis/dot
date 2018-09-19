@@ -1,8 +1,8 @@
-# -*- mode: sh -*-
+# -*- mode: fish -*-
 ## ----------------------------------------------------------
 ## Executed for interactive and non-interactive,
-## login and non-login sessions for any POSIX shell.
+## login and non-login Fish sessions.
 ## ----------------------------------------------------------
 
 # Debugging info
-export DOT_DEBUG="setup.sh:$$ $DOT_DEBUG"
+set -gx DOT_DEBUG "setup.fish:"(echo %self) $DOT_DEBUG
