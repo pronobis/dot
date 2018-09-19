@@ -33,7 +33,7 @@ then
 fi
 
 # Add completion for dot-get
-_dotget_completion()
+__dotget_completion()
 {
     local cur prev
     COMPREPLY=()
@@ -48,14 +48,14 @@ _dotget_completion()
             ;;
         update)
             local DOT_MODULES
-            _dot_get_modules
+            __dot_get_modules
             DOT_MODULES="${DOT_MODULES:+${DOT_MODULES}:}:all:dot"
             COMPREPLY=( $(compgen -W "${DOT_MODULES//:/ }" -- ${cur}) )
             return 0
             ;;
         install)
             local DOT_MODULES
-            _dot_get_modules
+            __dot_get_modules
             COMPREPLY=( $(compgen -W "${DOT_MODULES//:/ }" -- ${cur}) )
             return 0
             ;;
@@ -63,4 +63,4 @@ _dotget_completion()
             ;;
     esac
 }
-complete -F _dotget_completion dot-get
+complete -F __dotget_completion dot-get

@@ -14,7 +14,7 @@
 # Get a list of downloaded modules
 # Return:
 #   $DOT_MODULES - a list of modules (separated by colons)
-_dot_get_modules()
+__dot_get_modules()
 {
     DOT_MODULES=""
     local p=""
@@ -34,7 +34,7 @@ _dot_get_modules()
 #   $1 - Part of module name
 # Return:
 #   $DOT_MATCHING_MODULES - a list of matching modules (separated by colons)
-_dot_get_modules_matching_name()
+__dot_get_modules_matching_name()
 {
     DOT_MATCHING_MODULES=""
     local IFS=':'
