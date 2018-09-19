@@ -9,6 +9,9 @@ if [ -z "$DOT_SETUP_INTERACTIVE_FISH" ]
     set -g DOT_SETUP_INTERACTIVE_FISH 1
 
 
+# Make tools available to interactive shells
+source "$DOT_DIR/shell/tools-shell.fish"
+
 # Run setup-interactive.fish in all modules
 if [ -d $DOT_DIR/modules ]
     for i in (ls "$DOT_DIR/modules" | sort)
