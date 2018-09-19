@@ -40,8 +40,23 @@ end
 # Args:
 #   $1 - The path to add
 function __dot_add_path
-    if not echo "$PATH" | grep -Eq '(^|:)$argv[1]($|:)'; and [ -d $argv[1] ]
+    if not contains $argv[1] $PATH; and [ -d $argv[1] ]
         set -gx PATH $argv[1] $PATH
+    end
+end
+
+
+# Add path to a colon-separated list of paths
+# Args:
+#   $1 - Name of variable holding the list
+#   $2 - The path to add
+function __dot_add_path_to_list
+    if not echo "$$argv[1]" | grep -Eq '(^|:)'$argv[2]'($|:)'; and [ -d $argv[2] ]
+        if [ -z "$$argv[1]" ]
+            set -gx $argv[1] $argv[2]
+        else
+            set -gx $argv[1] "$argv[2]:$$argv[1]"
+        end
     end
 end
 

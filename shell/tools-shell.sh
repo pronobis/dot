@@ -59,3 +59,16 @@ __dot_add_path()
         export PATH="$1${PATH:+:${PATH}}"
     fi
 }
+
+
+# Add path to a colon-separated list of paths
+# Args:
+#   $1 - Name of variable holding the list
+#   $2 - The path to add
+__dot_add_path_to_list()
+{
+    if ! eval "echo \${$1}" | grep -Eq "(^|:)$2($|:)" && [ -d "$2" ]
+    then
+        eval "export $1=\"$2\${$1:+:\${$1}}\""
+    fi
+}
