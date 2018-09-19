@@ -21,7 +21,7 @@ _dot_get_modules()
     for i in `ls $DOT_DIR/modules | sort`
     do
         p="$DOT_DIR/modules/$i"
-        if [ -d "$p" ] && [ $(basename "$p") != "temp_clone" ] && [ -f $p/.git/config ]
+        if [ -d "$p" ] && [ $(basename "$p") != "temp_clone" ] && [ -f "$p/.git/config" ]
         then
             DOT_MODULES=${DOT_MODULES:+${DOT_MODULES}:}$i
         fi
@@ -40,7 +40,7 @@ _dot_get_modules_matching_name()
     local IFS=':'
     for i in $DOT_MODULES
     do
-        if [ "${i#*$name}" != "$i" ]
+        if [ "${i#*$1}" != "$i" ]
         then
             DOT_MATCHING_MODULES=${DOT_MATCHING_MODULES:+${DOT_MATCHING_MODULES}:}$i
         fi
