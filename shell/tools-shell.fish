@@ -36,5 +36,15 @@ function __dot_get_modules_matching_name
 end
 
 
+# Add path to $PATH
+# Args:
+#   $1 - The path to add
+function __dot_add_path
+    if [ -d $argv[1] ]
+        set -gx PATH $argv[1] $PATH
+    end
+end
+
+
 # Include guard
 end

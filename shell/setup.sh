@@ -8,6 +8,9 @@
 [ -n "$DOT_SETUP_SH" ] && return || readonly DOT_SETUP_SH=1
 
 
+# Make shell tools available
+. "$DOT_DIR/shell/tools-shell.sh"
+
 # Run setup.sh in all modules
 if [ -d "$DOT_DIR/modules" ]
 then

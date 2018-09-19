@@ -47,3 +47,15 @@ __dot_get_modules_matching_name()
     done
 
 }
+
+
+# Add path to $PATH
+# Args:
+#   $1 - The path to add
+__dot_add_path()
+{
+    if [ -d "$1" ]
+    then
+        export PATH="$1${PATH:+:${PATH}}"
+    fi
+}

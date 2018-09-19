@@ -8,6 +8,9 @@
 [ -n "$DOT_SETUP_PROFILE" ] && return || readonly DOT_SETUP_PROFILE=1
 
 
+# Make shell tools available
+. "$DOT_DIR/shell/tools-shell.sh"
+
 # Add binary dir to PATH
 PATH="$DOT_DIR/bin:$PATH"
 

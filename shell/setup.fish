@@ -9,6 +9,9 @@ if [ -z "$DOT_SETUP_FISH" ]
 set -g DOT_SETUP_FISH 1
 
 
+# Make shell tools available
+source "$DOT_DIR/shell/tools-shell.fish"
+
 # Handle common login shell setup
 if status is-login
     # Add binary dir to PATH
