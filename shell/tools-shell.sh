@@ -7,6 +7,9 @@
 # Include guard
 [ -n "$DOT_TOOLS_SHELL_SH" ] && return || readonly DOT_TOOLS_SHELL_SH=1
 
+# Include formatting
+. "$DOT_DIR/shell/formatting.sh"
+
 
 # Get a list of downloaded modules
 # Return:

@@ -7,6 +7,10 @@
 # Include guard
 [ -n "$DOT_SETUP_INTERACTIVE_SH" ] && return || readonly DOT_SETUP_INTERACTIVE_SH=1
 
+
+# Make tools available to interactive shells
+. "$DOT_DIR/shell/tools-shell.sh"
+
 # Run setup-interactive.sh in all modules
 if [ -d "$DOT_DIR/modules" ]
 then

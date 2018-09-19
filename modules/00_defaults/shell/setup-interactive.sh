@@ -4,8 +4,6 @@
 ## sessions for any POSIX shell.
 ## ----------------------------------------------------------
 
-. "$DOT_DIR/shell/tools-shell.sh"
-
 # Debugging info
 export DOT_DEBUG="setup-interactive.sh:$$ $DOT_DEBUG"
 

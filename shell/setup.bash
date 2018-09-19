@@ -7,6 +7,7 @@
 # Include guard
 [ -n "$DOT_SETUP_BASH" ] && return || readonly DOT_SETUP_BASH=1
 
+
 # Run setup.profile if not yet run and in login shell
 if shopt -q login_shell
 then

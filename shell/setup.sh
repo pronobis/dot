@@ -7,6 +7,7 @@
 # Include guard
 [ -n "$DOT_SETUP_SH" ] && return || readonly DOT_SETUP_SH=1
 
+
 # Run setup.sh in all modules
 if [ -d "$DOT_DIR/modules" ]
 then

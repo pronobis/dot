@@ -4,8 +4,6 @@
 ## Bash sessions.
 ## ----------------------------------------------------------
 
-. "$DOT_DIR/shell/tools-shell.sh"
-
 # Debugging info
 export DOT_DEBUG="setup-interactive.bash:$$ $DOT_DEBUG"
 

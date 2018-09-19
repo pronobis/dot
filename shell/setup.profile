@@ -7,6 +7,7 @@
 # Include guard
 [ -n "$DOT_SETUP_PROFILE" ] && return || readonly DOT_SETUP_PROFILE=1
 
+
 # Add binary dir to PATH
 PATH="$DOT_DIR/bin:$PATH"
 

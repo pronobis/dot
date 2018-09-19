@@ -7,6 +7,7 @@
 # Include guard
 [ -n "$DOT_SETUP_LOGIN_BASH" ] && return || readonly DOT_SETUP_LOGIN_BASH=1
 
+
 # Run setup-login.bash in all modules
 if [ -d "$DOT_DIR/modules" ]
 then
