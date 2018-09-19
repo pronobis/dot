@@ -18,8 +18,8 @@ cdot()
     then
         local DOT_MODULES
         local DOT_MATCHING_MODULES
-        _dot_get_modules
-        _dot_get_modules_matching_name "$name"
+        __dot_get_modules
+        __dot_get_modules_matching_name "$name"
         local IFS=':'
         set -- $DOT_MATCHING_MODULES
         cd "$DOT_DIR/modules/$1"

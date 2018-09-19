@@ -14,7 +14,7 @@ set -gx DOT_DEBUG "setup-interactive.fish:"(echo %self) $DOT_DEBUG
 function cdot
     set -l name $argv[1]
     if [ -n "$name" ]
-        set -l res (_dot_get_modules_matching_name "$name")
+        set -l res (__dot_get_modules_matching_name "$name")
         cd "$DOT_DIR/modules/$res[1]"
     else
         cd "$DOT_DIR/modules"
@@ -22,4 +22,4 @@ function cdot
 end
 
 # Add completion for cdot
-complete -c cdot -xa '(_dot_get_modules)'
+complete -c cdot -xa '(__dot_get_modules)'

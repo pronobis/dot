@@ -8,12 +8,12 @@
 export DOT_DEBUG="setup-interactive.bash:$$ $DOT_DEBUG"
 
 # Add completion for cdot
-_dot_cdot_completion()
+__dot_cdot_completion()
 {
     cur="${COMP_WORDS[COMP_CWORD]}"
     local DOT_MODULES
-    _dot_get_modules
+    __dot_get_modules
     COMPREPLY=( $(compgen -W "${DOT_MODULES//:/ }" -- ${cur}) )
     return 0
 }
-complete -F _dot_cdot_completion cdot
+complete -F __dot_cdot_completion cdot

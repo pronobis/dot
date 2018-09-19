@@ -33,7 +33,7 @@ then
 fi
 
 # Add completion for dot-get
-__dotget_completion()
+__dot_dotget_completion()
 {
     local cur prev
     COMPREPLY=()
@@ -63,4 +63,4 @@ __dotget_completion()
             ;;
     esac
 }
-complete -F __dotget_completion dot-get
+complete -F __dot_dotget_completion dot-get
