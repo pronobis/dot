@@ -38,9 +38,9 @@ Each module should be stored in its own git repo which will be cloned into the `
   * `setup.sh` - Executed for interactive and non-interactive, login and non-login sessions for any POSIX shell.
   * `setup.bash` - Executed for interactive and non-interactive, login and non-login Bash sessions.
   * `setup.fish` - Executed for interactive and non-interactive, login and non-login Fish sessions.
-  * `setup-login.sh` - Executed for interactive and non-interactive login sessions for any POSIX shell. Guaranteed to run once even if the login shell is not-POSIX compliant.
-  * `setup-login.bash` - Executed for interactive and non-interactive login Bash sessions. Guaranteed to run once even if the login shell is not Bash.
-  * `setup-login.fish` - Executed for interactive and non-interactive login Fish sessions. Guaranteed to run once even if the login shell is not Fish.
+  * `setup-login.sh` - Executed for interactive and non-interactive login sessions for any POSIX shell.
+  * `setup-login.bash` - Executed for interactive and non-interactive login Bash sessions.
+  * `setup-login.fish` - Executed for interactive and non-interactive login Fish sessions.
   * `setup-interactive.sh` - Executed for interactive, login and non-login sessions for any POSIX shell.
   * `setup-interactive.bash` - Executed for interactive, login and non-login Bash sessions.
   * `setup-interactive.fish` - Executed for interactive, login and non-login Fish sessions.
