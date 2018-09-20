@@ -31,14 +31,12 @@ end
 
 # Functions for accessing the sys and cmd commands
 function sys
-    eval $DOT_DIR/scripts/sys $argv
-    if [ -d "$DOT_DIR/system" ]
+    if eval $DOT_DIR/scripts/sys $argv; and [ -d "$DOT_DIR/system" ]
         [ -f "$DOT_DIR/system/setup.fish" ]; and source "$DOT_DIR/system/setup.fish"
     end
 end
 function cmd
-    eval $DOT_DIR/scripts/cmd $argv
-    if [ -d "$DOT_DIR/system" ]
+    if eval $DOT_DIR/scripts/cmd $argv; and [ -d "$DOT_DIR/system" ]
         [ -f "$DOT_DIR/system/setup.fish" ]; and source "$DOT_DIR/system/setup.fish"
     end
 end

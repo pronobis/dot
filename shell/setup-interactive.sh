@@ -35,8 +35,7 @@ fi
 # Functions for accessing the sys and cmd commands
 sys()
 {
-    $DOT_DIR/scripts/sys $@
-    if [ -d "$DOT_DIR/system" ]
+    if $DOT_DIR/scripts/sys "$@" && [ -d "$DOT_DIR/system" ]
     then
         [ -f "$DOT_DIR/system/setup.sh" ] && . "$DOT_DIR/system/setup.sh"
         [ -n "$BASH_VERSION" ] && [ -f "$DOT_DIR/system/setup.bash" ] && . "$DOT_DIR/system/setup.bash"
@@ -44,8 +43,7 @@ sys()
 }
 cmd()
 {
-    $DOT_DIR/scripts/cmd $@
-    if [ -d "$DOT_DIR/system" ]
+    if $DOT_DIR/scripts/cmd "$@" && [ -d "$DOT_DIR/system" ]
     then
         [ -f "$DOT_DIR/system/setup.sh" ] && . "$DOT_DIR/system/setup.sh"
         [ -n "$BASH_VERSION" ] && [ -f "$DOT_DIR/system/setup.bash" ] && . "$DOT_DIR/system/setup.bash"

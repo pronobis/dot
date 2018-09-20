@@ -56,7 +56,7 @@ menu_result=$(whiptail --title "Select System Configuration" --menu "" 20 70 10 
 if [ "$menu_result" == "" ]
 then
     print_warning "Canceled!"
-    exit
+    exit 1
 else
     # Get path to the system folder
     menu_nr=${menu_result/(/}
