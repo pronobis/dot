@@ -12,7 +12,7 @@
 . "$DOT_DIR/shell/tools-shell.sh"
 
 # Add binary dir to PATH
-PATH="$DOT_DIR/bin:$PATH"
+__dot_add_path PATH "$DOT_DIR/bin"
 
 # Run setup.profile in all modules
 if [ -d "$DOT_DIR/modules" ]
@@ -22,7 +22,7 @@ then
         if [ -d "$i" ]
         then
             # Add all module internal binary dirs to path
-            PATH="$i/bin:$PATH"
+            __dot_add_path PATH "$i/bin"
             # Run in each module
             if [ -f "$i/shell/setup.profile" ]
             then

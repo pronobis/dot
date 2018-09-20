@@ -15,7 +15,7 @@ source "$DOT_DIR/shell/tools-shell.fish"
 # Handle common login shell setup
 if status is-login
     # Add binary dir to PATH
-    set -gx PATH "$DOT_DIR/bin" $PATH
+    __dot_add_path PATH "$DOT_DIR/bin"
 
     # Run setup.profile in all modules if login shell
     if [ -d "$DOT_DIR/modules" ]
@@ -23,7 +23,7 @@ if status is-login
             set -l i "$DOT_DIR/modules/$i"
             if [ -d "$i" ]
                 # Add all module internal binary dirs to path
-                set -gx PATH "$i/bin" $PATH
+                __dot_add_path PATH "$i/bin"
                 # Run in each module
                 if [ -f "$i/shell/setup.profile" ]
                     set -g DOT_MODULE_DIR "$i"

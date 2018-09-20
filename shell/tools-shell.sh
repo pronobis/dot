@@ -79,24 +79,20 @@ __dot_get_modules_matching_name()
 }
 
 
-# Add path to $PATH
-# Args:
-#   $1 - The path to add
-__dot_add_path()
-{
-    if ! echo "$PATH" | grep -Eq "(^|:)$1($|:)" && [ -d "$1" ]
-    then
-        export PATH="$1${PATH:+:${PATH}}"
-    fi
-}
-
-
-# Add path to a colon-separated list of paths
+# Add a path to the front of a list of paths
+# if the path exists and is a directory.
 # Args:
 #   $1 - Name of variable holding the list
 #   $2 - The path to add
-__dot_add_path_to_list()
+__dot_add_path()
 {
+    # Check args
+    if [ $# -lt 2 ]
+    then
+        __dot_print_error "__dot_add_path: Incorrect arguments ('%s' '%s'). Must be (<var> <path>)." "$1" "$2"
+        return 1
+    fi
+    # Add path
     if ! eval "echo \${$1}" | grep -Eq "(^|:)$2($|:)" && [ -d "$2" ]
     then
         eval "export $1=\"$2\${$1:+:\${$1}}\""
