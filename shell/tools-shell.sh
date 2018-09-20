@@ -12,31 +12,42 @@
 
 # Print a status info
 # Args:
-#   $@ - Text to print
+#   $1 - Fromat
+#   $2- - Arguments
 __dot_print_status()
 {
+    local fmt="$1"
+    shift
     set_format ${LIGHT_GREEN}
-    printf "$1\n" "$2"
+    printf "$fmt\n" "$@"
     clear_format
 }
+
 
 # Print a warning
 # Args:
-#   $@ - Text to print
+#   $1 - Fromat
+#   $2- - Arguments
 __dot_print_warning()
 {
+    local fmt="$1"
+    shift
     set_format ${YELLOW}
-    printf "WARNING: $1\n" "$2"
+    printf "WARNING: $fmt\n" "$@"
     clear_format
 }
 
+
 # Print an error
 # Args:
-#   $@ - Text to print
+#   $1 - Fromat
+#   $2- - Arguments
 __dot_print_error()
 {
+    local fmt="$1"
+    shift
     set_format ${LIGHT_RED}
-    printf "ERROR: $1\n" "$2" 1>&2
+    printf "ERROR: $fmt\n" "$@" 1>&2
     clear_format
 }
 

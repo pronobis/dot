@@ -9,6 +9,39 @@ if [ -z "$DOT_TOOLS_SHELL_FISH" ]
     set -g DOT_TOOLS_SHELL_FISH 1
 
 
+# Print a status info
+# Args:
+#   $argv[1] - Fromat
+#   $argv[2..] - Arguments
+function __dot_print_status
+    set_color brgreen
+    printf "$argv[1]\n" $argv[2..-1]
+    set_color normal
+end
+
+
+# Print a warning
+# Args:
+#   $argv[1] - Fromat
+#   $argv[2..] - Arguments
+function __dot_print_warning
+    set_color bryellow
+    printf "WARNING: $argv[1]\n" $argv[2..-1]
+    set_color normal
+end
+
+
+# Print an error
+# Args:
+#   $argv[1] - Fromat
+#   $argv[2..] - Arguments
+function __dot_print_error
+    set_color brred
+    printf "ERROR: $argv[1]\n" $argv[2..-1] 1>&2
+    set_color normal
+end
+
+
 # Get a list of downloaded modules
 # Return:
 #   - A list of modules
