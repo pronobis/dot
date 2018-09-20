@@ -6,14 +6,16 @@
 # Include guard
 [ -n "$DOT_SETUP_TOOLS" ] && return || readonly DOT_SETUP_TOOLS=1
 
+# Include formatting
+. "$DOT_DIR/shell/formatting.sh"
+
+# Include shell tools
+. "$DOT_DIR/shell/tools-shell.sh"
+
 
 ## -------------------------------------------------------------
 ## Printing
 ## -------------------------------------------------------------
-
-# Include formatting
-. "$DOT_DIR/shell/formatting.sh"
-
 
 print_main_header()
 {
@@ -74,29 +76,24 @@ print_info()
 
 print_status()
 {
-    set_format ${LIGHT_GREEN}
-    printf "$1\n" "$2"
-    clear_format
+    __dot_print_status "$@"
 }
 
 print_warning()
 {
-    set_format ${YELLOW}
-    printf "WARNING: $1\n" "$2"
-    clear_format
+    __dot_print_warning "$@"
 }
 
 print_error()
 {
-    set_format ${LIGHT_RED}
-    printf "ERROR: $1\n" "$2" 1>&2
-    clear_format
+    __dot_print_error "$@"
 }
 
 
 ## -------------------------------------------------------------
 ## Interaction
 ## -------------------------------------------------------------
+
 ## Ask a yes/no question
 ## Args:
 ##   $1 - Question text

@@ -10,6 +10,37 @@
 . "$DOT_DIR/shell/formatting.sh"
 
 
+# Print a status info
+# Args:
+#   $@ - Text to print
+__dot_print_status()
+{
+    set_format ${LIGHT_GREEN}
+    printf "$1\n" "$2"
+    clear_format
+}
+
+# Print a warning
+# Args:
+#   $@ - Text to print
+__dot_print_warning()
+{
+    set_format ${YELLOW}
+    printf "WARNING: $1\n" "$2"
+    clear_format
+}
+
+# Print an error
+# Args:
+#   $@ - Text to print
+__dot_print_error()
+{
+    set_format ${LIGHT_RED}
+    printf "ERROR: $1\n" "$2" 1>&2
+    clear_format
+}
+
+
 # Get a list of downloaded modules
 # Return:
 #   $DOT_MODULES - a list of modules (separated by colons)

@@ -7,7 +7,6 @@ then
     exit 1
 fi
 . $DOT_DIR/shell/tools.sh
-. $DOT_DIR/shell/tools-shell.sh
 
 # Find git
 dot_get_git
