@@ -1,7 +1,11 @@
 # -*- mode: sh -*-
+## ----------------------------------------------------------
+## Formatting and colors for POSIX shells
+## ----------------------------------------------------------
 
 # Include guard
 [ -n "$DOT_FORMATTING_SH" ] && return || readonly DOT_FORMATTING_SH=1
+
 
 # Regular Colors
 BLACK='\033[30m'
