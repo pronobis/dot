@@ -36,7 +36,7 @@ if [ -d "$DOT_DIR/modules" ]
 end
 
 # Run setup-login.fish in all modules
-if [ -d $DOT_DIR/modules ]
+if [ -d "$DOT_DIR/modules" ]
     for i in (ls "$DOT_DIR/modules" | sort)
         set -l i "$DOT_DIR/modules/$i"
         if [ -d "$i" ]

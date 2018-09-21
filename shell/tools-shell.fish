@@ -81,7 +81,7 @@ function __dot_add_path
         return 1
     end
     # Special case for PATH
-    if [ $argv[1] = "PATH" ]
+    if [ "$argv[1]" = "PATH" ]
         if not contains $argv[2] $PATH; and [ -d $argv[2] ]
             set -gx PATH $argv[2] $PATH
         end

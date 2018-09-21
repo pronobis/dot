@@ -10,7 +10,7 @@ set -g DOT_SETUP_FISH 1
 
 
 # Run setup.all in all modules
-if [ -d $DOT_DIR/modules ]
+if [ -d "$DOT_DIR/modules" ]
     for i in (ls "$DOT_DIR/modules" | sort)
         set -l i "$DOT_DIR/modules/$i"
         if [ -d "$i" ]
@@ -25,7 +25,7 @@ if [ -d $DOT_DIR/modules ]
 end
 
 # Run setup.fish in all modules
-if [ -d $DOT_DIR/modules ]
+if [ -d "$DOT_DIR/modules" ]
     for i in (ls "$DOT_DIR/modules" | sort)
         set -l i "$DOT_DIR/modules/$i"
         if [ -d "$i" ]
