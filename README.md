@@ -4,25 +4,37 @@
 
 dot is a versatile framework for package installation and configuration file management (dot files) for POSIX systems (even with non-POSIX compliant shells, currently, with particular focus on Ubuntu and embedded Linux). Designed to support wide range of custom configurations, yet making package and dot file installation clean and easy. Offers:
 
-* modular architecture with modules for specific configuration sets (e.g. public terminal-only configuration, public desktop configuration, private laptop configuration etc.)
+* modular architecture with modules for specific configuration sets (e.g. public console-only configuration, public desktop configuration, private laptop configuration etc.)
 * specifying dependencies between the modules
 * automatic module downloading and updating from git repositories
-* configuration sets within modules (called systems) that can be used to specialize environment variables in real time depending on the currently performed task
+* a wide range of tools making typical installation tasks easy
+* configuration sets within modules (called systems) that can be used to specialize environment variables in real time depending on the current task
 * console GUI menus for bookmarking custom commands that can be customized for each system
+* compatibility with a wide range of shells, e.g. Bash, ZSH, Fish, other POSIX-compliant shells
 
 Check out the default module provided with this package in `modules/00_defaults` for inspiration.
 
 
 ## How it Works?
 
-The basic idea behind dot is simple. You clone the dot repository into a convenient location (e.g. `~/.dot`) and run `install.sh`. This will add one line to your `.profile`, `.bashrc`, and `.config/fish/config.fish` files. No other fiels are modified by dot itself. Then, you create your own configuration sets in the `modules` sub-folder. Each module should be stored in its own git repository. The name of the module determines it's priority as it is often the case for Linux `.d` folders. Using number prefixes such as `10_dot-module-my` is a good idea. Every module placed in the `modules` folder is detected and used automatically.
+The basic idea behind dot is simple. You clone the dot repository into a convenient location (e.g. `~/.dot`) and run `install.sh`. This will add one line to the initialization scripts of each shell:
+
+* `.profile`
+* `.bashrc`
+* `.zprofile`
+* `.zshrc`
+* `.config/fish/config.fish`
+
+No other fiels are modified by dot itself. Then, you create your own configuration sets in the `modules` sub-folder. Each module should be stored in its own git repository. The name of the module determines it's priority as it is often the case for Linux `.d` folders. Using number prefixes such as `10_dot-module-my` is a good idea. Every module placed in the `modules` folder is detected and used automatically.
 
 
 ## Module Examples
 
-The following public modules are available for dot and can be used as an example:
+The following public modules are available for dot and can be used as examples:
 
 * <https://github.com/pronobis/dot-module-sara-uw>
+
+Also, check out the default module provided with this package in `modules/00_defaults`.
 
 
 ## Building Modules
@@ -34,16 +46,21 @@ Each module should be stored in its own git repo which will be cloned into the `
 * `config-sys` - Global system config files in the same folder structure in which they should be placed in the system root folder `/`.
 * `opt` - Folder where local dependencies are installed.
 * `shell` - Shell scripts configuring the environment. Several files can be present there:
-  * `setup.profile` - Executed for interactive and non-interactive login sessions for any POSIX and non-POSIX shell. Must be compatible with any login shell used.
-  * `setup.sh` - Executed for interactive and non-interactive, login and non-login sessions for any POSIX shell.
-  * `setup.bash` - Executed for interactive and non-interactive, login and non-login Bash sessions.
-  * `setup.fish` - Executed for interactive and non-interactive, login and non-login Fish sessions.
-  * `setup-login.sh` - Executed for interactive and non-interactive login sessions for any POSIX shell.
+  * `setup.all`  - Executed for interactive and non-interactive, login and non-login sessions for any POSIX and non-POSIX shell. Must be compatible with any login shell used.
+  * `setup.sh`   - Executed for interactive and non-interactive login and non-login sessions for any POSIX shell.
+  * `setup.bash` - Executed for interactive and non-interactive login and non-login Bash sessions.
+  * `setup.zsh`  - Executed for interactive and non-interactive login and non-login ZSH sessions.
+  * `setup.fish` - Executed for interactive and non-interactive login and non-login Fish sessions.
+  * `setup-login.all`  - Executed for interactive and non-interactive login sessions for any POSIX and non-POSIX shell. Must be compatible with any login shell used.
+  * `setup-login.sh`   - Executed for interactive and non-interactive login sessions for any POSIX shell.
   * `setup-login.bash` - Executed for interactive and non-interactive login Bash sessions.
+  * `setup-login.zsh`  - Executed for interactive and non-interactive login ZSH sessions.
   * `setup-login.fish` - Executed for interactive and non-interactive login Fish sessions.
-  * `setup-interactive.sh` - Executed for interactive, login and non-login sessions for any POSIX shell.
-  * `setup-interactive.bash` - Executed for interactive, login and non-login Bash sessions.
-  * `setup-interactive.fish` - Executed for interactive, login and non-login Fish sessions.
+  * `setup-interactive.all`  - Executed for interactive login and non-login sessions for any POSIX and non-POSIX shell. Must be compatible with any login shell used.
+  * `setup-interactive.sh`   - Executed for interactive login and non-login sessions for any POSIX shell.
+  * `setup-interactive.bash` - Executed for interactive login and non-login Bash sessions.
+  * `setup-interactive.zsh`  - Executed for interactive login and non-login ZSH sessions.
+  * `setup-interactive.fish` - Executed for interactive login and non-login Fish sessions.
 * `systems` - Systems provided by the module. See the systems description below.
 * `tmp` - Temporary folder used for storing temporary files during module installation. The files in this folder can be safely deleted after the installation finishes.
 * `default_name` - File containing the default name of the module used by the `dot-get` installer.
@@ -85,12 +102,12 @@ The first step is to install dot itself. To do so:
   Here, dot was installed in `~/.dot`, but any location can be used.
 * Re-login
 
-Now, it's time to install modules. Modules are downloaded (and later updated) using the `dot-get` command. To install a new module, run `dot-get add <repo_url> [<module_name>]`. If no name is given, the one defined in the file `default_name` in the module will be used. All module dependencies will be downloaded automatically. Once modules are downloaded, manually run the `install.sh` script of each module. Re-login when done.
+Now, it's time to install modules. Modules are downloaded (and later updated) using the `dot-get` command. To install a new module, run `dot-get add <repo_url> [<module_name>]`. If no name is given, the one defined in the file `default_name` in the module will be used. All module dependencies will be downloaded automatically. Once module is downloaded, run `dot-get install <module>` to install it. Re-login when done.
 
 
 ## Commands Provided by dot
 
-* `cdot` - `cd` to the folder where dot is installed
-* `dot-get` - download/update modules, run `dot-get` without arguments for help
+* `cdot` - `cd` to the folder where dot is installed or any dot module
+* `dot-get` - download/update/install modules, run `dot-get` without arguments for help
 * `cmd` - select and run bookmark commands
 * `sys` - select and activate a system
