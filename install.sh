@@ -4,7 +4,7 @@ dot_shell=$(cd "${0%/*}/shell" && pwd); . "$dot_shell/install_main_header.sh"
 
 
 ## ---------------------------------------------------------
-## Install setup.profile
+## Install in .profile
 ## ---------------------------------------------------------
 PROFILE_FILE="$HOME/.profile"
 # Header
@@ -16,8 +16,8 @@ then
     touch "${PROFILE_FILE}"
 fi
 
-## Add the setup.profile if not yet added
-if ! grep -q ". $DOT_DIR/shell/setup.profile" "${PROFILE_FILE}"
+## Add if not yet added
+if ! grep -q ". $DOT_DIR/shell/setup-profile.sh" "${PROFILE_FILE}"
 then
     cat << EOF >> ${PROFILE_FILE}
 
@@ -25,7 +25,7 @@ then
 ## Setup dot files
 ## ---------------
 export DOT_DIR="${DOT_DIR}"
-. ${DOT_DIR}/shell/setup.profile
+. ${DOT_DIR}/shell/setup-profile.sh
 
 EOF
     print_status "Done!"
@@ -35,7 +35,7 @@ fi
 
 
 ## ---------------------------------------------------------
-## Install setup.bash
+## Install in .bashrc
 ## ---------------------------------------------------------
 BASHRC_FILE="$HOME/.bashrc"
 # Header
@@ -47,8 +47,8 @@ then
     touch "${BASHRC_FILE}"
 fi
 
-## Add the setup.bash if not yet added
-if ! grep -q ". $DOT_DIR/shell/setup.bash" "${BASHRC_FILE}"
+## Add if not yet added
+if ! grep -q ". $DOT_DIR/shell/setup-rc.sh" "${BASHRC_FILE}"
 then
     cat << EOF >> ${BASHRC_FILE}
 
@@ -56,7 +56,7 @@ then
 ## Setup dot files
 ## ---------------
 export DOT_DIR="${DOT_DIR}"
-. ${DOT_DIR}/shell/setup.bash
+. ${DOT_DIR}/shell/setup-rc.sh
 
 EOF
     print_status "Done!"
@@ -66,7 +66,69 @@ fi
 
 
 ## ---------------------------------------------------------
-## Install setup.fish
+## Install in .zprofile
+## ---------------------------------------------------------
+ZPROFILE_FILE="$HOME/.zprofile"
+# Header
+print_header "Setting up $ZPROFILE_FILE"
+
+# Create .zprofile
+if [ ! -f ${ZPROFILE_FILE} ]
+then
+    touch "${ZPROFILE_FILE}"
+fi
+
+## Add if not yet added
+if ! grep -q ". $DOT_DIR/shell/setup-profile.sh" "${ZPROFILE_FILE}"
+then
+    cat << EOF >> ${ZPROFILE_FILE}
+
+## ---------------
+## Setup dot files
+## ---------------
+export DOT_DIR="${DOT_DIR}"
+. ${DOT_DIR}/shell/setup-profile.sh
+
+EOF
+    print_status "Done!"
+else
+    print_status "Already set up, doing nothing!"
+fi
+
+
+## ---------------------------------------------------------
+## Install in .zshrc
+## ---------------------------------------------------------
+ZSHRC_FILE="$HOME/.zshrc"
+# Header
+print_header "Setting up $ZSHRC_FILE"
+
+# Create .zshrc
+if [ ! -f ${ZSHRC_FILE} ]
+then
+    touch "${ZSHRC_FILE}"
+fi
+
+## Add if not yet added
+if ! grep -q ". $DOT_DIR/shell/setup-rc.sh" "${ZSHRC_FILE}"
+then
+    cat << EOF >> ${ZSHRC_FILE}
+
+## ---------------
+## Setup dot files
+## ---------------
+export DOT_DIR="${DOT_DIR}"
+. ${DOT_DIR}/shell/setup-rc.sh
+
+EOF
+    print_status "Done!"
+else
+    print_status "Already set up, doing nothing!"
+fi
+
+
+## ---------------------------------------------------------
+## Install in config.fish
 ## ---------------------------------------------------------
 CONFIG_FISH_FILE="$HOME/.config/fish/config.fish"
 # Header
@@ -78,8 +140,8 @@ then
     touch "${CONFIG_FISH_FILE}"
 fi
 
-## Add the setup.fish if not yet added
-if ! grep -q ". $DOT_DIR/shell/setup.fish" "${CONFIG_FISH_FILE}"
+## Add if not yet added
+if ! grep -q ". $DOT_DIR/shell/setup-config.fish" "${CONFIG_FISH_FILE}"
 then
     cat << EOF >> ${CONFIG_FISH_FILE}
 
@@ -87,7 +149,7 @@ then
 ## Setup dot files
 ## ---------------
 set -x DOT_DIR "${DOT_DIR}"
-source ${DOT_DIR}/shell/setup.fish
+source ${DOT_DIR}/shell/setup-config.fish
 
 EOF
     print_status "Done!"

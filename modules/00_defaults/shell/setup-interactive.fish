@@ -1,11 +1,11 @@
 # -*- mode: fish -*-
 ## ----------------------------------------------------------
-## Executed for interactive, login and non-login
+## Executed for interactive login and non-login
 ## Fish sessions.
 ## ----------------------------------------------------------
 
 # Debugging info
-set -gx DOT_DEBUG "setup-interactive.fish:"(echo %self) $DOT_DEBUG
+set -gx DOT_DEBUG "setup-interactive.fish:"(echo %self)" $DOT_DEBUG"
 
 # Go to the module directory indicated by part of its name.
 # If no argument is given, go to the directory containing all modules.

@@ -1,8 +1,8 @@
 # -*- mode: sh -*-
 ## ----------------------------------------------------------
-## Executed for interactive and non-interactive
-## login and non-login Bash sessions.
+## Executed for interactive and non-interactive login
+## ZSH sessions.
 ## ----------------------------------------------------------
 
 # Debugging info
-export DOT_DEBUG="setup.bash:$$ $DOT_DEBUG"
+export DOT_DEBUG="setup-login.zsh:$$ $DOT_DEBUG"

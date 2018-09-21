@@ -5,4 +5,4 @@
 ## ----------------------------------------------------------
 
 # Debugging info
-set -gx DOT_DEBUG "setup-login.fish:"(echo %self) $DOT_DEBUG
+set -gx DOT_DEBUG "setup-login.fish:"(echo %self)" $DOT_DEBUG"

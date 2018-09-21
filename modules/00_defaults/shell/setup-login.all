@@ -5,4 +5,4 @@
 ## ----------------------------------------------------------
 
 # Debugging info
-export DOT_DEBUG="setup.profile $DOT_DEBUG"
+export DOT_DEBUG="setup-login.all $DOT_DEBUG"

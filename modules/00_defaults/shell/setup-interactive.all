@@ -1,8 +1,8 @@
 # -*- mode: sh -*-
 ## ----------------------------------------------------------
-## Executed for interactive and non-interactive
-## login and non-login Bash sessions.
+## Executed for interactive login and non-login
+## sessions for any shell, including non-POSIX.
 ## ----------------------------------------------------------
 
 # Debugging info
-export DOT_DEBUG="setup.bash:$$ $DOT_DEBUG"
+export DOT_DEBUG="setup-interactive.all $DOT_DEBUG"

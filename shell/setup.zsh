@@ -1,14 +1,14 @@
 # -*- mode: sh -*-
 ## ----------------------------------------------------------
 ## Executed for interactive and non-interactive
-## login and non-login Bash sessions.
+## login and non-login ZSH sessions.
 ## ----------------------------------------------------------
 
 # Include guard
-[ -n "$DOT_SETUP_BASH" ] && return || readonly DOT_SETUP_BASH=1
+[ -n "$DOT_SETUP_ZSH" ] && return || readonly DOT_SETUP_ZSH=1
 
 
-# Run setup.bash in all modules
+# Run setup.zsh in all modules
 if [ -d "$DOT_DIR/modules" ]
 then
     for i in `ls $DOT_DIR/modules | sort`; do
@@ -16,10 +16,10 @@ then
         if [ -d "$i" ]
         then
             # Run in each module
-            if [ -f "$i/shell/setup.bash" ]
+            if [ -f "$i/shell/setup.zsh" ]
             then
                 DOT_MODULE_DIR="$i"
-                . "$i/shell/setup.bash"
+                . "$i/shell/setup.zsh"
                 unset DOT_MODULE_DIR
             fi
         fi

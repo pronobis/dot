@@ -1,6 +1,6 @@
 # -*- mode: sh -*-
 ## ----------------------------------------------------------
-## Executed for interactive, login and non-login
+## Executed for interactive login and non-login
 ## Bash sessions.
 ## ----------------------------------------------------------
 

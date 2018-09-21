@@ -9,6 +9,21 @@ if [ -z "$DOT_SETUP_INTERACTIVE_FISH" ]
     set -g DOT_SETUP_INTERACTIVE_FISH 1
 
 
+# Run setup-interactive.all in all modules
+if [ -d $DOT_DIR/modules ]
+    for i in (ls "$DOT_DIR/modules" | sort)
+        set -l i "$DOT_DIR/modules/$i"
+        if [ -d "$i" ]
+            # Run in each module
+            if [ -f "$i/shell/setup-interactive.all" ]
+                set -g DOT_MODULE_DIR "$i"
+                source "$i/shell/setup-interactive.all"
+                set -e DOT_MODULE_DIR
+            end
+        end
+    end
+end
+
 # Run setup-interactive.fish in all modules
 if [ -d $DOT_DIR/modules ]
     for i in (ls "$DOT_DIR/modules" | sort)
@@ -25,18 +40,21 @@ if [ -d $DOT_DIR/modules ]
 end
 
 # Setup selected system
-if [ -d "$DOT_DIR/system" ]; and [ -f "$DOT_DIR/system/setup.fish" ]
-    source "$DOT_DIR/system/setup.fish"
+if [ -d "$DOT_DIR/system" ]
+    [ -f "$DOT_DIR/system/setup.all" ]; and source "$DOT_DIR/system/setup.all"
+    [ -f "$DOT_DIR/system/setup.fish" ]; and source "$DOT_DIR/system/setup.fish"
 end
 
 # Functions for accessing the sys and cmd commands
 function sys
     if eval $DOT_DIR/scripts/sys $argv; and [ -d "$DOT_DIR/system" ]
+        [ -f "$DOT_DIR/system/setup.all" ]; and source "$DOT_DIR/system/setup.all"
         [ -f "$DOT_DIR/system/setup.fish" ]; and source "$DOT_DIR/system/setup.fish"
     end
 end
 function cmd
     if eval $DOT_DIR/scripts/cmd $argv; and [ -d "$DOT_DIR/system" ]
+        [ -f "$DOT_DIR/system/setup.all" ]; and source "$DOT_DIR/system/setup.all"
         [ -f "$DOT_DIR/system/setup.fish" ]; and source "$DOT_DIR/system/setup.fish"
     end
 end

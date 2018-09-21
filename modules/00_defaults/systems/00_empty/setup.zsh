@@ -1,5 +1,5 @@
 # -*- mode: sh -*-
 ## ----------------------------------------------------------
 ## Executed for interactive login and non-login
-## Bash sessions.
+## ZSH sessions.
 ## ----------------------------------------------------------
