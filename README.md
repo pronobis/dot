@@ -61,6 +61,9 @@ Each module should be stored in its own git repo which will be cloned into the `
   * `setup-interactive.bash` - Executed for interactive login and non-login Bash sessions.
   * `setup-interactive.zsh`  - Executed for interactive login and non-login ZSH sessions.
   * `setup-interactive.fish` - Executed for interactive login and non-login Fish sessions.
+  * `fish`
+    * `functions` - Folder where fish functions can be defined.
+    * `completions` - Folder where fish completions can be defined.
 * `systems` - Systems provided by the module. See the systems description below.
 * `tmp` - Temporary folder used for storing temporary files during module installation. The files in this folder can be safely deleted after the installation finishes.
 * `default_name` - File containing the default name of the module used by the `dot-get` installer.
