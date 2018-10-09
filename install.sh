@@ -137,6 +137,7 @@ print_header "Setting up $CONFIG_FISH_FILE"
 # Create config.fish
 if [ ! -f ${CONFIG_FISH_FILE} ]
 then
+    mkdir -p "$HOME/.config/fish"
     touch "${CONFIG_FISH_FILE}"
 fi
 
