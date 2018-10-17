@@ -109,3 +109,12 @@ __dot_add_path()
         eval "export $1=\"$2\${$1:+:\${$1}}\""
     fi
 }
+
+# Add an abbreviation
+# Args:
+#   $1 - Name of the abbreviation
+#   $2 - Content of the abbreviation
+__dot_abbr()
+{
+    alias "$1"="$2"
+}

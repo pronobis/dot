@@ -98,5 +98,14 @@ function __dot_add_path
 end
 
 
+# Add an abbreviation
+# Args:
+#   $argv[1] - Name of the abbreviation
+#   $argv[2] - Content of the abbreviation
+function __dot_abbr
+    abbr -a $argv[1] $argv[2]
+end
+
+
 # Include guard
 end
