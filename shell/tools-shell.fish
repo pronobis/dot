@@ -103,7 +103,7 @@ end
 #   $argv[1] - Name of the abbreviation
 #   $argv[2] - Content of the abbreviation
 function __dot_abbr
-    abbr -a $argv[1] $argv[2]
+    abbr -g -a $argv[1] $argv[2]
 end
 
 
