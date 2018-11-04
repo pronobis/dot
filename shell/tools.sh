@@ -443,6 +443,7 @@ dot_fill_config()
             fi
             # envsubst < "${DOT_MODULE_DIR}/config/$i" > "${HOME}/$i"  # Does not work with busybox
             sed \
+                -e 's#${USER}#'"${USER}"'#g' \
                 -e 's#${HOME}#'"${HOME}"'#g' \
                 -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
                 -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
@@ -479,6 +480,7 @@ dot_fill_config_sys()
             fi
             # envsubst < "${DOT_MODULE_DIR}/config-sys/$i" > "/$i"  # Does not work with busybox
             sed \
+                -e 's#${USER}#'"${USER}"'#g' \
                 -e 's#${HOME}#'"${HOME}"'#g' \
                 -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
                 -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
