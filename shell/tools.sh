@@ -730,6 +730,21 @@ dot_install_gem_user()
 }
 
 
+## Install a Node.js package globally
+## Args:
+##   $1 - Package name
+dot_install_npm()
+{
+    print_status "Installing the Node.js package $@ in default location"
+    dot_get_su
+    if ! dot_inhibit $DOT_SU npm install -g "$@"
+    then
+        print_error "Error while running npm!"
+        exit 1
+    fi
+}
+
+
 ## Retrieve updated package list if not yet retrieved
 dot_update_package_list()
 {
