@@ -941,7 +941,7 @@ dot_is_min_ubuntu_version()
     if [ "$dist_id" = "Ubuntu" ]
     then  # On Ubuntu
         cur_ver=$(lsb_release -sr)
-        [ "$(echo "$cur_ver >= $1" | bc -l)" = "1" ]
+        dpkg --compare-versions "$cur_ver" ge "$1"
     else
         return 1
     fi
@@ -959,7 +959,7 @@ dot_is_max_ubuntu_version()
     if [ "$dist_id" = "Ubuntu" ]
     then  # On Ubuntu
         cur_ver=$(lsb_release -sr)
-        [ "$(echo "$cur_ver <= $1" | bc -l)" = "1" ]
+        dpkg --compare-versions "$cur_ver" le "$1"
     else
         return 1
     fi
@@ -977,7 +977,7 @@ dot_is_min_debian_version()
     if [ "$dist_id" = "Debian" ] || [ "$dist_id" = "Raspbian" ]
     then  # On Debian
         cur_ver=$(lsb_release -sr)
-        [ "$(echo "$cur_ver >= $1" | bc -l)" = "1" ]
+        dpkg --compare-versions "$cur_ver" ge "$1"
     else
         return 1
     fi
@@ -995,7 +995,7 @@ dot_is_max_debian_version()
     if [ "$dist_id" = "Debian" ] || [ "$dist_id" = "Raspbian" ]
     then  # On Debian
         cur_ver=$(lsb_release -sr)
-        [ "$(echo "$cur_ver <= $1" | bc -l)" = "1" ]
+        dpkg --compare-versions "$cur_ver" le "$1"
     else
         return 1
     fi
