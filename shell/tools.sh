@@ -1188,7 +1188,7 @@ dot_check_snap_packages()
 
     for pkg in $args
     do
-        if snap list $pkg 2>&1 >/dev/null
+        if snap list $pkg >/dev/null 2>&1
         then
             DOT_INSTALLED=${DOT_INSTALLED:+${DOT_INSTALLED} }$pkg
         else
