@@ -816,6 +816,21 @@ dot_install_builddep()
 }
 
 
+# Install given Snap packages system-wide
+# Args:
+#   $@ - Package names
+dot_install_snap_packages_sys()
+{
+    dot_get_su
+
+    local args=""  # To avoid "bad variable name" in dash for some values
+    args="$@"
+    # Install
+    print_status "Installing ${args}..."
+    $DOT_SU snap install $args
+}
+
+
 # Clone a git repository (with sub-modules), if it is not yet cloned, and
 # checkout a branch or a tag. If the repository is already cloned, fetch
 # the origin and update the requested branch or checkout the requested tag.
@@ -1020,7 +1035,7 @@ dot_is_ubuntu_codename()
 
 
 # Check if given system packages are installed.
-# If package is not found, it should be assumed uninstalled.
+# If a package is not found, it should be assumed uninstalled.
 # Currently works only for Debian-based systems.
 # Args:
 #   $@ - Package names
@@ -1154,6 +1169,35 @@ dot_get_available_package_version()
 {
     DOT_PACKAGE_VERSION=$(apt-cache policy "$1" 2>/dev/null | grep Candidate | sed -e 's/[ ]*Candidate:[ ]*//g')
     [ -n "$DOT_PACKAGE_VERSION" ]
+}
+
+
+# Check if given snap packages are installed.
+# If a package is not found, it should be assumed uninstalled.
+# Args:
+#   $@ - Package names
+# Return:
+#   $DOT_NOT_INSTALLED - Not installed packages
+#   $? - 1 if something is not installed, 0 otherwise
+dot_check_snap_packages()
+{
+    local args=""  # To avoid "bad variable name" in dash for some values
+    args="$@"
+    DOT_NOT_INSTALLED=""
+    DOT_INSTALLED=""
+
+    for pkg in $args
+    do
+        if snap list $pkg 2>&1 >/dev/null
+        then
+            DOT_INSTALLED=${DOT_INSTALLED:+${DOT_INSTALLED} }$pkg
+        else
+            DOT_NOT_INSTALLED=${DOT_NOT_INSTALLED:+${DOT_NOT_INSTALLED} }$pkg
+        fi
+    done
+
+    # Return false if sth not installed
+    [ -z "$DOT_NOT_INSTALLED" ]
 }
 
 
