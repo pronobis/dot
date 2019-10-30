@@ -913,8 +913,8 @@ dot_check_virtualenv()
 # Check if we are on Ubuntu and exit otherwise.
 dot_check_ubuntu()
 {
-    dist_id=$(lsb_release -si 2>/dev/null || true)
-    if [ "$dist_id" != "Ubuntu" ]
+    dist_id=$(cat /etc/os-release 2> /dev/null | grep "^ID=\|^ID_LIKE=" || true)
+    if [ "${dist_id#*ubuntu}" = "${dist_id}" ]
     then
         print_error "This module can only be installed on Ubuntu!"
         exit 1
@@ -937,7 +937,8 @@ dot_check_raspbian()
 # Check if we are on a Debian derivative and exit otherwise.
 dot_check_debian_derivative()
 {
-    if [ ! -f /etc/debian_version ]
+    dist_id=$(cat /etc/os-release 2> /dev/null | grep "^ID=\|^ID_LIKE=" || true)
+    if [ "${dist_id#*debian}" = "${dist_id}" ]
     then
         print_error "This module can only be installed on a Debian derivative!"
         exit 1
@@ -952,8 +953,8 @@ dot_check_debian_derivative()
 #   $? - 0 if version number >= given, 1 otherwise
 dot_is_min_ubuntu_version()
 {
-    dist_id=$(lsb_release -si 2>/dev/null || true)
-    if [ "$dist_id" = "Ubuntu" ]
+    dist_id=$(cat /etc/os-release 2> /dev/null | grep "^ID=\|^ID_LIKE=" || true)
+    if [ "${dist_id#*ubuntu}" != "${dist_id}" ]
     then  # On Ubuntu
         cur_ver=$(lsb_release -sr)
         dpkg --compare-versions "$cur_ver" ge "$1"
@@ -970,8 +971,8 @@ dot_is_min_ubuntu_version()
 #   $? - 0 if version number <= given, 1 otherwise
 dot_is_max_ubuntu_version()
 {
-    dist_id=$(lsb_release -si 2>/dev/null || true)
-    if [ "$dist_id" = "Ubuntu" ]
+    dist_id=$(cat /etc/os-release 2> /dev/null | grep "^ID=\|^ID_LIKE=" || true)
+    if [ "${dist_id#*ubuntu}" != "${dist_id}" ]
     then  # On Ubuntu
         cur_ver=$(lsb_release -sr)
         dpkg --compare-versions "$cur_ver" le "$1"
@@ -988,8 +989,8 @@ dot_is_max_ubuntu_version()
 #   $? - 0 if version number >= given, 1 otherwise
 dot_is_min_debian_version()
 {
-    dist_id=$(lsb_release -si 2>/dev/null || true)
-    if [ "$dist_id" = "Debian" ] || [ "$dist_id" = "Raspbian" ]
+    dist_id=$(cat /etc/os-release 2> /dev/null | grep "^ID=\|^ID_LIKE=" || true)
+    if [ "${dist_id#*debian}" != "${dist_id}" ]
     then  # On Debian
         cur_ver=$(lsb_release -sr)
         dpkg --compare-versions "$cur_ver" ge "$1"
@@ -1006,8 +1007,8 @@ dot_is_min_debian_version()
 #   $? - 0 if version number <= given, 1 otherwise
 dot_is_max_debian_version()
 {
-    dist_id=$(lsb_release -si 2>/dev/null || true)
-    if [ "$dist_id" = "Debian" ] || [ "$dist_id" = "Raspbian" ]
+    dist_id=$(cat /etc/os-release 2> /dev/null | grep "^ID=\|^ID_LIKE=" || true)
+    if [ "${dist_id#*debian}" != "${dist_id}" ]
     then  # On Debian
         cur_ver=$(lsb_release -sr)
         dpkg --compare-versions "$cur_ver" le "$1"
@@ -1024,8 +1025,8 @@ dot_is_max_debian_version()
 #   $? - 0 if on the given codename, 1 otherwise
 dot_is_ubuntu_codename()
 {
-    dist_id=$(lsb_release -si 2>/dev/null || true)
-    if [ "$dist_id" = "Ubuntu" ]
+    dist_id=$(cat /etc/os-release 2> /dev/null | grep "^ID=\|^ID_LIKE=" || true)
+    if [ "${dist_id#*ubuntu}" != "${dist_id}" ]
     then  # On Ubuntu
         [ "$(lsb_release -cs)" = "$1" ]
     else
