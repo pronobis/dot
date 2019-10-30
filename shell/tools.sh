@@ -1169,7 +1169,7 @@ dot_get_installed_package_version()
 dot_get_available_package_version()
 {
     DOT_PACKAGE_VERSION=$(apt-cache policy "$1" 2>/dev/null | grep Candidate | sed -e 's/[ ]*Candidate:[ ]*//g')
-    [ -n "$DOT_PACKAGE_VERSION" ]
+    [ -n "$DOT_PACKAGE_VERSION" ] && [ "$DOT_PACKAGE_VERSION" != "(none)" ]
 }
 
 
