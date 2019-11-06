@@ -4,9 +4,10 @@
 #   $argv[1] - Part of the module name
 function cdot --argument-names 'module' --description 'Go to dot module directory'
     set -l name $argv[1]
+    set -l path (string match -r "/.*" "$argv[1]")
     if [ -n "$name" ]
         set -l res (__dot_get_modules_matching_name "$name")
-        cd "$DOT_DIR/modules/$res[1]"
+        cd "$DOT_DIR/modules/$res[1]$path"
     else
         cd "$DOT_DIR/modules"
     end

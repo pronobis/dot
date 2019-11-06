@@ -14,6 +14,7 @@ export DOT_DEBUG="setup-interactive.sh:$$ $DOT_DEBUG"
 cdot()
 {
     local name="$1"
+    local path=$(echo "$name" | grep -oE '/.*')
     if [ -n "$name" ]
     then
         local DOT_MODULES
@@ -22,7 +23,7 @@ cdot()
         __dot_get_modules_matching_name "$name"
         local IFS=':'
         set -- $DOT_MATCHING_MODULES
-        cd "$DOT_DIR/modules/$1"
+        cd "$DOT_DIR/modules/$1$path"
     else
         cd "$DOT_DIR/modules"
     fi
