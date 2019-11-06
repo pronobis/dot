@@ -160,6 +160,20 @@ dot_inhibit()
 }
 
 
+# Execute the command as superuser and inhibit the output unless
+# an error occurs, in which case print stdout and stderr of the
+# original command to stdout. Return the original exit status.
+# Args:
+#   $@ - command with arguments
+# Return:
+#   $? - command exit status
+dot_inhibit_su()
+{
+    dot_get_su
+    dot_inhibit $DOT_SU "$@"
+}
+
+
 # Try finding git, even if PATH is not set
 # Return:
 #   DOT_GIT - absolute path to the git command
