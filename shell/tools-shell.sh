@@ -70,18 +70,20 @@ __dot_get_modules()
 }
 
 
-# Return names of modules containing the argument
+# Return names of modules containing the part of argument
+# the argument before "/".
 # Args:
 #   $1 - Part of module name
 # Return:
 #   $DOT_MATCHING_MODULES - a list of matching modules (separated by colons)
 __dot_get_modules_matching_name()
 {
+    local name="${1%%/*}"
     DOT_MATCHING_MODULES=""
     local IFS=':'
     for i in $DOT_MODULES
     do
-        if [ "${i#*$1}" != "$i" ]
+        if [ "${i#*$name}" != "$i" ]
         then
             DOT_MATCHING_MODULES=${DOT_MATCHING_MODULES:+${DOT_MATCHING_MODULES}:}$i
         fi

@@ -55,14 +55,16 @@ function __dot_get_modules
 end
 
 
-# Return names of modules containing the argument
+# Return names of modules containing the part of argument
+# the argument before "/".
 # Args:
 #   $argv[1] - Part of module name
 # Return:
 #   - A list of matching modules (separated by colons)
 function __dot_get_modules_matching_name
+    set -l name (string replace -r "/.*" "" "$argv[1]")
     for i in (__dot_get_modules)
-        if string match -q "*$argv[1]*" "$i"
+        if string match -q "*$name*" "$i"
             echo $i
         end
     end
