@@ -218,6 +218,7 @@ clone_module()
     if [ -x "$DOT_DIR/modules/$name/init.sh" ]
     then
         print_status "Running init script $name/init.sh..."
+        cd "$DOT_DIR/modules/$name"
         "$DOT_DIR/modules/$name/init.sh"
     fi
 
