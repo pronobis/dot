@@ -4,6 +4,20 @@ dot_shell=$(cd "${0%/*}/shell" && pwd); . "$dot_shell/install_main_header.sh"
 
 
 ## ---------------------------------------------------------
+## Run the init script in the default module
+## ---------------------------------------------------------
+# Header
+print_header "Initializing"
+
+# Run the init script
+if [ -x "$DOT_DIR/modules/00_defaults/init.sh" ]
+then
+    print_status "Running init script 00_defaults/init.sh..."
+    "$DOT_DIR/modules/00_defaults/init.sh"
+fi
+
+
+## ---------------------------------------------------------
 ## Install in .profile
 ## ---------------------------------------------------------
 PROFILE_FILE="$HOME/.profile"

@@ -212,7 +212,14 @@ clone_module()
     fi
 
     # Move to final name
-    mv $DOT_DIR/modules/temp_clone $DOT_DIR/modules/$name
+    mv "$DOT_DIR/modules/temp_clone" "$DOT_DIR/modules/$name"
+
+    # Run the init script
+    if [ -x "$DOT_DIR/modules/$name/init.sh" ]
+    then
+        print_status "Running init script $name/init.sh..."
+        "$DOT_DIR/modules/$name/init.sh"
+    fi
 
     # Get dependencies
     get_module_dependencies $name
@@ -390,6 +397,8 @@ cmd_resolve()
     if [ -z "$installed_sth" ]
     then
         print_status "All dependencies are already installed."
+    else
+        print_status "Done!"
     fi
 }
 
@@ -447,13 +456,29 @@ cmd_update()
             cd "$DOT_DIR"
             $DOT_GIT pull --recurse-submodules
             $DOT_GIT submodule update --recursive
+
+            # Run the init script
+            if [ -x "$DOT_DIR/modules/00_defaults/init.sh" ]
+            then
+                print_status "Running init script 00_defaults/init.sh..."
+                "$DOT_DIR/modules/00_defaults/init.sh"
+            fi
         else
             print_status "Updating module $i..."
             cd "$DOT_DIR/modules/$i"
             $DOT_GIT pull --recurse-submodules
             $DOT_GIT submodule update --recursive
+
+            # Run the init script
+            if [ -x "$DOT_DIR/modules/$i/init.sh" ]
+            then
+                print_status "Running init script $i/init.sh..."
+                "$DOT_DIR/modules/$i/init.sh"
+            fi
         fi
     done
+
+    print_status "Done!"
 }
 
 
