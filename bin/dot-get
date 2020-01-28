@@ -455,7 +455,7 @@ cmd_update()
         then
             print_status "Updating dot..."
             cd "$DOT_DIR"
-            $DOT_GIT pull --recurse-submodules
+            $DOT_GIT pull --rebase --recurse-submodules
             $DOT_GIT submodule update --recursive
 
             # Run the init script
@@ -467,7 +467,7 @@ cmd_update()
         else
             print_status "Updating module $i..."
             cd "$DOT_DIR/modules/$i"
-            $DOT_GIT pull --recurse-submodules
+            $DOT_GIT pull --rebase --recurse-submodules
             $DOT_GIT submodule update --recursive
 
             # Run the init script
