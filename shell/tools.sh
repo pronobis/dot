@@ -117,6 +117,129 @@ yes_no_question()
 }
 
 
+# Ask a question whether to overwrite $2 with $1
+# Return:
+# $? - 1 if $2 exists and differs and user says no, 0 otherwise
+# Args:
+#   $1 - Source file
+#   $2 - Destination file
+overwrite_question()
+{
+    if [ -d "$2" ] && [ ! -L "$2" ]  # Dst: directory
+    then
+        print_error "'$2' is a directory that would be overwritten. Remove it first."
+        exit 1
+    elif [ -d "$2" ] && [ -L "$2" ]  # Dst: link to directory
+    then
+        # If source is not a link or a different link
+        if [ ! -L "$1" ] || [ ! "$(readlink "$1")" = "$(readlink "$2")" ]
+        then
+            yes_no_question "'$2' is a link to a directory that will be overwritten. Proceed?"
+        else
+            return 0
+        fi
+    elif [ -d "$1" ]  # File/link to file overwritten by a directory/link to dir
+    then
+        yes_no_question "'$2' will be overwritten by a directory. Proceed?"
+    elif [ -f "$2" ] && [ -f "$1" ]  # Files/links to files
+    then
+        if ! cmp --silent "$1" "$2"  # Files differ
+        then
+            while :
+            do
+                printf "${BOLD}${YELLOW}'$2' exists and is different. Proceed? ${WHITE}(${YELLOW}d${WHITE}/${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}N${WHITE}):${NO_FORMAT} "
+                old_stty_cfg=$(stty -g)
+                stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
+                if echo "$answer" | grep -iq "^d"
+                then # Diff
+                    printf "${BOLD}${LIGHT_GREEN}diff${NO_FORMAT}\n"
+                    diff -y --suppress-common-lines "$2" "$1"
+                elif echo "$answer" | grep -iq "^y"
+                then # Yes
+                    printf "${BOLD}${LIGHT_GREEN}y${NO_FORMAT}\n"
+                    return 0
+                elif [ "$answer" = $(printf \\003) ]
+                then # ^C detected
+                    printf "${BOLD}${LIGHT_RED}interrupted${NO_FORMAT}\n"
+                    exit 1
+                else # No
+                    printf "${BOLD}${LIGHT_RED}n${NO_FORMAT}\n"
+                    return 1
+                fi
+            done
+        else # Files are identical
+            return 0
+        fi
+    else  # Unknown type
+        print_error "Cannot compare '$2' and '$1'!"
+        exit 1
+    fi
+}
+
+
+# Ask a question whether to overwrite $2 with $1
+# Check differences as superuser
+# Return:
+# $? - 1 if $2 exists and differs and user says no, 0 otherwise
+# Args:
+#   $1 - Source file
+#   $2 - Destination file
+overwrite_question_sys()
+{
+    dot_get_su
+
+    if $DOT_SU test -d "$2" && $DOT_SU test ! -L "$2"  # Dst: directory
+    then
+        print_error "'$2' is a directory that would be overwritten. Remove it first."
+        exit 1
+    elif $DOT_SU test -d "$2" && $DOT_SU test -L "$2"  # Dst: link to directory
+    then
+        # If source is not a link or a different link
+        if $DOT_SU test ! -L "$1" || $DOT_SU test ! "$(readlink "$1")" = "$(readlink "$2")"
+        then
+            yes_no_question "'$2' is a link to a directory that will be overwritten. Proceed?"
+        else
+            return 0
+        fi
+    elif $DOT_SU test -d "$1"  # File/link to file overwritten by a directory/link to dir
+    then
+        yes_no_question "'$2' will be overwritten by a directory. Proceed?"
+    elif $DOT_SU test -f "$2" && $DOT_SU test -f "$1"  # Files/links to files
+    then
+        if ! $DOT_SU cmp --silent "$1" "$2" # Files differ
+        then
+            while :
+            do
+                printf "${BOLD}${YELLOW}'$2' exists and is different. Proceed? ${WHITE}(${YELLOW}d${WHITE}/${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}N${WHITE}):${NO_FORMAT} "
+                old_stty_cfg=$(stty -g)
+                stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
+                if echo "$answer" | grep -iq "^d"
+                then # Diff
+                    printf "${BOLD}${LIGHT_GREEN}diff${NO_FORMAT}\n"
+                    diff -y --suppress-common-lines "$2" "$1"
+                elif echo "$answer" | grep -iq "^y"
+                then # Yes
+                    printf "${BOLD}${LIGHT_GREEN}y${NO_FORMAT}\n"
+                    return 0
+                elif [ "$answer" = $(printf \\003) ]
+                then # ^C detected
+                    printf "${BOLD}${LIGHT_RED}interrupted${NO_FORMAT}\n"
+                    exit 1
+                else # No
+                    printf "${BOLD}${LIGHT_RED}n${NO_FORMAT}\n"
+                    return 1
+                fi
+            done
+        else # Files are identical
+            return 0
+        fi
+    else  # Unknown type
+        print_error "Cannot compare '$2' and '$1'!"
+        exit 1
+    fi
+}
+
+
 ## Wait for any user input
 wait_for_key()
 {
@@ -239,59 +362,70 @@ dot_link_bin()
 
 # Create a link to config files
 # Args:
-#   $1 - Wildcard describing the path to config files relative to $HOME
+#   $1 - Wildcard describing the path to config files relative to $2
+#   $2 - Root folder to which files are linked. If missing, set to $HOME.
 dot_link_config()
 {
+    local root="$2"
+    [ -z "$root" ] && root="$HOME"
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in ${DOT_MODULE_DIR}/config/$1
     do
         i=${i#${DOT_MODULE_DIR}/config/}
         if [ -e "${DOT_MODULE_DIR}/config/$i" ]
         then
-            mkdir -p $(dirname "${HOME}/$i")
-            if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
-            then # Do not overwrite existing folders
-                print_error "${HOME}/${i} already exists and is a directory!"
-                exit 1
+            # Check if destination is not already a link to source
+            if [ -L "${root}/$i" ] && [ "$(readlink "${root}/$i")" = "${DOT_MODULE_DIR}/config/$i" ]
+            then
+                print_info "Linked: ${root}/$i"
+            elif overwrite_question "${DOT_MODULE_DIR}/config/$i" "${root}/$i"
+            then
+                if [ -e "${root}/$i" ] || [ -h "${root}/$i" ]
+                then # To prevent creation of a link on another link (e.g. link to folder)
+                    rm "${root}/$i"
+                fi
+                mkdir -p $(dirname "${root}/$i")
+                ln -s "${DOT_MODULE_DIR}/config/$i" "${root}/$i"
+                print_info "Linked: ${root}/$i"
             fi
-            if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
-            then # To prevent creation of a link on another link (e.g. link to folder)
-                rm "${HOME}/$i"
-            fi
-            ln -s "${DOT_MODULE_DIR}/config/$i" "${HOME}/$i"
         else
-            print_warning "No config file $i found!"
+            print_warning "Config file '$i' not found!"
         fi
     done
 }
 
 
-# Create a link to system-wide config files
+# Create a link as superuser to system-wide config files
 # Args:
-#   $1 - Wildcard describing the path to config files relative to /
+#   $1 - Wildcard describing the path to config files relative to $2
+#   $2 - Root folder to which files are linked. If missing, set to /.
 dot_link_config_sys()
 {
     dot_get_su
 
+    local root="$2"
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in ${DOT_MODULE_DIR}/config-sys/$1
     do
         i=${i#${DOT_MODULE_DIR}/config-sys/}
         if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
-            $DOT_SU mkdir -p $(dirname "/$i")
-            if $DOT_SU test -d "/$i" && $DOT_SU test ! -L "/$i"
-            then # Do not overwrite existing folders
-                print_error "/${i} already exists and is a directory!"
-                exit 1
+            # Check if destination is not already a link to source
+            if $DOT_SU test -L "${root}/$i" && $DOT_SU test "$(readlink "${root}/$i")" = "${DOT_MODULE_DIR}/config-sys/$i"
+            then
+                print_info "Linked: ${root}/$i"
+            elif overwrite_question_sys "${DOT_MODULE_DIR}/config-sys/$i" "${root}/$i"
+            then
+                if $DOT_SU test -e "${root}/$i" || $DOT_SU test -h "${root}/$i"
+                then # To prevent creation of a link on another link (e.g. link to folder)
+                    $DOT_SU rm "${root}/$i"
+                fi
+                $DOT_SU mkdir -p $(dirname "${root}/$i")
+                $DOT_SU ln -s "${DOT_MODULE_DIR}/config-sys/$i" "${root}/$i"
+                print_info "Linked: ${root}/$i"
             fi
-            if $DOT_SU test -e "/$i" || $DOT_SU test -h "/$i"
-            then # To prevent creation of a link on another link (e.g. link to folder)
-                $DOT_SU rm "/$i"
-            fi
-            $DOT_SU ln -s "${DOT_MODULE_DIR}/config-sys/$i" "/$i"
         else
-            print_warning "No config file $i found!"
+            print_warning "Config file '$i' not found!"
         fi
     done
 }
@@ -376,59 +510,62 @@ dot_mkdir_user()
 
 # Make a copy of config files
 # Args:
-#   $1 - Wildcard describing the path to config files relative to $HOME
+#   $1 - Wildcard describing the path to config files relative to $2
+#   $2 - Root folder to which files are copied. If missing, set to $HOME.
 dot_copy_config()
 {
+    local root="$2"
+    [ -z "$root" ] && root="$HOME"
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in ${DOT_MODULE_DIR}/config/$1
     do
         i=${i#${DOT_MODULE_DIR}/config/}
         if [ -e "${DOT_MODULE_DIR}/config/$i" ]
         then
-            mkdir -p $(dirname "${HOME}/$i")
-            if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
-            then # Do not overwrite existing folders
-                print_error "${HOME}/${i} already exists and is a directory!"
-                exit 1
+            if overwrite_question "${DOT_MODULE_DIR}/config/$i" "${root}/$i"
+            then
+                if [ -e "${root}/$i" ] || [ -h "${root}/$i" ]
+                then # To prevent copying into a link
+                    rm "${root}/$i"
+                fi
+                mkdir -p $(dirname "${root}/$i")
+                cp -rd "${DOT_MODULE_DIR}/config/$i" "${root}/$i"
+                print_info "Copied: ${root}/$i"
             fi
-            if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
-            then # To prevent copying into a link
-                rm "${HOME}/$i"
-            fi
-            cp -d "${DOT_MODULE_DIR}/config/$i" "${HOME}/$i"
         else
-            print_warning "No config file $i found!"
+            print_warning "Config file '$i' not found!"
         fi
     done
 }
 
 
-# Make a copy of config files system-wide
+# Make a copy as superuser of config files system-wide
 # Args:
-#   $1 - Wildcard describing the path to config files relative to $HOME
+#   $1 - Wildcard describing the path to config files relative to $2
+#   $2 - Root folder to which files are copied. If missing, set to /.
 dot_copy_config_sys()
 {
     dot_get_su
 
+    local root="$2"
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in ${DOT_MODULE_DIR}/config-sys/$1
     do
         i=${i#${DOT_MODULE_DIR}/config-sys/}
         if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
-            $DOT_SU mkdir -p $(dirname "/$i")
-            if $DOT_SU test -d "/$i" && $DOT_SU test ! -L "/$i"
-            then # Do not overwrite existing folders
-                print_error "/${i} already exists and is a directory!"
-                exit 1
+            if overwrite_question_sys "${DOT_MODULE_DIR}/config-sys/$i" "${root}/$i"
+            then
+                if $DOT_SU test -e "${root}/$i" || $DOT_SU test -h "${root}/$i"
+                then # To prevent copying into a link
+                    $DOT_SU rm "${root}/$i"
+                fi
+                $DOT_SU mkdir -p $(dirname "${root}/$i")
+                $DOT_SU cp -rd "${DOT_MODULE_DIR}/config-sys/$i" "${root}/$i"
+                print_info "Copied: ${root}/$i"
             fi
-            if $DOT_SU test -e "/$i" || $DOT_SU test -h "/$i"
-            then # To prevent copying into a link
-                $DOT_SU rm "/$i"
-            fi
-            $DOT_SU cp -d "${DOT_MODULE_DIR}/config-sys/$i" "/$i"
         else
-            print_warning "No config file $i found!"
+            print_warning "Config file '$i' not found!"
         fi
     done
 }
@@ -436,71 +573,76 @@ dot_copy_config_sys()
 
 # Copy config files and fill env. variables inside
 # Args:
-#   $1 - Wildcard describing the path to config files relative to $HOME
+#   $1 - Wildcard describing the path to config files relative to $2
+#   $2 - Root folder to which files are copied. If missing, set to $HOME.
 dot_fill_config()
 {
+    local root="$2"
+    [ -z "$root" ] && root="$HOME"
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in ${DOT_MODULE_DIR}/config/$1
     do
         i=${i#${DOT_MODULE_DIR}/config/}
         if [ -e "${DOT_MODULE_DIR}/config/$i" ]
         then
-            mkdir -p $(dirname "${HOME}/$i")
-            if [ -d "${HOME}/$i" ] && [ ! -L "${HOME}/$i" ]
-            then # Do not overwrite existing folders
-                print_error "${HOME}/${i} already exists and is a directory!"
-                exit 1
-            fi
-            if [ -e "${HOME}/$i" ] || [ -h "${HOME}/$i" ]
-            then # To prevent copying into a link
-                rm "${HOME}/$i"
-            fi
-            # envsubst < "${DOT_MODULE_DIR}/config/$i" > "${HOME}/$i"  # Does not work with busybox
+            # envsubst < "${DOT_MODULE_DIR}/config/$i" > "${DOT_MODULE_DIR}/config/$i.dot-filled"  # Does not work with busybox
             sed \
                 -e 's#${USER}#'"${USER}"'#g' \
                 -e 's#${HOME}#'"${HOME}"'#g' \
                 -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
                 -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
-                "${DOT_MODULE_DIR}/config/$i" > "${HOME}/$i"
+                "${DOT_MODULE_DIR}/config/$i" > "${DOT_MODULE_DIR}/config/$i.dot-filled"
+            if overwrite_question "${DOT_MODULE_DIR}/config/$i.dot-filled" "${root}/$i"
+            then
+                if [ -e "${root}/$i" ] || [ -h "${root}/$i" ]
+                then # To prevent copying into a link
+                    rm "${root}/$i"
+                fi
+                mkdir -p $(dirname "${root}/$i")
+                mv "${DOT_MODULE_DIR}/config/$i.dot-filled" "${root}/$i"
+                print_info "Filled: ${root}/$i"
+            fi
         else
-            print_warning "No config file $i found!"
+            print_warning "Config file '$i' not found!"
         fi
     done
 }
 
 
-# Copy system-wide config files and fill env. variables inside
+# Copy system-wide config files as superuser and fill env. variables inside
 # Args:
-#   $1 - Wildcard describing the path to config files relative to /
+#   $1 - Wildcard describing the path to config files relative to $2
+#   $2 - Root folder to which files are copied. If missing, set to /.
 dot_fill_config_sys()
 {
     dot_get_su
 
+    local root="$2"
     local IFS="$(printf '\n+')"; IFS=${IFS%+}  # Only this is dash/ash compatible
     for i in ${DOT_MODULE_DIR}/config-sys/$1
     do
         i=${i#${DOT_MODULE_DIR}/config-sys/}
         if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
-            $DOT_SU mkdir -p $(dirname "/$i")
-            if $DOT_SU test -d "/$i" && $DOT_SU test ! -L "/$i"
-            then # Do not overwrite existing folders
-                print_error "/${i} already exists and is a directory!"
-                exit 1
-            fi
-            if $DOT_SU test -e "/$i" || $DOT_SU test -h "/$i"
-            then # To prevent copying into a link
-                $DOT_SU rm "/$i"
-            fi
-            # envsubst < "${DOT_MODULE_DIR}/config-sys/$i" > "/$i"  # Does not work with busybox
+            # envsubst < "${DOT_MODULE_DIR}/config-sys/$i" > "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"  # Does not work with busybox
             sed \
                 -e 's#${USER}#'"${USER}"'#g' \
                 -e 's#${HOME}#'"${HOME}"'#g' \
                 -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
                 -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
-                "${DOT_MODULE_DIR}/config-sys/$i" | $DOT_SU tee "/$i" > /dev/null
+                "${DOT_MODULE_DIR}/config-sys/$i" > "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"
+            if overwrite_question_sys "${DOT_MODULE_DIR}/config-sys/$i.dot-filled" "${root}/$i"
+            then
+                if $DOT_SU test -e "${root}/$i" || $DOT_SU test -h "${root}/$i"
+                then # To prevent copying into a link
+                    $DOT_SU rm "${root}/$i"
+                fi
+                $DOT_SU mkdir -p $(dirname "${root}/$i")
+                $DOT_SU mv "${DOT_MODULE_DIR}/config-sys/$i.dot-filled" "${root}/$i"
+                print_info "Filled: ${root}/$i"
+            fi
         else
-            print_warning "No config file $i found!"
+            print_warning "Config file '$i' not found!"
         fi
     done
 }
@@ -530,7 +672,7 @@ dot_append_to_config()
             # Append
             cat "${DOT_MODULE_DIR}/config/$i" >> "${HOME}/$i"
         else
-            print_warning "No config file $i found!"
+            print_warning "Config file '$i' not found!"
         fi
     done
 }
@@ -569,7 +711,7 @@ dot_append_section_to_config()
             cat "${DOT_MODULE_DIR}/config/$i" >> "${HOME}/$i"
             echo "$3" >> "${HOME}/$i"
         else
-            print_warning "No config file $i found!"
+            print_warning "Config file '$i' not found!"
         fi
     done
 }
@@ -610,7 +752,7 @@ dot_append_section_to_config_sys()
             cat "${DOT_MODULE_DIR}/config-sys/$i" | $DOT_SU tee -a "/$i" > /dev/null
             echo "$3" | $DOT_SU tee -a "/$i" > /dev/null
         else
-            print_warning "No config file $i found!"
+            print_warning "Config file '$i' not found!"
         fi
     done
 }
@@ -654,7 +796,7 @@ dot_prepend_section_to_config()
             # some characters in the file as formatting characters
             # printf "$2\n$(cat "${DOT_MODULE_DIR}/config/$i")\n$3\n$(cat ${HOME}/$i)\n" > "${HOME}/$i"
         else
-            print_warning "No config file $i found!"
+            print_warning "Config file '$i' not found!"
         fi
     done
 }
