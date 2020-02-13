@@ -118,11 +118,11 @@ dot_ask_yes_no()
 
 
 # Ask a question whether to overwrite $2 with $1
-# Return:
-# $? - 1 if $2 exists and differs and user says no, 0 otherwise
 # Args:
 #   $1 - Source file
 #   $2 - Destination file
+# Return:
+#   $? - 1 if $2 exists and differs and user says no, 0 otherwise
 dot_ask_overwrite()
 {
     if [ -d "$2" ] && [ ! -L "$2" ]  # Dst: directory
@@ -179,11 +179,11 @@ dot_ask_overwrite()
 
 # Ask a question whether to overwrite $2 with $1
 # Check differences as superuser
-# Return:
-# $? - 1 if $2 exists and differs and user says no, 0 otherwise
 # Args:
 #   $1 - Source file
 #   $2 - Destination file
+# Return:
+#   $? - 1 if $2 exists and differs and user says no, 0 otherwise
 dot_ask_overwrite_sys()
 {
     dot_get_su
