@@ -121,27 +121,37 @@ dot_ask_yes_no()
 # Args:
 #   $1 - Source file
 #   $2 - Destination file
+#   $3 - If not empty, assume we are making a link, not copying
 # Return:
-#   $? - 1 if $2 exists and differs and user says no, 0 otherwise
+#   $? - 0 if $2 differs and user say yes, 1 otherwise
 dot_ask_overwrite()
 {
-    if [ -d "$2" ] && [ ! -L "$2" ]  # Dst: directory
+    if [ ! -e "$2" ] && [ ! -L "$2" ]  # Dst: missing
+    then
+        return 0
+    elif [ -n "$3" ] && [ -L "$2" ] && [ "$(readlink "$2")" = "$1" ]  # Dst: link to source
+    then
+        return 1
+    elif [ -z "$3" ] && [ -L "$2" ] && [ -L "$1" ] && [ "$(readlink "$1")" = "$(readlink "$2")" ]  # Dst/Src: identical links
+    then
+        return 1
+    elif [ -d "$2" ] && [ ! -L "$2" ]  # Dst: directory
     then
         print_error "'$2' is a directory that would be overwritten. Remove it first."
         exit 1
     elif [ -d "$2" ] && [ -L "$2" ]  # Dst: link to directory
     then
-        # If source is not a link or a different link
-        if [ ! -L "$1" ] || [ ! "$(readlink "$1")" = "$(readlink "$2")" ]
-        then
-            dot_ask_yes_no "'$2' is a link to a directory that will be overwritten. Proceed?"
-        else
-            return 0
-        fi
-    elif [ -d "$1" ]  # File/link to file overwritten by a directory/link to dir
+        dot_ask_yes_no "'$2' is a link to a directory that will be overwritten. Proceed?"
+    elif [ -d "$1" ]  # Dst: file/link to file, Src: dir/link to dir
     then
         dot_ask_yes_no "'$2' will be overwritten by a directory. Proceed?"
-    elif [ -f "$2" ] && [ -f "$1" ]  # Files/links to files
+    elif [ -L "$1" ] && [ ! -e "$1" ]  # Dst: file/link to file, Src: link to nothing
+    then
+        dot_ask_yes_no "'$2' will be overwritten by a link. Proceed?"
+    elif [ -L "$2" ] && [ ! -e "$2" ]  # Dst: link to nothing
+    then
+        dot_ask_yes_no "'$2' is a link that will be overwritten. Proceed?"
+    elif [ -f "$2" ] && [ -f "$1" ]  # Dst/src: files/links to files
     then
         if ! cmp --silent "$1" "$2"  # Files differ
         then
@@ -168,7 +178,18 @@ dot_ask_overwrite()
                 fi
             done
         else # Files are identical
-            return 0
+            if [ -n "$3" ]  # We are linking, replace identical file
+            then
+                return 0
+            elif [ -L "$2" ]  # Dst: link to file, Src: file or link to a different file
+            then
+                dot_ask_yes_no "'$2' is a link that will be overwritten. Proceed?"
+            elif [ -L "$1" ]  # Dst: file, Src: link to file
+            then
+                dot_ask_yes_no "'$2' will be overwritten by a link. Proceed?"
+            else  # We are copying, do nothing
+                return 1
+            fi
         fi
     else  # Unknown type
         print_error "Cannot compare '$2' and '$1'!"
@@ -182,29 +203,39 @@ dot_ask_overwrite()
 # Args:
 #   $1 - Source file
 #   $2 - Destination file
+#   $3 - If not empty, assume we are making a link, not copying
 # Return:
-#   $? - 1 if $2 exists and differs and user says no, 0 otherwise
+#   $? - 0 if $2 differs and user say yes, 1 otherwise
 dot_ask_overwrite_sys()
 {
     dot_get_su
 
-    if $DOT_SU test -d "$2" && $DOT_SU test ! -L "$2"  # Dst: directory
+    if $DOT_SU test ! -e "$2" && $DOT_SU test ! -L "$2"  # Dst: missing
+    then
+        return 0
+    elif [ -n "$3" ] && $DOT_SU test -L "$2" && $DOT_SU test "$("$DOT_SU" readlink "$2")" = "$1"  # Dst: link to source
+    then
+        return 1
+    elif [ -z "$3" ] && $DOT_SU test -L "$2" && $DOT_SU test -L "$1" && $DOT_SU test "$("$DOT_SU" readlink "$1")" = "$("$DOT_SU" readlink "$2")"  # Dst/Src: identical links
+    then
+        return 1
+    elif $DOT_SU test -d "$2" && $DOT_SU test ! -L "$2"  # Dst: directory
     then
         print_error "'$2' is a directory that would be overwritten. Remove it first."
         exit 1
     elif $DOT_SU test -d "$2" && $DOT_SU test -L "$2"  # Dst: link to directory
     then
-        # If source is not a link or a different link
-        if $DOT_SU test ! -L "$1" || $DOT_SU test ! "$(readlink "$1")" = "$(readlink "$2")"
-        then
-            dot_ask_yes_no "'$2' is a link to a directory that will be overwritten. Proceed?"
-        else
-            return 0
-        fi
-    elif $DOT_SU test -d "$1"  # File/link to file overwritten by a directory/link to dir
+        dot_ask_yes_no "'$2' is a link to a directory that will be overwritten. Proceed?"
+    elif $DOT_SU test -d "$1"  # Dst: file/link to file, Src: dir/link to dir
     then
         dot_ask_yes_no "'$2' will be overwritten by a directory. Proceed?"
-    elif $DOT_SU test -f "$2" && $DOT_SU test -f "$1"  # Files/links to files
+    elif $DOT_SU test -L "$1" && $DOT_SU test ! -e "$1"  # Dst: file/link to file, Src: link to nothing
+    then
+        dot_ask_yes_no "'$2' will be overwritten by a link. Proceed?"
+    elif $DOT_SU test -L "$2" && $DOT_SU test ! -e "$2"  # Dst: link to nothing
+    then
+        dot_ask_yes_no "'$2' is a link that will be overwritten. Proceed?"
+    elif $DOT_SU test -f "$2" && $DOT_SU test -f "$1"  # Dst/src: files/links to files
     then
         if ! $DOT_SU cmp --silent "$1" "$2" # Files differ
         then
@@ -231,7 +262,18 @@ dot_ask_overwrite_sys()
                 fi
             done
         else # Files are identical
-            return 0
+            if [ -n "$3" ]  # We are linking, replace identical file
+            then
+                return 0
+            elif $DOT_SU test -L "$2"  # Dst: link to file, Src: file or link to a different file
+            then
+                dot_ask_yes_no "'$2' is a link that will be overwritten. Proceed?"
+            elif $DOT_SU test -L "$1"  # Dst: file, Src: link to file
+            then
+                dot_ask_yes_no "'$2' will be overwritten by a link. Proceed?"
+            else  # We are copying, do nothing
+                return 1
+            fi
         fi
     else  # Unknown type
         print_error "Cannot compare '$2' and '$1'!"
@@ -372,13 +414,9 @@ dot_link_config()
     for i in ${DOT_MODULE_DIR}/config/$1
     do
         i=${i#${DOT_MODULE_DIR}/config/}
-        if [ -e "${DOT_MODULE_DIR}/config/$i" ]
+        if [ -e "${DOT_MODULE_DIR}/config/$i" ] || [ -h "${DOT_MODULE_DIR}/config/$i" ]
         then
-            # Check if destination is not already a link to source
-            if [ -L "${root}/$i" ] && [ "$(readlink "${root}/$i")" = "${DOT_MODULE_DIR}/config/$i" ]
-            then
-                print_info "Linked: ${root}/$i"
-            elif dot_ask_overwrite "${DOT_MODULE_DIR}/config/$i" "${root}/$i"
+            if dot_ask_overwrite "${DOT_MODULE_DIR}/config/$i" "${root}/$i" 1
             then
                 if [ -e "${root}/$i" ] || [ -h "${root}/$i" ]
                 then # To prevent creation of a link on another link (e.g. link to folder)
@@ -408,13 +446,9 @@ dot_link_config_sys()
     for i in ${DOT_MODULE_DIR}/config-sys/$1
     do
         i=${i#${DOT_MODULE_DIR}/config-sys/}
-        if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ]
+        if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ] || [ -h "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
-            # Check if destination is not already a link to source
-            if $DOT_SU test -L "${root}/$i" && $DOT_SU test "$(readlink "${root}/$i")" = "${DOT_MODULE_DIR}/config-sys/$i"
-            then
-                print_info "Linked: ${root}/$i"
-            elif dot_ask_overwrite_sys "${DOT_MODULE_DIR}/config-sys/$i" "${root}/$i"
+            if dot_ask_overwrite_sys "${DOT_MODULE_DIR}/config-sys/$i" "${root}/$i" 1
             then
                 if $DOT_SU test -e "${root}/$i" || $DOT_SU test -h "${root}/$i"
                 then # To prevent creation of a link on another link (e.g. link to folder)
@@ -520,7 +554,7 @@ dot_copy_config()
     for i in ${DOT_MODULE_DIR}/config/$1
     do
         i=${i#${DOT_MODULE_DIR}/config/}
-        if [ -e "${DOT_MODULE_DIR}/config/$i" ]
+        if [ -e "${DOT_MODULE_DIR}/config/$i" ] || [ -h "${DOT_MODULE_DIR}/config/$i" ]
         then
             if dot_ask_overwrite "${DOT_MODULE_DIR}/config/$i" "${root}/$i"
             then
@@ -552,7 +586,7 @@ dot_copy_config_sys()
     for i in ${DOT_MODULE_DIR}/config-sys/$1
     do
         i=${i#${DOT_MODULE_DIR}/config-sys/}
-        if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ]
+        if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ] || [ -h "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
             if dot_ask_overwrite_sys "${DOT_MODULE_DIR}/config-sys/$i" "${root}/$i"
             then
@@ -583,7 +617,7 @@ dot_fill_config()
     for i in ${DOT_MODULE_DIR}/config/$1
     do
         i=${i#${DOT_MODULE_DIR}/config/}
-        if [ -e "${DOT_MODULE_DIR}/config/$i" ]
+        if [ -e "${DOT_MODULE_DIR}/config/$i" ] && [ ! -d "${DOT_MODULE_DIR}/config/$i" ]
         then
             # envsubst < "${DOT_MODULE_DIR}/config/$i" > "${DOT_MODULE_DIR}/config/$i.dot-filled"  # Does not work with busybox
             sed \
@@ -601,6 +635,8 @@ dot_fill_config()
                 mkdir -p $(dirname "${root}/$i")
                 mv "${DOT_MODULE_DIR}/config/$i.dot-filled" "${root}/$i"
                 print_info "Filled: ${root}/$i"
+            else
+                rm "${DOT_MODULE_DIR}/config/$i.dot-filled"
             fi
         else
             print_warning "Config file '$i' not found!"
@@ -622,7 +658,7 @@ dot_fill_config_sys()
     for i in ${DOT_MODULE_DIR}/config-sys/$1
     do
         i=${i#${DOT_MODULE_DIR}/config-sys/}
-        if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ]
+        if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ] && [ ! -d "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
             # envsubst < "${DOT_MODULE_DIR}/config-sys/$i" > "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"  # Does not work with busybox
             sed \
@@ -640,6 +676,8 @@ dot_fill_config_sys()
                 $DOT_SU mkdir -p $(dirname "${root}/$i")
                 $DOT_SU mv "${DOT_MODULE_DIR}/config-sys/$i.dot-filled" "${root}/$i"
                 print_info "Filled: ${root}/$i"
+            else
+                rm "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"
             fi
         else
             print_warning "Config file '$i' not found!"
