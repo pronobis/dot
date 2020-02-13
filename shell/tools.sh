@@ -97,7 +97,7 @@ print_error()
 ## Ask a yes/no question
 ## Args:
 ##   $1 - Question text
-yes_no_question()
+dot_yes_no_question()
 {
     printf "${BOLD}${YELLOW}$1 ${WHITE}(${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}N${WHITE}):${NO_FORMAT} "
     old_stty_cfg=$(stty -g)
@@ -123,7 +123,7 @@ yes_no_question()
 # Args:
 #   $1 - Source file
 #   $2 - Destination file
-overwrite_question()
+dot_overwrite_question()
 {
     if [ -d "$2" ] && [ ! -L "$2" ]  # Dst: directory
     then
@@ -134,13 +134,13 @@ overwrite_question()
         # If source is not a link or a different link
         if [ ! -L "$1" ] || [ ! "$(readlink "$1")" = "$(readlink "$2")" ]
         then
-            yes_no_question "'$2' is a link to a directory that will be overwritten. Proceed?"
+            dot_yes_no_question "'$2' is a link to a directory that will be overwritten. Proceed?"
         else
             return 0
         fi
     elif [ -d "$1" ]  # File/link to file overwritten by a directory/link to dir
     then
-        yes_no_question "'$2' will be overwritten by a directory. Proceed?"
+        dot_yes_no_question "'$2' will be overwritten by a directory. Proceed?"
     elif [ -f "$2" ] && [ -f "$1" ]  # Files/links to files
     then
         if ! cmp --silent "$1" "$2"  # Files differ
@@ -184,7 +184,7 @@ overwrite_question()
 # Args:
 #   $1 - Source file
 #   $2 - Destination file
-overwrite_question_sys()
+dot_overwrite_question_sys()
 {
     dot_get_su
 
@@ -197,13 +197,13 @@ overwrite_question_sys()
         # If source is not a link or a different link
         if $DOT_SU test ! -L "$1" || $DOT_SU test ! "$(readlink "$1")" = "$(readlink "$2")"
         then
-            yes_no_question "'$2' is a link to a directory that will be overwritten. Proceed?"
+            dot_yes_no_question "'$2' is a link to a directory that will be overwritten. Proceed?"
         else
             return 0
         fi
     elif $DOT_SU test -d "$1"  # File/link to file overwritten by a directory/link to dir
     then
-        yes_no_question "'$2' will be overwritten by a directory. Proceed?"
+        dot_yes_no_question "'$2' will be overwritten by a directory. Proceed?"
     elif $DOT_SU test -f "$2" && $DOT_SU test -f "$1"  # Files/links to files
     then
         if ! $DOT_SU cmp --silent "$1" "$2" # Files differ
@@ -241,7 +241,7 @@ overwrite_question_sys()
 
 
 ## Wait for any user input
-wait_for_key()
+dot_wait_for_key()
 {
     printf "${BOLD}${YELLOW}Press any key to continue...${NO_FORMAT} "
     old_stty_cfg=$(stty -g)
@@ -378,7 +378,7 @@ dot_link_config()
             if [ -L "${root}/$i" ] && [ "$(readlink "${root}/$i")" = "${DOT_MODULE_DIR}/config/$i" ]
             then
                 print_info "Linked: ${root}/$i"
-            elif overwrite_question "${DOT_MODULE_DIR}/config/$i" "${root}/$i"
+            elif dot_overwrite_question "${DOT_MODULE_DIR}/config/$i" "${root}/$i"
             then
                 if [ -e "${root}/$i" ] || [ -h "${root}/$i" ]
                 then # To prevent creation of a link on another link (e.g. link to folder)
@@ -414,7 +414,7 @@ dot_link_config_sys()
             if $DOT_SU test -L "${root}/$i" && $DOT_SU test "$(readlink "${root}/$i")" = "${DOT_MODULE_DIR}/config-sys/$i"
             then
                 print_info "Linked: ${root}/$i"
-            elif overwrite_question_sys "${DOT_MODULE_DIR}/config-sys/$i" "${root}/$i"
+            elif dot_overwrite_question_sys "${DOT_MODULE_DIR}/config-sys/$i" "${root}/$i"
             then
                 if $DOT_SU test -e "${root}/$i" || $DOT_SU test -h "${root}/$i"
                 then # To prevent creation of a link on another link (e.g. link to folder)
@@ -522,7 +522,7 @@ dot_copy_config()
         i=${i#${DOT_MODULE_DIR}/config/}
         if [ -e "${DOT_MODULE_DIR}/config/$i" ]
         then
-            if overwrite_question "${DOT_MODULE_DIR}/config/$i" "${root}/$i"
+            if dot_overwrite_question "${DOT_MODULE_DIR}/config/$i" "${root}/$i"
             then
                 if [ -e "${root}/$i" ] || [ -h "${root}/$i" ]
                 then # To prevent copying into a link
@@ -554,7 +554,7 @@ dot_copy_config_sys()
         i=${i#${DOT_MODULE_DIR}/config-sys/}
         if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
-            if overwrite_question_sys "${DOT_MODULE_DIR}/config-sys/$i" "${root}/$i"
+            if dot_overwrite_question_sys "${DOT_MODULE_DIR}/config-sys/$i" "${root}/$i"
             then
                 if $DOT_SU test -e "${root}/$i" || $DOT_SU test -h "${root}/$i"
                 then # To prevent copying into a link
@@ -592,7 +592,7 @@ dot_fill_config()
                 -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
                 -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
                 "${DOT_MODULE_DIR}/config/$i" > "${DOT_MODULE_DIR}/config/$i.dot-filled"
-            if overwrite_question "${DOT_MODULE_DIR}/config/$i.dot-filled" "${root}/$i"
+            if dot_overwrite_question "${DOT_MODULE_DIR}/config/$i.dot-filled" "${root}/$i"
             then
                 if [ -e "${root}/$i" ] || [ -h "${root}/$i" ]
                 then # To prevent copying into a link
@@ -631,7 +631,7 @@ dot_fill_config_sys()
                 -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
                 -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
                 "${DOT_MODULE_DIR}/config-sys/$i" > "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"
-            if overwrite_question_sys "${DOT_MODULE_DIR}/config-sys/$i.dot-filled" "${root}/$i"
+            if dot_overwrite_question_sys "${DOT_MODULE_DIR}/config-sys/$i.dot-filled" "${root}/$i"
             then
                 if $DOT_SU test -e "${root}/$i" || $DOT_SU test -h "${root}/$i"
                 then # To prevent copying into a link
@@ -1047,7 +1047,7 @@ dot_check_root()
     if [ "$uid" = "0" ] || [ "$HOME" = "/root" ] || [ "$USER" = "root" ] || [ "$(whoami)" = "root" ]
     then
         print_warning "You are running the installation script as root!"
-        if ! yes_no_question "Are you sure you want to continue?"
+        if ! dot_yes_no_question "Are you sure you want to continue?"
         then
             exit 1
         fi
@@ -1396,4 +1396,20 @@ dot_contains()
     string="$1"
     substring="$2"
     [ "${string#*$substring}" != "$string" ]
+}
+
+
+## -------------------------------------------------------------
+## Deprecated
+## -------------------------------------------------------------
+wait_for_key()
+{
+    print_warning "wait_for_key is deprecated, use dot_wait_for_key"
+    dot_wait_for_key "$@"
+}
+
+yes_no_question()
+{
+    print_warning "yes_no_question is deprecated, use dot_yes_no_question"
+    dot_yes_no_question "$@"
 }
