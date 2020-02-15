@@ -213,10 +213,10 @@ dot_ask_overwrite_sys()
     if $DOT_SU test ! -e "$2" && $DOT_SU test ! -L "$2"  # Dst: missing
     then
         return 0
-    elif [ -n "$3" ] && $DOT_SU test -L "$2" && $DOT_SU test "$("$DOT_SU" readlink "$2")" = "$1"  # Dst: link to source
+    elif [ -n "$3" ] && $DOT_SU test -L "$2" && $DOT_SU test "$($DOT_SU readlink "$2")" = "$1"  # Dst: link to source
     then
         return 1
-    elif [ -z "$3" ] && $DOT_SU test -L "$2" && $DOT_SU test -L "$1" && $DOT_SU test "$("$DOT_SU" readlink "$1")" = "$("$DOT_SU" readlink "$2")"  # Dst/Src: identical links
+    elif [ -z "$3" ] && $DOT_SU test -L "$2" && $DOT_SU test -L "$1" && $DOT_SU test "$($DOT_SU readlink "$1")" = "$($DOT_SU readlink "$2")"  # Dst/Src: identical links
     then
         return 1
     elif $DOT_SU test -d "$2" && $DOT_SU test ! -L "$2"  # Dst: directory
