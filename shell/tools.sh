@@ -1073,6 +1073,95 @@ dot_git_clone_or_update()
 }
 
 
+# Runs apt-add-repository with arguments depending on the version.
+# Args:
+#   $1 - <sourceline>
+dot_apt_add_repository()
+{
+    dot_get_su
+
+    if dot_get_installed_package_version software-properties-common
+    then
+        if dot_versions_ge "$DOT_PACKAGE_VERSION" "0.96.24"
+        then
+            $DOT_SU apt-add-repository -y -n "$1"  # Do not update here
+        else
+            $DOT_SU apt-add-repository -y "$1"  # No -n
+        fi
+    else
+        print_error "Package 'software-properties-common' is not installed!"
+        exit 1
+    fi
+}
+
+
+# Add a new PPA if not yet added.
+# Works only for Debian-based systems.
+# Args:
+#   $1 - PPA name (e.g. "ppa:git-core/ppa") or
+#        URL of a list file to download as "list:URL" or
+#        a complete apt line to add to the list file.
+#   $2 - (Optional) List file name without extension (ignored for PPA names).
+#                   If missing, "sources.list" is used.
+#   $3 - (Optional) URL to the public key or public key ID if PPA name is given
+#   $4 - (Optional) Fingerprint to verify
+dot_add_ppa()
+{
+    dot_get_su
+
+    # Install missing dependencies
+    if ! dot_check_packages software-properties-common curl
+    then
+        print_status "Installing PPA dependencies: $DOT_NOT_INSTALLED..."
+        dot_install_packages $DOT_NOT_INSTALLED
+    fi
+    # Add PPA
+    local public_key_id=""
+    if [ ! "${1#ppa:}" = "$1" ]
+    then  # PPA name
+        print_status "Adding PPA '$1'..."
+        public_key_id="$3"
+        dot_apt_add_repository "$1"
+    elif [ ! "${1#list:}" = "$1" ]
+    then  # List file URL
+        print_status "Adding PPA from list file '$1'..."
+        local list_file="/etc/apt/sources.list.d/$2.list"
+        [ -z "$2" ] && list_file="/etc/apt/sources.list"
+        curl -fsSL "${1#list:}" | $DOT_SU tee "$list_file" > /dev/null
+    else  # APT line
+        print_status "Adding PPA using line '$1'..."
+        if [ -n "$2" ]  # List file specified
+        then
+            echo "$1" | $DOT_SU tee /etc/apt/sources.list.d/$2.list > /dev/null
+        else  # List file not specified
+            dot_apt_add_repository "$1"
+        fi
+    fi
+    # Add public key
+    if [ "${1#ppa:}" = "$1" ] && [ -n "$3" ]
+    then
+        print_status "Adding public GPG key..."
+        local key="$(curl -fsSL "$3")"
+        public_key_id=$(echo "$key" | gpg --with-colon 2>/dev/null | awk -F: '/pub/{print $5}')
+        echo "$key" | $DOT_SU apt-key add -
+    fi
+    # Verify fingerprint
+    if [ -n "$public_key_id" ] && [ -n "$4" ]
+    then
+        print_status "Verifying fingerprint for key $public_key_id..."
+        if apt-key adv --finger --with-colons 8D81803C0EBFCD88 2>/dev/null | grep -q -E "fpr:*$4:"
+        then
+            print_info "OK"
+        else
+            print_error "Incorrect fingerprint for PPA key!"
+            exit 1
+        fi
+    fi
+    # Force an update of package lists
+    DOT_MODULE_PACKAGES_UPDATED=""
+    dot_update_package_list
+}
+
 
 ## -------------------------------------------------------------
 ## Checks
