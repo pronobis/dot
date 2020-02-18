@@ -9,6 +9,7 @@
 if [ -z "$DOT_SETUP_CONFIG_FISH" ]
 set -g DOT_SETUP_CONFIG_FISH 1
 
+
 # Make shell tools available
 source "$DOT_DIR/shell/tools-shell.fish"
 

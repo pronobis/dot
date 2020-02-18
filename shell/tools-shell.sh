@@ -112,6 +112,7 @@ __dot_add_path()
     fi
 }
 
+
 # Add an abbreviation
 # Args:
 #   $1 - Name of the abbreviation
