@@ -1663,6 +1663,70 @@ print_param()
 
 
 ## -------------------------------------------------------------
+## High-level Tools
+## -------------------------------------------------------------
+
+# Install software and configure it.
+# The following functions are called by this function:
+# - <id>_test - Tests if software is installed.
+#               If missing, assume NOT installed.
+#               Returns: 0-installed
+#                        1-not installed
+#                        2-cannot be installed
+# - <id>_install - Installs the software.
+# - <id>_configure - Configures installed software, optional.
+# Args:
+#   $1 - ID, used to derive parameter (upper case) and
+#        function (lower case) names
+#   $2 - (Optional) Question to ask the user. If the question
+#        contains variables, they will be dereferenced after
+#        the test function is run.
+dot_install_and_configure ()
+{
+    local var_name="INSTALL_$(echo "$1" | tr ' a-z' '_A-Z')"
+    local fun_name="$(echo "$1" | tr ' A-Z' '_a-z')"
+    local question="Install $1?"
+    [ -n "$2" ] && question="$2"
+
+    # Print header
+    print_header "$1"
+    print_param "${var_name}"
+
+    # Do nothing if parameter indicates not to install
+    # Also skip configuration in such case
+    if dot_false "${var_name}"
+    then
+        print_status "$1 is disabled"
+        return 0
+    fi
+
+    if dot_check_cmd ${fun_name}_test && ${fun_name}_test
+    then  # Software installed, just configure
+        if dot_check_cmd ${fun_name}_configure
+        then
+            ${fun_name}_configure
+            print_status "Done!"
+        fi
+    else  # Software not installed, or cannot be installed
+        if [ "$?" = "2" ]
+        then  # Cannot be installed
+            print_warning "$1 cannot be installed."
+            dot_wait_for_key
+        else  # Not installed
+            if dot_true "${var_name}" || dot_ask_yes_no "$(eval "printf '%s' \"$question\"")"
+            then
+                ${fun_name}_install
+                dot_check_cmd ${fun_name}_configure && ${fun_name}_configure
+                print_status "Done!"
+            fi
+        fi
+    fi
+
+    unset DOT_INSTALL_QUESTION
+}
+
+
+## -------------------------------------------------------------
 ## Deprecated
 ## -------------------------------------------------------------
 wait_for_key()
