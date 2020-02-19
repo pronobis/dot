@@ -11,6 +11,9 @@
 # Make shell tools available
 . "$DOT_DIR/shell/tools-shell.sh"
 
+# Load module parameters
+__dot_load_params
+
 # Run setup-login.sh/bash if running bash login session and non yet run
 # This is needed if .profile sources .bashrc before setup-profile.sh
 if [ -n "$BASH_VERSION" ]

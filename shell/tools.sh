@@ -619,13 +619,30 @@ dot_fill_config()
         i=${i#${DOT_MODULE_DIR}/config/}
         if [ -e "${DOT_MODULE_DIR}/config/$i" ] && [ ! -d "${DOT_MODULE_DIR}/config/$i" ]
         then
-            # envsubst < "${DOT_MODULE_DIR}/config/$i" > "${DOT_MODULE_DIR}/config/$i.dot-filled"  # Does not work with busybox
-            sed \
-                -e 's#${USER}#'"${USER}"'#g' \
-                -e 's#${HOME}#'"${HOME}"'#g' \
-                -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
-                -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
-                "${DOT_MODULE_DIR}/config/$i" > "${DOT_MODULE_DIR}/config/$i.dot-filled"
+            # Use envsubst whenever gettext available
+            if dot_check_cmd envsubst
+            then
+                envsubst < "${DOT_MODULE_DIR}/config/$i" > "${DOT_MODULE_DIR}/config/$i.dot-filled"
+            else
+                print_warning "dot_fill_config: gettext is not available, using sed instead."
+                print_warning "Some variables might not be replaced and characters might be escaped!"
+                # Build sed arguments for module parameters
+                local sed_args=";"
+                for j in $(env | awk '/^DOT_PARAM_/ {sub(/\s*=.*/,"", $1); print $1}')
+                do
+                    __dot_param -q "${j#DOT_PARAM_}"
+                    sed_args=$(printf "s\001\${$j}\001$DOT_PARAM\001g;${sed_args}")
+                done
+                # Replace variables
+                sed \
+                    -e "$sed_args" \
+                    -e 's#${USER}#'"${USER}"'#g' \
+                    -e 's#${HOME}#'"${HOME}"'#g' \
+                    -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
+                    -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
+                    "${DOT_MODULE_DIR}/config/$i" > "${DOT_MODULE_DIR}/config/$i.dot-filled"
+
+            fi
             if dot_ask_overwrite "${DOT_MODULE_DIR}/config/$i.dot-filled" "${root}/$i"
             then
                 if [ -e "${root}/$i" ] || [ -h "${root}/$i" ]
@@ -660,13 +677,29 @@ dot_fill_config_sys()
         i=${i#${DOT_MODULE_DIR}/config-sys/}
         if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ] && [ ! -d "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
-            # envsubst < "${DOT_MODULE_DIR}/config-sys/$i" > "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"  # Does not work with busybox
-            sed \
-                -e 's#${USER}#'"${USER}"'#g' \
-                -e 's#${HOME}#'"${HOME}"'#g' \
-                -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
-                -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
-                "${DOT_MODULE_DIR}/config-sys/$i" > "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"
+            # Use envsubst whenever gettext available
+            if dot_check_cmd envsubst
+            then
+                envsubst < "${DOT_MODULE_DIR}/config-sys/$i" > "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"
+            else
+                print_warning "dot_fill_config: gettext is not available, using sed instead."
+                print_warning "Some variables might not be replaced and characters might be escaped!"
+                # Build sed arguments for module parameters
+                local sed_args=";"
+                for j in $(env | awk '/^DOT_PARAM_/ {sub(/\s*=.*/,"", $1); print $1}')
+                do
+                    __dot_param -q "${j#DOT_PARAM_}"
+                    sed_args=$(printf "s\001\${$j}\001$DOT_PARAM\001g;${sed_args}")
+                done
+                # Replace variables
+                sed \
+                    -e "$sed_args" \
+                    -e 's#${USER}#'"${USER}"'#g' \
+                    -e 's#${HOME}#'"${HOME}"'#g' \
+                    -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
+                    -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
+                    "${DOT_MODULE_DIR}/config-sys/$i" > "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"
+            fi
             if dot_ask_overwrite_sys "${DOT_MODULE_DIR}/config-sys/$i.dot-filled" "${root}/$i"
             then
                 if $DOT_SU test -e "${root}/$i" || $DOT_SU test -h "${root}/$i"
@@ -1523,6 +1556,109 @@ dot_contains()
     string="$1"
     substring="$2"
     [ "${string#*$substring}" != "$string" ]
+}
+
+
+# Get the value of a parameter and print it to stdout.
+# Options:
+#   -q - Stay quiet, do not print
+#   -n - Test if parameter is not empty
+#   -e - Test if parameter is not empty and exit with error if it is
+# Args:
+#   $1 - Parameter name
+# Return:
+#   $? - 0 if parameter is set (not empty), 1 otherwise (for -n)
+#   $DOT_PARAM - parameter value
+dot_param()
+{
+    # Parse options
+    while true
+    do
+        case $1 in
+            -q)
+                local arg_quiet="-q"
+                shift
+                ;;
+            -n)
+                local arg_test_empty="-n"
+                shift
+                ;;
+            -e)
+                local arg_test_empty="-n"
+                local arg_test_exit=1
+                shift
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    if ! __dot_param $arg_quiet $arg_test_empty "$@"
+    then
+        [ -n "$arg_test_exit" ] && print_error "Parameter $1 is empty!" && exit 1
+    fi
+}
+
+
+# Check if parameter is set to '1', 'yes', or 'true'
+# Args:
+#   $1 - Parameter name
+# Return:
+#   $? - 0 if parameter was set to true, 1 otherwise
+dot_true()
+{
+    __dot_true "$@"
+}
+
+
+# Check if parameter is set to '0', 'no', or 'false'
+# Args:
+#   $1 - Parameter name
+# Return:
+#   $? - 0 if parameter was set to true, 1 otherwise
+dot_false()
+{
+    __dot_false "$@"
+}
+
+
+# Print the value of a parameter in a human-readable way
+# Options:
+#   -n - Test if parameter is not empty
+#   -e - Test if parameter is not empty and exit with error if it is
+# Args:
+#   $1 - Parameter name
+# Return:
+#   $? - 0 if parameter is set (not empty), 1 otherwise (for -n)
+#   $DOT_PARAM - parameter value
+print_param()
+{
+    # Parse options
+    while true
+    do
+        case $1 in
+            -n)
+                local arg_test_empty=1
+                shift
+                ;;
+            -e)
+                local arg_test_exit=1
+                shift
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+    if __dot_param -q -n "$1"
+    then
+        printf "${LIGHT_CYAN}$1${NO_FORMAT}='${LIGHT_YELLOW}%s${NO_FORMAT}'\n" "$DOT_PARAM"
+    else
+        echo "${LIGHT_CYAN}$1${NO_FORMAT} ${YELLOW}is empty or not set${NO_FORMAT}"
+        [ -n "$arg_test_exit" ] && print_error "Parameter $1 cannot be empty!" && exit 1
+        [ -z "$arg_test_empty" ]
+    fi
 }
 
 

@@ -13,6 +13,8 @@ set -g DOT_SETUP_CONFIG_FISH 1
 # Make shell tools available
 source "$DOT_DIR/shell/tools-shell.fish"
 
+# Load module parameters
+__dot_load_params
 
 # Run setup-login.fish if login session
 if status is-login

@@ -15,5 +15,8 @@ OPT_DIR="$DOT_MODULE_DIR/opt"
 # Import tools
 . "$DOT_DIR/shell/tools.sh"
 
+# Reload parameters
+__dot_load_params -r
+
 # Header
 print_main_module_header

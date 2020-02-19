@@ -121,3 +121,98 @@ __dot_abbr()
 {
     alias "$1"="$2"
 }
+
+
+# Load parameters of all modules
+# Options:
+#   -r - Force reload
+__dot_load_params()
+{
+    # Do nothing if params already loaded, unless reloading
+    [ ! "$1" = "-r" ] && [ -n "$DOT_PARAMS_LOADED" ] && return || export DOT_PARAMS_LOADED=1
+
+    # Unset any previous params
+    for i in $(env | awk '/^DOT_PARAM_/ {sub(/\s*=.*/,"", $1); print $1}')
+    do
+        unset $i
+    done
+
+    # Load params found in each module
+    if [ -d "$DOT_DIR/modules" ]
+    then
+        for i in `ls $DOT_DIR/modules | sort`; do
+            i="$DOT_DIR/modules/$i"
+            if [ -d "$i" ]
+            then
+                if [ -f "$i/params" ]
+                then
+                    # Load params as environment variables
+                    eval "$(awk 'BEGIN{ORS=";"} /^[[:alnum:]_]+=/{print "export DOT_PARAM_"$0}' "$i/params")"
+                fi
+            fi
+        done
+    fi
+}
+
+
+# Get the value of a parameter and print it to stdout.
+# Options:
+#   -q - Stay quiet, do not print
+#   -n - Test if parameter is not empty
+# Args:
+#   $1 - Parameter name
+# Return:
+#   $? - 0 if parameter is set (not empty), 1 otherwise (for -n)
+#   $DOT_PARAM - parameter value
+__dot_param()
+{
+    # Parse options
+    while true
+    do
+        case $1 in
+            -q)
+                local arg_quiet=1
+                shift
+                ;;
+            -n)
+                local arg_test_empty=1
+                shift
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+    # Get param
+    eval "DOT_PARAM=\"\$DOT_PARAM_$1\""
+    if [ -n "$DOT_PARAM" ]
+    then
+        [ -n "$arg_quiet" ] || echo -n "$DOT_PARAM"
+    else
+        [ -z "$arg_test_empty" ]
+    fi
+}
+
+
+# Check if parameter is set to '1', 'yes', or 'true'
+# Args:
+#   $1 - Parameter name
+# Return:
+#   $? - 0 if parameter was set to true, 1 otherwise
+__dot_true()
+{
+    local val="$(__dot_param "$1" | tr a-z A-Z)"
+    [ "$val" = "1" ] || [ "$val" = "TRUE" ] || [ "$val" = "YES" ]
+}
+
+
+# Check if parameter is set to '0', 'no', or 'false'
+# Args:
+#   $1 - Parameter name
+# Return:
+#   $? - 0 if parameter was set to true, 1 otherwise
+__dot_false()
+{
+    local val="$(__dot_param "$1" | tr a-z A-Z)"
+    [ "$val" = "0" ] || [ "$val" = "FALSE" ] || [ "$val" = "NO" ]
+}

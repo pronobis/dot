@@ -109,5 +109,81 @@ function __dot_abbr
 end
 
 
+# Load parameters of all modules
+# Options:
+#   -r - Force reload
+function __dot_load_params
+    # Do nothing if params already loaded, unless reloading
+    if [ "$argv[1]" = "-r" ]; or [ -z "$DOT_PARAMS_LOADED" ]
+        set -gx DOT_PARAMS_LOADED 1
+
+        # Unset any previous params
+        for i in (env | awk '/^DOT_PARAM_/ {sub(/\s*=.*/,"", $1); print $1}')
+            set -e $i
+        end
+
+        # Load params found in each module
+        if [ -d "$DOT_DIR/modules" ]
+            for i in (ls "$DOT_DIR/modules" | sort)
+                set -l i "$DOT_DIR/modules/$i"
+                if [ -d "$i" ]
+                    # Run in each module
+                    if [ -f "$i/params" ]
+                        # Load params as environment variables
+                        awk '/^[[:alnum:]_]+=/{print "export DOT_PARAM_"$0}' "$i/params" | source
+                    end
+                end
+            end
+        end
+    end
+end
+
+
+# Get the value of a parameter and print it to stdout.
+# Options:
+#   -q - Stay quiet, do not print
+#   -n - Test if parameter is not empty
+# Args:
+#   $1 - Parameter name
+# Return:
+#   $? - 0 if parameter is set (not empty), 1 otherwise (for -n)
+#   $DOT_PARAM - parameter value
+function __dot_param
+    # Parse options
+    argparse 'q' 'n' -- $argv
+    # Get param
+    set -l var "DOT_PARAM_$argv[1]"
+    set -g DOT_PARAM "$$var"
+    if [ -n "$DOT_PARAM" ]
+        [ -n "$_flag_q" ]
+        or echo "$DOT_PARAM"
+    else
+        [ -z "$_flag_n" ]
+    end
+end
+
+
+# Check if parameter is set to '1', 'yes', or 'true'
+# Args:
+#   $1 - Parameter name
+# Return:
+#   $? - 0 if parameter was set to true, 1 otherwise
+function __dot_true
+    set -l val (__dot_param "$argv[1]" | string upper)
+    [ "$val" = "1" ] || [ "$val" = "TRUE" ] || [ "$val" = "YES" ]
+end
+
+
+# Check if parameter is set to '0', 'no', or 'false'
+# Args:
+#   $1 - Parameter name
+# Return:
+#   $? - 0 if parameter was set to true, 1 otherwise
+function __dot_false
+    set -l val (__dot_param "$argv[1]" | string upper)
+    [ "$val" = "0" ] || [ "$val" = "FALSE" ] || [ "$val" = "NO" ]
+end
+
+
 # Include guard
 end
