@@ -1757,6 +1757,33 @@ dot_install_and_configure ()
 }
 
 
+# Interactively clean up temporary module files.
+# This uses xorg -o and find -execdir and will not work on busybox.
+# Args:
+#   $@ - Exclusion patterns
+dot_module_cleanup()
+{
+    print_header "Module Cleanup"
+    cd "${DOT_MODULE_DIR}/tmp"
+    # Build find arguments
+    local find_args="-mindepth 1 -maxdepth 1 ! -name '.gitignore' ! -name 'installed*'"
+    for i do
+        find_args="$find_args ! -name '$i'"
+    done
+    # Cleanup
+    if [ $(echo -n "$find_args" | xargs find "${DOT_MODULE_DIR}/tmp"  | wc -l) = "0" ]
+    then
+        print_status "No temporary files found in the module."
+    else
+        if dot_ask_yes_no "Clean up temporary module files ("$(du -sh "${DOT_MODULE_DIR}/tmp" | awk '{print $1}')")?"
+        then
+            find_args="$find_args -execdir sh -c '. $DOT_DIR/shell/tools.sh; dot_ask_yes_no \"Delete \$(realpath --relative-base=.. {}) (\"\$(du -sh {} | awk \"{print \\\$1}\")\")?\" && rm -rf {}' \;"
+            echo -n "$find_args" | xargs -o find "${DOT_MODULE_DIR}/tmp"
+        fi
+    fi
+}
+
+
 ## -------------------------------------------------------------
 ## Deprecated
 ## -------------------------------------------------------------
