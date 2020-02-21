@@ -30,6 +30,8 @@ print_usage()
     echo
     echo "  status  - Show module update/install status."
     echo
+    echo "  params  - List all module parameters and their values."
+    echo
     echo "  add     - Add a new module. Usage:"
     echo "              dot-get add <url> [<name>]"
     echo "            Arguments: "
@@ -537,6 +539,22 @@ cmd_install()
 # ------------------------------------------------------------------------------
 # Status
 # ------------------------------------------------------------------------------
+cmd_params()
+{
+    # Reload params
+    __dot_load_params -r
+
+    # List all
+    for i in $(env | awk '/^DOT_PARAM_/ {sub(/\s*=.*/,"", $1); print $1}' | sort)
+    do
+        print_param "${i#DOT_PARAM_}"
+    done
+}
+
+
+# ------------------------------------------------------------------------------
+# Status
+# ------------------------------------------------------------------------------
 cmd_status()
 {
     # Get list of all modules
@@ -652,6 +670,10 @@ elif [ "$command" = "resolve" ]
 then
     shift
     cmd_resolve
+elif [ "$command" = "params" ]
+then
+    shift
+    cmd_params "$@"
 elif [ "$command" = "status" ]
 then
     shift
