@@ -39,6 +39,7 @@ print_main_footer()
     clear_format
 }
 
+
 print_main_module_header()
 {
     set_format ${BOLD}${LIGHT_YELLOW}
@@ -48,6 +49,7 @@ print_main_module_header()
     clear_format
     echo "Using dot files in: ${DOT_DIR}"
 }
+
 
 print_main_module_footer()
 {
@@ -59,31 +61,60 @@ print_main_module_footer()
     clear_format
 }
 
+
+# Print a header
+# Args:
+#   $1 - Fromat
+#   $2- - Arguments
 print_header()
 {
+    local fmt="$1"
+    shift
     set_format ${BOLD}${LIGHT_BLUE}
     echo
     echo "-------------------------------"
-    printf "$1\n" "$2"
+    printf "$fmt\n" "$@"
     echo "-------------------------------"
     clear_format
 }
 
+
+# Print an info message
+# Args:
+#   $1 - Fromat
+#   $2- - Arguments
 print_info()
 {
-    printf "$1\n" "$2"
+    local fmt="$1"
+    shift
+    printf "$fmt\n" "$@"
 }
 
+
+# Print a status message
+# Args:
+#   $1 - Fromat
+#   $2- - Arguments
 print_status()
 {
     __dot_print_status "$@"
 }
 
+
+# Print a warning
+# Args:
+#   $1 - Fromat
+#   $2- - Arguments
 print_warning()
 {
     __dot_print_warning "$@"
 }
 
+
+# Print an error
+# Args:
+#   $1 - Fromat
+#   $2- - Arguments
 print_error()
 {
     __dot_print_error "$@"

@@ -10,7 +10,7 @@
 . "$DOT_DIR/shell/formatting.sh"
 
 
-# Print a status info
+# Print a status message
 # Args:
 #   $1 - Fromat
 #   $2- - Arguments

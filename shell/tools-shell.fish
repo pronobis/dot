@@ -9,7 +9,7 @@ if [ -z "$DOT_TOOLS_SHELL_FISH" ]
     set -g DOT_TOOLS_SHELL_FISH 1
 
 
-# Print a status info
+# Print a status message
 # Args:
 #   $argv[1] - Fromat
 #   $argv[2..] - Arguments
