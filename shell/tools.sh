@@ -184,7 +184,7 @@ dot_ask_overwrite()
         dot_ask_yes_no "'$2' is a link that will be overwritten. Proceed?"
     elif [ -f "$2" ] && [ -f "$1" ]  # Dst/src: files/links to files
     then
-        if ! cmp --silent "$1" "$2"  # Files differ
+        if ! cmp -s "$1" "$2"  # Files differ
         then
             while :
             do
@@ -194,7 +194,7 @@ dot_ask_overwrite()
                 if echo "$answer" | grep -iq "^d"
                 then # Diff
                     printf "${BOLD}${LIGHT_GREEN}diff${NO_FORMAT}\n"
-                    diff -y --suppress-common-lines "$2" "$1"
+                    diff "$2" "$1"
                 elif echo "$answer" | grep -iq "^y"
                 then # Yes
                     printf "${BOLD}${LIGHT_GREEN}y${NO_FORMAT}\n"
@@ -268,7 +268,7 @@ dot_ask_overwrite_sys()
         dot_ask_yes_no "'$2' is a link that will be overwritten. Proceed?"
     elif $DOT_SU test -f "$2" && $DOT_SU test -f "$1"  # Dst/src: files/links to files
     then
-        if ! $DOT_SU cmp --silent "$1" "$2" # Files differ
+        if ! $DOT_SU cmp -s "$1" "$2" # Files differ
         then
             while :
             do
@@ -278,7 +278,7 @@ dot_ask_overwrite_sys()
                 if echo "$answer" | grep -iq "^d"
                 then # Diff
                     printf "${BOLD}${LIGHT_GREEN}diff${NO_FORMAT}\n"
-                    diff -y --suppress-common-lines "$2" "$1"
+                    diff "$2" "$1"
                 elif echo "$answer" | grep -iq "^y"
                 then # Yes
                     printf "${BOLD}${LIGHT_GREEN}y${NO_FORMAT}\n"
