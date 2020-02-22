@@ -106,7 +106,7 @@ __dot_add_path()
         return 1
     fi
     # Add path
-    if ! eval "echo \${$1}" | grep -Eq "(^|:)$2($|:)" && [ -d "$2" ]
+    if ! eval "printf '%s' \"\${$1}\"" | grep -Eq "(^|:)$2($|:)" && [ -d "$2" ]
     then
         eval "export $1=\"$2\${$1:+:\${$1}}\""
     fi
@@ -187,7 +187,7 @@ __dot_param()
     eval "DOT_PARAM=\"\$DOT_PARAM_$1\""
     if [ -n "$DOT_PARAM" ]
     then
-        [ -n "$arg_quiet" ] || echo -n "$DOT_PARAM"
+        [ -n "$arg_quiet" ] || printf '%s' "$DOT_PARAM"
     else
         [ -z "$arg_test_empty" ]
     fi

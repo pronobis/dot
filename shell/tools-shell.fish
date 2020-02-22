@@ -49,7 +49,7 @@ function __dot_get_modules
     for i in (ls $DOT_DIR/modules | sort)
         set p "$DOT_DIR/modules/$i"
         if [ -d $p ]; and [ (basename $p) != "temp_clone" ]; and [ -f $p/.git/config ]
-            echo $i
+            printf '%s\n' "$i"
         end
     end
 end
@@ -65,7 +65,7 @@ function __dot_get_modules_matching_name
     set -l name (string replace -r "/.*" "" "$argv[1]")
     for i in (__dot_get_modules)
         if string match -q "*$name*" "$i"
-            echo $i
+            printf '%s\n' "$i"
         end
     end
 end
@@ -89,7 +89,7 @@ function __dot_add_path
         end
     # Other colon separated lists
     else
-        if not echo "$$argv[1]" | grep -Eq '(^|:)'$argv[2]'($|:)'; and [ -d $argv[2] ]
+        if not printf '%s' "$$argv[1]" | grep -Eq '(^|:)'$argv[2]'($|:)'; and [ -d $argv[2] ]
             if [ -z "$$argv[1]" ]
                 set -gx $argv[1] $argv[2]
             else
@@ -156,7 +156,7 @@ function __dot_param
     set -g DOT_PARAM "$$var"
     if [ -n "$DOT_PARAM" ]
         [ -n "$_flag_q" ]
-        or echo "$DOT_PARAM"
+        or printf '%s' "$DOT_PARAM"
     else
         [ -z "$_flag_n" ]
     end

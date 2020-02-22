@@ -20,22 +20,22 @@
 print_main_header()
 {
     set_format ${BOLD}${LIGHT_YELLOW}
-    echo "==============================="
-    echo "Dotfiles Installer"
-    echo "==============================="
+    printf '%s\n' "==============================="
+    printf '%s\n' "Dotfiles Installer"
+    printf '%s\n' "==============================="
     clear_format
-    echo "Using dot files in: ${DOT_DIR}"
+    printf '%s\n' "Using dot files in: ${DOT_DIR}"
 }
 
 
 print_main_footer()
 {
     set_format ${BOLD}${LIGHT_GREEN}
-    echo
-    echo "==============================="
-    echo "All done! "
-    echo "Please install modules now. "
-    echo "==============================="
+    printf '\n'
+    printf '%s\n' "==============================="
+    printf '%s\n' "All done! "
+    printf '%s\n' "Please install modules now. "
+    printf '%s\n' "==============================="
     clear_format
 }
 
@@ -43,21 +43,21 @@ print_main_footer()
 print_main_module_header()
 {
     set_format ${BOLD}${LIGHT_YELLOW}
-    echo "==============================="
-    echo "Dotfiles Module Installer "
-    echo "==============================="
+    printf '%s\n' "==============================="
+    printf '%s\n' "Dotfiles Module Installer "
+    printf '%s\n' "==============================="
     clear_format
-    echo "Using dot files in: ${DOT_DIR}"
+    printf '%s\n' "Using dot files in: ${DOT_DIR}"
 }
 
 
 print_main_module_footer()
 {
     set_format ${BOLD}${LIGHT_GREEN}
-    echo
-    echo "==============================="
-    echo "All done! "
-    echo "==============================="
+    printf '\n'
+    printf '%s\n' "==============================="
+    printf '%s\n' "All done! "
+    printf '%s\n' "==============================="
     clear_format
 }
 
@@ -71,10 +71,10 @@ print_header()
     local fmt="$1"
     shift
     set_format ${BOLD}${LIGHT_BLUE}
-    echo
-    echo "-------------------------------"
+    printf '\n'
+    printf '%s\n' "-------------------------------"
     printf "$fmt\n" "$@"
-    echo "-------------------------------"
+    printf '%s\n' "-------------------------------"
     clear_format
 }
 
@@ -133,7 +133,7 @@ dot_ask_yes_no()
     printf "${BOLD}${YELLOW}$1 ${WHITE}(${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}N${WHITE}):${NO_FORMAT} "
     old_stty_cfg=$(stty -g)
     stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
-    if echo "$answer" | grep -iq "^y"
+    if printf '%s' "$answer" | grep -iq "^y"
     then # Yes
         printf "${BOLD}${LIGHT_GREEN}y${NO_FORMAT}\n"
         return 0
@@ -191,11 +191,11 @@ dot_ask_overwrite()
                 printf "${BOLD}${YELLOW}'$2' exists and is different. Proceed? ${WHITE}(${YELLOW}d${WHITE}/${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}N${WHITE}):${NO_FORMAT} "
                 old_stty_cfg=$(stty -g)
                 stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
-                if echo "$answer" | grep -iq "^d"
+                if printf '%s' "$answer" | grep -iq "^d"
                 then # Diff
                     printf "${BOLD}${LIGHT_GREEN}diff${NO_FORMAT}\n"
                     diff "$2" "$1"
-                elif echo "$answer" | grep -iq "^y"
+                elif printf '%s' "$answer" | grep -iq "^y"
                 then # Yes
                     printf "${BOLD}${LIGHT_GREEN}y${NO_FORMAT}\n"
                     return 0
@@ -275,11 +275,11 @@ dot_ask_overwrite_sys()
                 printf "${BOLD}${YELLOW}'$2' exists and is different. Proceed? ${WHITE}(${YELLOW}d${WHITE}/${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}N${WHITE}):${NO_FORMAT} "
                 old_stty_cfg=$(stty -g)
                 stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
-                if echo "$answer" | grep -iq "^d"
+                if printf '%s' "$answer" | grep -iq "^d"
                 then # Diff
                     printf "${BOLD}${LIGHT_GREEN}diff${NO_FORMAT}\n"
                     diff "$2" "$1"
-                elif echo "$answer" | grep -iq "^y"
+                elif printf '%s' "$answer" | grep -iq "^y"
                 then # Yes
                     printf "${BOLD}${LIGHT_GREEN}y${NO_FORMAT}\n"
                     return 0
@@ -809,9 +809,9 @@ dot_append_section_to_config()
             local safe4=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
             sed -i "/$safe3/,/$safe4/d" "${HOME}/$i"
             # Add our section
-            echo "$2" >> "${HOME}/$i"
+            printf '%s\n' "$2" >> "${HOME}/$i"
             cat "${DOT_MODULE_DIR}/config/$i" >> "${HOME}/$i"
-            echo "$3" >> "${HOME}/$i"
+            printf '%s\n' "$3" >> "${HOME}/$i"
         else
             print_warning "Config file '$i' not found!"
         fi
@@ -850,9 +850,9 @@ dot_append_section_to_config_sys()
             local safe4=$(printf '%s\n' "$3" | sed 's/[[\.*^$/]/\\&/g')
             $DOT_SU sed -i "/$safe3/,/$safe4/d" "/$i"
             # Add our section
-            echo "$2" | $DOT_SU tee -a "/$i" > /dev/null
+            printf '%s\n' "$2" | $DOT_SU tee -a "/$i" > /dev/null
             cat "${DOT_MODULE_DIR}/config-sys/$i" | $DOT_SU tee -a "/$i" > /dev/null
-            echo "$3" | $DOT_SU tee -a "/$i" > /dev/null
+            printf '%s\n' "$3" | $DOT_SU tee -a "/$i" > /dev/null
         else
             print_warning "Config file '$i' not found!"
         fi
@@ -890,10 +890,10 @@ dot_prepend_section_to_config()
             sed -i "/$safe3/,/$safe4/d" "${HOME}/$i"
             # Prepend our section
             local orig_file="$(cat ${HOME}/$i)"
-            echo "$2" > "${HOME}/$i"
+            printf '%s\n' "$2" > "${HOME}/$i"
             cat "${DOT_MODULE_DIR}/config/$i" >> "${HOME}/$i"
-            echo "$3" >> "${HOME}/$i"
-            echo -n "$orig_file" >> "${HOME}/$i"
+            printf '%s\n' "$3" >> "${HOME}/$i"
+            printf '%s' "$orig_file" >> "${HOME}/$i"
             # Prepanding with printf doesn't work since it's considering
             # some characters in the file as formatting characters
             # printf "$2\n$(cat "${DOT_MODULE_DIR}/config/$i")\n$3\n$(cat ${HOME}/$i)\n" > "${HOME}/$i"
@@ -1196,7 +1196,7 @@ dot_add_ppa()
         print_status "Adding PPA using line '$1'..."
         if [ -n "$2" ]  # List file specified
         then
-            echo "$1" | $DOT_SU tee /etc/apt/sources.list.d/$2.list > /dev/null
+            printf '%s\n' "$1" | $DOT_SU tee /etc/apt/sources.list.d/$2.list > /dev/null
         else  # List file not specified
             dot_apt_add_repository "$1"
         fi
@@ -1206,8 +1206,8 @@ dot_add_ppa()
     then
         print_status "Adding public GPG key..."
         local key="$(curl -fsSL "$3")"
-        public_key_id=$(echo "$key" | gpg --with-colon 2>/dev/null | awk -F: '/pub/{print $5}')
-        echo "$key" | $DOT_SU apt-key add -
+        public_key_id=$(printf '%s\n' "$key" | gpg --with-colon 2>/dev/null | awk -F: '/pub/{print $5}')
+        printf '%s\n' "$key" | $DOT_SU apt-key add -
     fi
     # Verify fingerprint
     if [ -n "$public_key_id" ] && [ -n "$4" ]
@@ -1686,7 +1686,7 @@ print_param()
     then
         printf "${LIGHT_CYAN}$1${NO_FORMAT}='${LIGHT_YELLOW}%s${NO_FORMAT}'\n" "$DOT_PARAM"
     else
-        echo "${LIGHT_CYAN}$1${NO_FORMAT} ${YELLOW}is empty or not set${NO_FORMAT}"
+        printf "${LIGHT_CYAN}$1${NO_FORMAT} ${YELLOW}is empty or not set${NO_FORMAT}\n"
         [ -n "$arg_test_exit" ] && print_error "Parameter $1 cannot be empty!" && exit 1
         [ -z "$arg_test_empty" ]
     fi
@@ -1714,8 +1714,8 @@ print_param()
 #        the test function is run.
 dot_install_and_configure ()
 {
-    local var_name="INSTALL_$(echo "$1" | tr ' a-z' '_A-Z')"
-    local fun_name="$(echo "$1" | tr ' A-Z' '_a-z')"
+    local var_name="INSTALL_$(printf '%s' "$1" | tr ' a-z' '_A-Z')"
+    local fun_name="$(printf '%s' "$1" | tr ' A-Z' '_a-z')"
     local question="Install $1?"
     [ -n "$2" ] && question="$2"
 
@@ -1771,14 +1771,14 @@ dot_module_cleanup()
         find_args="$find_args ! -name '$i'"
     done
     # Cleanup
-    if [ $(echo -n "$find_args" | xargs find "${DOT_MODULE_DIR}/tmp"  | wc -l) = "0" ]
+        if [ $(printf '%s' "$find_args" | xargs find "${DOT_MODULE_DIR}/tmp"  | wc -l) = "0" ]
     then
         print_status "No temporary files found in the module."
     else
         if dot_ask_yes_no "Clean up temporary module files ("$(du -sh "${DOT_MODULE_DIR}/tmp" | awk '{print $1}')")?"
         then
             find_args="$find_args -execdir sh -c '. $DOT_DIR/shell/tools.sh; dot_ask_yes_no \"Delete \$(realpath --relative-base=.. {}) (\"\$(du -sh {} | awk \"{print \\\$1}\")\")?\" && rm -rf {}' \;"
-            echo -n "$find_args" | xargs -o find "${DOT_MODULE_DIR}/tmp"
+            printf '%s' "$find_args" | xargs -o find "${DOT_MODULE_DIR}/tmp"
         fi
     fi
 }
