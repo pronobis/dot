@@ -224,6 +224,10 @@ clone_module()
         "$DOT_DIR/modules/$name/init.sh"
     fi
 
+    # Renormalize after any filters have been added
+    # This will not add any new files, since we cloned a clean repo
+    git add --renormalize "$DOT_DIR/modules/$name" 2>/dev/null || true
+
     # Get dependencies
     get_module_dependencies $name
 }
@@ -466,6 +470,10 @@ cmd_update()
                 print_status "Running init script 00_defaults/init.sh..."
                 "$DOT_DIR/modules/00_defaults/init.sh"
             fi
+
+            # Renormalize after any filters have been added
+            # This will not add any new files, pull --rebase would fail if there were changes
+            git add --renormalize "$DOT_DIR" 2>/dev/null || true
         else
             print_status "Updating module $i..."
             cd "$DOT_DIR/modules/$i"
@@ -478,6 +486,10 @@ cmd_update()
                 print_status "Running init script $i/init.sh..."
                 "$DOT_DIR/modules/$i/init.sh"
             fi
+
+            # Renormalize after any filters have been added
+            # This will not add any new files, pull --rebase would fail if there were changes
+            git add --renormalize "$DOT_DIR/modules/$i" 2>/dev/null || true
         fi
     done
 
