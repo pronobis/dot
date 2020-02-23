@@ -654,31 +654,31 @@ for (i=0; i<NF; ++i)
 # Check and run command
 # ------------------------------------------------------------------------------
 command=$1
-if [ "$command" = "add" ]
+if [ "$command" = "add" ] || [ "$command" = "a" ]
 then
     shift
     cmd_add "$@"
-elif [ "$command" = "update" ]
+elif [ "$command" = "update" ] || [ "$command" = "u" ]
 then
     shift
     cmd_update "$@"
-elif [ "$command" = "install" ]
+elif [ "$command" = "install" ] || [ "$command" = "i" ]
 then
     shift
     cmd_install "$@"
-elif [ "$command" = "resolve" ]
+elif [ "$command" = "resolve" ] || [ "$command" = "r" ]
 then
     shift
     cmd_resolve
-elif [ "$command" = "params" ]
+elif [ "$command" = "params" ] || [ "$command" = "p" ]
 then
     shift
     cmd_params "$@"
-elif [ "$command" = "status" ]
+elif [ "$command" = "status" ] || [ "$command" = "s" ]
 then
     shift
     cmd_status "$@"
-elif [ "$command" = "list" ]
+elif [ "$command" = "list" ] || [ "$command" = "l" ]
 then
     shift
     cmd_list "$@"
