@@ -909,7 +909,7 @@ dot_prepend_section_to_config()
 ##   $1 - Module name
 dot_install_pip2_user()
 {
-    print_status "Installing $@ for Python 2 in ~/.local"
+    print_status "Installing $@ for Python 2 in '~/.local'..."
     if ! dot_inhibit pip install --user --upgrade "$@"
     then
         print_error "Error while running pip!"
@@ -923,7 +923,7 @@ dot_install_pip2_user()
 ##   $1 - Module name
 dot_install_pip3_user()
 {
-    print_status "Installing $@ for Python 3 in ~/.local"
+    print_status "Installing $@ for Python 3 in '~/.local'..."
     if ! dot_inhibit pip3 install --user --upgrade "$@"
     then
         print_error "Error while running pip!"
@@ -937,7 +937,7 @@ dot_install_pip3_user()
 ##   $1 - Module name
 dot_install_pip2()
 {
-    print_status "Installing $@ for Python 2 in default location"
+    print_status "Installing $@ for Python 2 in default location..."
     if ! dot_inhibit pip install --upgrade "$@"
     then
         print_error "Error while running pip!"
@@ -951,7 +951,7 @@ dot_install_pip2()
 ##   $1 - Module name
 dot_install_pip3()
 {
-    print_status "Installing $@ for Python 3 in default location"
+    print_status "Installing $@ for Python 3 in default location..."
     if ! dot_inhibit pip3 install --upgrade "$@"
     then
         print_error "Error while running pip!"
@@ -965,7 +965,7 @@ dot_install_pip3()
 ##   $1 - Module name
 dot_install_gem()
 {
-    print_status "Installing the Ruby gem $@ in default location"
+    print_status "Installing the Ruby gem $@ in default location..."
     if ! dot_inhibit gem install "$@"
     then
         print_error "Error while running gem!"
@@ -979,7 +979,7 @@ dot_install_gem()
 ##   $1 - Module name
 dot_install_gem_user()
 {
-    print_status "Installing the Ruby gem $@ in ~/.gem"
+    print_status "Installing the Ruby gem $@ in '~/.gem'..."
     if ! dot_inhibit gem install --user-install "$@"
     then
         print_error "Error while running gem!"
@@ -993,7 +993,7 @@ dot_install_gem_user()
 ##   $1 - Package name
 dot_install_npm()
 {
-    print_status "Installing the Node.js package $@ in default location"
+    print_status "Installing the Node.js package $@ in default location..."
     dot_get_su
     if ! dot_inhibit $DOT_SU npm install -g "$@"
     then
@@ -1727,7 +1727,7 @@ dot_install_and_configure ()
     # Also skip configuration in such case
     if dot_false "${var_name}"
     then
-        print_status "$1 is disabled"
+        print_status "$1 is disabled."
         return 0
     fi
 
