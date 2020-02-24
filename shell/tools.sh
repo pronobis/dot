@@ -1219,11 +1219,13 @@ dot_add_ppa()
     dot_get_su
 
     # Install missing dependencies
+    local not_installed="$DOT_NOT_INSTALLED"
     if ! dot_check_packages software-properties-common curl
     then
         print_status "Installing PPA dependencies: $DOT_NOT_INSTALLED..."
         dot_install_packages $DOT_NOT_INSTALLED
     fi
+    DOT_NOT_INSTALLED="$not_installed"
     # Add PPA
     local public_key_id=""
     if [ ! "${1#ppa:}" = "$1" ]
