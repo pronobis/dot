@@ -1803,7 +1803,6 @@ dot_install_and_configure ()
 
 
 # Interactively clean up temporary module files.
-# This uses xorg -o and find -execdir and will not work on busybox.
 # Args:
 #   $@ - Exclusion patterns
 dot_module_cleanup()
@@ -1822,8 +1821,8 @@ dot_module_cleanup()
     else
         if dot_ask_yes_no "Clean up temporary module files ("$(du -sh "${DOT_MODULE_DIR}/tmp" | awk '{print $1}')")?"
         then
-            find_args="$find_args -execdir sh -c '. $DOT_DIR/shell/tools.sh; dot_ask_yes_no \"Delete \$(realpath --relative-base=.. {}) (\"\$(du -sh {} | awk \"{print \\\$1}\")\")?\" && rm -rf {}' \;"
-            printf '%s' "$find_args" | xargs -o find "${DOT_MODULE_DIR}/tmp"
+            find_args="$find_args -exec sh -c '. $DOT_DIR/shell/tools.sh; dot_ask_yes_no \"Delete \$(realpath --relative-base=.. {}) (\"\$(du -sh {} | awk \"{print \\\$1}\")\")?\" </dev/tty && rm -rf {}' \;"
+            printf '%s' "$find_args" | xargs find "${DOT_MODULE_DIR}/tmp"
         fi
     fi
 }
