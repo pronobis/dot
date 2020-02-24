@@ -406,8 +406,6 @@ cmd_resolve()
     if [ -z "$installed_sth" ]
     then
         print_status "All dependencies are already installed."
-    else
-        print_status "Done!"
     fi
 }
 
