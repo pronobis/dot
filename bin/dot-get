@@ -297,7 +297,7 @@ cmd_add()
         exit 1
     fi
 
-    print_status "Installing module $url:"
+    print_status "Installing module ${url}..."
 
     # Get list of all modules with urls
     __dot_get_modules
@@ -332,7 +332,7 @@ cmd_add()
         # If not yet added, clone
         if ! is_url_added $url
         then
-            print_status "Installing dependency $url:"
+            print_status "Installing dependency ${url}..."
             clone_module $url
             # Add dependencies of that one
             if [ -n "$DEPENDENCIES" ]
@@ -389,7 +389,7 @@ cmd_resolve()
         # If not yet added, clone
         if ! is_url_added $url
         then
-            print_status "Installing dependency $url:"
+            print_status "Installing dependency ${url}..."
             installed_sth="1"
             clone_module $url
             # Add dependencies of that one
@@ -475,7 +475,7 @@ cmd_update()
             # This will not add any new files, pull --rebase would fail if there were changes
             git add --renormalize "$DOT_DIR" 2>/dev/null || true
         else
-            print_status "Updating module $i..."
+            print_status "Updating module ${i}..."
             cd "$DOT_DIR/modules/$i"
             $DOT_GIT pull --rebase --recurse-submodules
             $DOT_GIT submodule update --recursive
@@ -540,7 +540,7 @@ cmd_install()
     local IFS=':'
     for i in $modules
     do
-        print_status "Installing module $i..."
+        print_status "Installing module ${i}..."
         cd "$DOT_DIR/modules/$i"
         ./install.sh
         echo
