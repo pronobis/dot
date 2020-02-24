@@ -278,7 +278,7 @@ dot_ask_overwrite_sys()
                 if printf '%s' "$answer" | grep -iq "^d"
                 then # Diff
                     printf "${BOLD}${LIGHT_GREEN}diff${NO_FORMAT}\n"
-                    diff "$2" "$1"
+                    $DOT_SU diff "$2" "$1"
                 elif printf '%s' "$answer" | grep -iq "^y"
                 then # Yes
                     printf "${BOLD}${LIGHT_GREEN}y${NO_FORMAT}\n"
