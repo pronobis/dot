@@ -1816,7 +1816,7 @@ dot_module_cleanup()
         find_args="$find_args ! -name '$i'"
     done
     # Cleanup
-        if [ $(printf '%s' "$find_args" | xargs find "${DOT_MODULE_DIR}/tmp"  | wc -l) = "0" ]
+    if [ $(printf '%s' "$find_args" | xargs find "${DOT_MODULE_DIR}/tmp"  | wc -l) = "0" ]
     then
         print_status "No temporary files found in the module."
     else
