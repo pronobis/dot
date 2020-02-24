@@ -1258,7 +1258,7 @@ dot_add_ppa()
     if [ -n "$public_key_id" ] && [ -n "$4" ]
     then
         print_status "Verifying fingerprint for key $public_key_id..."
-        if apt-key adv --finger --with-colons 8D81803C0EBFCD88 2>/dev/null | grep -q -E "fpr:*$4:"
+        if apt-key adv --finger --with-colons "$public_key_id" 2>/dev/null | grep -q -E "fpr:*$4:"
         then
             print_info "OK"
         else
