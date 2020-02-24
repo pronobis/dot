@@ -640,6 +640,7 @@ dot_copy_config_sys()
 # Args:
 #   $1 - Wildcard describing the path to config files relative to $2
 #   $2 - Root folder to which files are copied. If missing, set to $HOME.
+#   $3- - Names of variables to substitute
 dot_fill_config()
 {
     local root="$2"
@@ -650,29 +651,50 @@ dot_fill_config()
         i=${i#${DOT_MODULE_DIR}/config/}
         if [ -e "${DOT_MODULE_DIR}/config/$i" ] && [ ! -d "${DOT_MODULE_DIR}/config/$i" ]
         then
+            local var_list=""
             # Use envsubst whenever gettext available
             if dot_check_cmd envsubst
             then
-                envsubst < "${DOT_MODULE_DIR}/config/$i" > "${DOT_MODULE_DIR}/config/$i.dot-filled"
+                # Prepare variable list
+                if [ "$#" -ge "2" ]
+                then
+                    shift 2
+                    for j do
+                        var_list="$var_list \$$j"
+                    done
+                fi
+                # Substitute
+                [ -n "$var_list" ] && \
+                    envsubst "$var_list" < "${DOT_MODULE_DIR}/config/$i" > \
+                             "${DOT_MODULE_DIR}/config/$i.dot-filled" || \
+                        envsubst < "${DOT_MODULE_DIR}/config/$i" > \
+                                 "${DOT_MODULE_DIR}/config/$i.dot-filled"
             else
                 print_warning "dot_fill_config: gettext is not available, using sed instead."
                 print_warning "Some variables might not be replaced and characters might be escaped!"
+                # Prepare variable list
+                if [ "$#" -ge "2" ]
+                then
+                    shift 2
+                    for j do
+                        var_list="$(printf "%s\n%s" "$j" "$var_list")"
+                    done
+                fi
+                # If empty, create default variable list with all params
+                if [ -z "$var_list" ]
+                then
+                    var_list="$(printf "USER\nHOME\nDOT_DIR\nDOT_MODULE_DIR\n")"  # Some default variables
+                    var_list="${var_list}$(env | awk '/^DOT_PARAM_/ {sub(/\s*=.*/,"", $1); print $1}')"
+                fi
                 # Build sed arguments for module parameters
                 local sed_args=";"
-                for j in $(env | awk '/^DOT_PARAM_/ {sub(/\s*=.*/,"", $1); print $1}')
+                for j in $var_list
                 do
-                    __dot_param -q "${j#DOT_PARAM_}"
-                    sed_args=$(printf "s\001\${$j}\001$DOT_PARAM\001g;${sed_args}")
+                    sed_args="$(eval "printf \"s\001%s\001%s\001g;%s\" \"\\\${$j}\" \"\$$j\" \"\${sed_args}\"")"
                 done
                 # Replace variables
-                sed \
-                    -e "$sed_args" \
-                    -e 's#${USER}#'"${USER}"'#g' \
-                    -e 's#${HOME}#'"${HOME}"'#g' \
-                    -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
-                    -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
+                sed -e "$sed_args" \
                     "${DOT_MODULE_DIR}/config/$i" > "${DOT_MODULE_DIR}/config/$i.dot-filled"
-
             fi
             if dot_ask_overwrite "${DOT_MODULE_DIR}/config/$i.dot-filled" "${root}/$i"
             then
@@ -697,6 +719,7 @@ dot_fill_config()
 # Args:
 #   $1 - Wildcard describing the path to config files relative to $2
 #   $2 - Root folder to which files are copied. If missing, set to /.
+#   $3- - Names of variables to substitute
 dot_fill_config_sys()
 {
     dot_get_su
@@ -708,27 +731,49 @@ dot_fill_config_sys()
         i=${i#${DOT_MODULE_DIR}/config-sys/}
         if [ -e "${DOT_MODULE_DIR}/config-sys/$i" ] && [ ! -d "${DOT_MODULE_DIR}/config-sys/$i" ]
         then
+            local var_list=""
             # Use envsubst whenever gettext available
             if dot_check_cmd envsubst
             then
-                envsubst < "${DOT_MODULE_DIR}/config-sys/$i" > "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"
+                # Prepare variable list
+                if [ "$#" -ge "2" ]
+                then
+                    shift 2
+                    for j do
+                        var_list="$var_list \$$j"
+                    done
+                fi
+                # Substitute
+                [ -n "$var_list" ] && \
+                    envsubst "$var_list" < "${DOT_MODULE_DIR}/config-sys/$i" > \
+                             "${DOT_MODULE_DIR}/config-sys/$i.dot-filled" || \
+                        envsubst < "${DOT_MODULE_DIR}/config-sys/$i" > \
+                                 "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"
             else
                 print_warning "dot_fill_config: gettext is not available, using sed instead."
                 print_warning "Some variables might not be replaced and characters might be escaped!"
+                # Prepare variable list
+                if [ "$#" -ge "2" ]
+                then
+                    shift 2
+                    for j do
+                        var_list="$(printf "%s\n%s" "$j" "$var_list")"
+                    done
+                fi
+                # If empty, create default variable list with all params
+                if [ -z "$var_list" ]
+                then
+                    var_list="$(printf "USER\nHOME\nDOT_DIR\nDOT_MODULE_DIR\n")"  # Some default variables
+                    var_list="${var_list}$(env | awk '/^DOT_PARAM_/ {sub(/\s*=.*/,"", $1); print $1}')"
+                fi
                 # Build sed arguments for module parameters
                 local sed_args=";"
-                for j in $(env | awk '/^DOT_PARAM_/ {sub(/\s*=.*/,"", $1); print $1}')
+                for j in $var_list
                 do
-                    __dot_param -q "${j#DOT_PARAM_}"
-                    sed_args=$(printf "s\001\${$j}\001$DOT_PARAM\001g;${sed_args}")
+                    sed_args="$(eval "printf \"s\001%s\001%s\001g;%s\" \"\\\${$j}\" \"\$$j\" \"\${sed_args}\"")"
                 done
                 # Replace variables
-                sed \
-                    -e "$sed_args" \
-                    -e 's#${USER}#'"${USER}"'#g' \
-                    -e 's#${HOME}#'"${HOME}"'#g' \
-                    -e 's#${DOT_DIR}#'"${DOT_DIR}"'#g' \
-                    -e 's#${DOT_MODULE_DIR}#'"${DOT_MODULE_DIR}"'#g' \
+                sed -e "$sed_args" \
                     "${DOT_MODULE_DIR}/config-sys/$i" > "${DOT_MODULE_DIR}/config-sys/$i.dot-filled"
             fi
             if dot_ask_overwrite_sys "${DOT_MODULE_DIR}/config-sys/$i.dot-filled" "${root}/$i"
