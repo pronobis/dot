@@ -477,6 +477,22 @@ cmd_update()
         else
             print_status "Updating module ${i}..."
             cd "$DOT_DIR/modules/$i"
+
+            # Check if there are local changes to stash
+            local unstash=""
+            if ! git diff --quiet
+            then
+                if dot_ask_yes_no "There are unstaged changes in the module. Stash/unstash for the update?"
+                then
+                    unstash=1
+                    git stash
+                else
+                    print_error "Cannot update a module with unstaged changes."
+                    exit 1
+                fi
+            fi
+
+            # Do the actual update
             $DOT_GIT pull --rebase --recurse-submodules
             $DOT_GIT submodule update --recursive
 
@@ -490,6 +506,12 @@ cmd_update()
             # Renormalize after any filters have been added
             # This will not add any new files, pull --rebase would fail if there were changes
             git add --renormalize "$DOT_DIR/modules/$i" 2>/dev/null || true
+
+            # Unstash - must be done after git add to not add changes
+            if [ -n "$unstash" ]
+            then
+                git stash pop --quiet
+            fi
         fi
     done
 
