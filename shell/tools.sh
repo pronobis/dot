@@ -131,8 +131,8 @@ print_error()
 dot_ask_yes_no()
 {
     printf "${BOLD}${YELLOW}$1 ${WHITE}(${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}N${WHITE}):${NO_FORMAT} "
-    old_stty_cfg=$(stty -g)
-    stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
+    old_stty_cfg="$(stty -g)"
+    stty raw -echo ; answer="$(head -c 1)" ; stty "$old_stty_cfg"
     if printf '%s' "$answer" | grep -iq "^y"
     then # Yes
         printf "${BOLD}${LIGHT_GREEN}y${NO_FORMAT}\n"
@@ -189,8 +189,8 @@ dot_ask_overwrite()
             while :
             do
                 printf "${BOLD}${YELLOW}'$2' exists and is different. Proceed? ${WHITE}(${YELLOW}d${WHITE}/${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}N${WHITE}):${NO_FORMAT} "
-                old_stty_cfg=$(stty -g)
-                stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
+                old_stty_cfg="$(stty -g)"
+                stty raw -echo ; answer="$(head -c 1)" ; stty "$old_stty_cfg"
                 if printf '%s' "$answer" | grep -iq "^d"
                 then # Diff
                     printf "${BOLD}${LIGHT_GREEN}diff${NO_FORMAT}\n"
@@ -273,8 +273,8 @@ dot_ask_overwrite_sys()
             while :
             do
                 printf "${BOLD}${YELLOW}'$2' exists and is different. Proceed? ${WHITE}(${YELLOW}d${WHITE}/${LIGHT_GREEN}y${WHITE}/${LIGHT_RED}N${WHITE}):${NO_FORMAT} "
-                old_stty_cfg=$(stty -g)
-                stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
+                old_stty_cfg="$(stty -g)"
+                stty raw -echo ; answer="$(head -c 1)" ; stty "$old_stty_cfg"
                 if printf '%s' "$answer" | grep -iq "^d"
                 then # Diff
                     printf "${BOLD}${LIGHT_GREEN}diff${NO_FORMAT}\n"
@@ -317,8 +317,8 @@ dot_ask_overwrite_sys()
 dot_wait_for_key()
 {
     printf "${BOLD}${YELLOW}Press any key to continue...${NO_FORMAT} "
-    old_stty_cfg=$(stty -g)
-    stty raw -echo ; answer=$(head -c 1) ; stty $old_stty_cfg
+    old_stty_cfg="$(stty -g)"
+    stty raw -echo ; answer="$(head -c 1)" ; stty "$old_stty_cfg"
     if [ "$answer" = $(printf \\003) ]
     then # ^C detected
         printf "${BOLD}${LIGHT_RED}interrupted${NO_FORMAT}\n"
